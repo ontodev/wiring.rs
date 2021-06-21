@@ -1,5 +1,3 @@
-//use serde_json::{Result, Value};
-use serde_json::{Result};
 use serde::{Deserialize, Serialize};
 //use std::fmt;
 //use serde_json::json;
@@ -352,35 +350,4 @@ pub fn translate_complement_of(s: &ComplementOf) -> String {
     let complement_of = base2ofn(&s.owl_complement_of[0].object);
     let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
     expression
-}
-
-pub fn obo_example() -> Result<()> {
-
-let some_values = r#" {"subject": "ex:existential", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pExistential"}], "owl:someValuesFrom": [{"object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pExistential"}], "owl:someValuesFrom": [{"object": "ex:existentialFiller"}]} }]}}"#;
-
-let all_values = r#" {"subject": "ex:universal", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pUniversal"}], "owl:allValuesFrom": [{"object": "ex:universalFiller"}]}}"#;
-
-let intersection = r#" {"subject": "ex:intersection", "predicate": "rdfs:subClassOf", "object": {"owl:intersectionOf": [{"object": {"rdf:first": [{"object": "ex:I1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:I2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:I3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}], "rdf:type": [{"object": "owl:Class"}]}} "#;
-
-
-let min = r#" {"subject": "ex:minCardinality", "predicate": "owl:equivalentClass", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pMinCardinality"}], "owl:minCardinality": [{"object": "1^^xsd:nonNegativeInteger"}]}} "#;
-
-    let data = r#" {"subject": "obo:OBI:0001977", "predicate": "owl:equivalentClass", "object": {"rdf:type": [{"object": "owl:Class"}], "owl:intersectionOf": [{"object": {"rdf:first": [{"object": "obo:OBI:0000070"}], "rdf:rest": [{"object": {"rdf:first": [{"object": {"rdf:type": [{"object": "owl:Class"}], "owl:intersectionOf": [{"object": {"rdf:first": [{"object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:BFO:0000055"}], "owl:someValuesFrom": [{"object": {"rdf:type": [{"object": "owl:Class"}], "owl:intersectionOf": [{"object": {"rdf:first": [{"object": "obo:OBI:0000067"}], "rdf:rest": [{"object": {"rdf:first": [{"object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:RO:0000081"}], "owl:someValuesFrom": [{"object": "obo:CL:0000000"}]}}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}]}}], "rdf:rest": [{"object": {"rdf:first": [{"object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:OBI:0000293"}], "owl:someValuesFrom": [{"object": {"rdf:type": [{"object": "owl:Class"}], "owl:intersectionOf": [{"object": {"rdf:first": [{"object": "obo:CL:0000000"}], "rdf:rest": [{"object": {"rdf:first": [{"object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:RO:0000087"}], "owl:someValuesFrom": [{"object": "obo:OBI:0000067"}]}}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}]}}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}"#;
-
-    let t: ThickTriple = serde_json::from_str(some_values)?;
-    let s: ThickTriple = serde_json::from_str(all_values)?;
-    let i: ThickTriple = serde_json::from_str(intersection)?;
-    let m: ThickTriple = serde_json::from_str(min)?;
-    let d: ThickTriple = serde_json::from_str(data)?;
-    //println!("Subject {} predicate {}", v["subject"], v["predicate"]); 
-    //println!("Test {}", v["object"]["rdf:type"][0]["object"]); 
-    //println!("Please call {} at the number {}", t.subject, t.predicate.unwrap());
-    //println!("Please call {} at the number {}", (t.object.rdf_type.unwrap())[0].object, t.predicate);
-    //println!("Please call {:?} at the number {:?}", t.subject, t.object);
-    thick2ofn(&t.object);
-    thick2ofn(&s.object);
-    thick2ofn(&i.object);
-    thick2ofn(&m.object);
-    thick2ofn(&d.object);
-    Ok(()) 
 }
