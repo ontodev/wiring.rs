@@ -25,5 +25,11 @@ let disjoint_classes = r#"
     let test_disjoint_classes = thick_triple_parser::parse_tiple(disjoint_classes); 
     println!("{}", test_disjoint_classes);
 
+    let disjoint_union_of = r#"
+{"subject": "ex:disjointUnion", "predicate": "owl:disjointUnionOf", "object": {"rdf:first": [{"object": "ex:u1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}} "#;
+
+    let test_disjoint_union_of = thick_triple_parser::parse_tiple(disjoint_union_of); 
+    println!("{}", test_disjoint_union_of);
+
 }
 

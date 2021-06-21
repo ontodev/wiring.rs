@@ -31,4 +31,15 @@ pub fn translate_disjoint_classes(ops: &str) -> String {
     expression 
 }
 
+pub fn translate_disjoint_union(u: &str, ops: &str) -> String {
+
+    let union: class_translation::OWL = serde_json::from_str(u).unwrap(); 
+    let operands: class_translation::OWL = serde_json::from_str(ops).unwrap(); 
+
+    let lhs : String = class_translation::thick2ofn(&union);
+    let rhs: String = class_translation::thick2ofn(&operands); 
+    let expression = format!("[\"DisjointUnionOf\",{},{}]", lhs, rhs);
+    expression 
+}
+
 

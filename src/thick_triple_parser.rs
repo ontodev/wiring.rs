@@ -34,7 +34,8 @@ pub fn parse_tiple(t: &str) -> String {
                 let members_helper : String = thick_triple["object"]["owl:members"].to_string();
                 let members : &str = members_helper.as_str(); 
                 axiom_translation::translate_disjoint_classes(members) 
-            },
+            }, 
+        "\"owl:disjointUnionOf\"" => axiom_translation::translate_disjoint_union(subj, obj),
         _ => String::from("Fail"),
     } 
 }
