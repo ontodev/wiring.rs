@@ -11,19 +11,18 @@ use crate::axiom_translation as axiom_translation;
 //    string
 //}
 
-//TODO: error handling (don't use unrwap() like that...)
 pub fn parse_tiple(t: &str) -> String {
 
     //println!("{}", t);
     let thick_triple: Value = serde_json::from_str(t).unwrap();
     //println!("{}", thick_triple["subject"]);
 
+    //TODO: I cannot chain to_string() and as_str() - why?
     let subj_helper : String  = thick_triple["subject"].to_string();
     let subj : &str = subj_helper.as_str();
 
     let predicate : String = thick_triple["predicate"].to_string();
 
-    //TODO: I cannot chain to_string() and as_str() - why?
     let obj_helper : String  = thick_triple["object"].to_string();
     let obj : &str = obj_helper.as_str();
 
