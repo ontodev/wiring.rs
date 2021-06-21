@@ -18,5 +18,12 @@ let intersection = r#" {"subject": "ex:intersection", "predicate": "rdfs:subClas
 
     let test_obo = thick_triple_parser::parse_tiple(obo); 
     println!("{}", test_obo);
+
+let disjoint_classes = r#"
+{"subject": "_:genid27", "predicate": "owl:AllDisjointClasses", "object": {"owl:members": {"rdf:first": [{"object": "ex:disjointClass1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:disjointClass2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:disjointClass3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}} "#;
+
+    let test_disjoint_classes = thick_triple_parser::parse_tiple(disjoint_classes); 
+    println!("{}", test_disjoint_classes);
+
 }
 

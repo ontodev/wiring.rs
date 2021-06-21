@@ -30,6 +30,11 @@ pub fn parse_tiple(t: &str) -> String {
     match predicate.as_str() {
         "\"rdfs:subClassOf\"" => axiom_translation::translate_subclass_of_axiom(subj, obj),
         "\"owl:equivalentClass\"" => axiom_translation::translate_equivalent_class(subj, obj),
+        "\"owl:AllDisjointClasses\"" => {
+                let members_helper : String = thick_triple["object"]["owl:members"].to_string();
+                let members : &str = members_helper.as_str(); 
+                axiom_translation::translate_disjoint_classes(members) 
+            },
         _ => String::from("Fail"),
     } 
 }

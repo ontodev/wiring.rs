@@ -23,4 +23,12 @@ pub fn translate_equivalent_class(sub: &str, sup: &str) -> String {
     expression 
 }
 
+pub fn translate_disjoint_classes(ops: &str) -> String {
+
+    let operands : class_translation::OWL = serde_json::from_str(ops).unwrap(); 
+    let arguments: String = class_translation::thick2ofn(&operands); 
+    let expression = format!("[\"DisjointClassses\",{}]", arguments);
+    expression 
+}
+
 
