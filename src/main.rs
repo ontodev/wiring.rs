@@ -31,5 +31,10 @@ let disjoint_classes = r#"
     let test_disjoint_union_of = thick_triple_parser::parse_tiple(disjoint_union_of); 
     println!("{}", test_disjoint_union_of);
 
+let n_ary_equivalent_classes = r#" {"subject": "_:genid1", "predicate": "owl:equivalentClass", "object": {"rdf:rest": [{"object": {"rdf:rest": [{"object": {"rdf:rest": [{"object": "rdf:nil"}], "rdf:first": [{"object": "ex:equivalent2"}]}}], "rdf:first": [{"object": "ex:equivalent1"}]}}], "rdf:first": [{"object": "ex:equivalent3"}]}} "#;
+
+    let test_n_ary_equivalent_classes = thick_triple_parser::parse_tiple(n_ary_equivalent_classes); 
+    println!("{}", test_n_ary_equivalent_classes);
+
 }
 
