@@ -1,5 +1,5 @@
-use serde_json::{Result,Value};
-use serde::{Deserialize, Serialize};
+use serde_json::{Value};
+//use serde::{Deserialize, Serialize};
 
 use crate::axiom_translation as axiom_translation; 
 
@@ -29,6 +29,7 @@ pub fn parse_tiple(t: &str) -> String {
 
     match predicate.as_str() {
         "\"rdfs:subClassOf\"" => axiom_translation::translate_subclass_of_axiom(subj, obj),
+        "\"owl:equivalentClass\"" => axiom_translation::translate_equivalent_class(subj, obj),
         _ => String::from("Fail"),
     } 
 }
