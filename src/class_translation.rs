@@ -1,14 +1,6 @@
 use serde::{Deserialize, Serialize};
-//use std::fmt;
-//use serde_json::json;
 
-//TODO refactor this into a module for thick triples
-#[derive(Debug,Serialize, Deserialize)]
-pub struct ThickTriple {
-    subject: OWL,
-    predicate: OWL,
-    object: OWL, 
-}
+//TODO: recursive translation for object properties
 
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 //                      RDF
@@ -180,7 +172,6 @@ pub struct Object {
 //#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum OWL {
-    //String,
     Named(String),
     //Number(i64), //we could type numbers for cardinality restrictions - but I don't see the point
     SomeValuesFrom(SomeValuesFrom),
@@ -200,14 +191,8 @@ pub enum OWL {
     RDFlist(RDFlist),
 }
 
-//pub fn thick2ofn(t: ThickTriple ) -> () {
-//pub fn thick2ofn(t: &OWL ) -> () {
-pub fn thick2ofn(t: &OWL ) -> String {
-
-    //translate object of thick triples for test purposes
-    //let owned_string : String = base2ofn(&t.object);
-    //let owned_string : String = base2ofn(t);
-    //println!("{}", owned_string); 
+//TODO: rename base2ofn thick2ofn?
+pub fn thick2ofn(t: &OWL ) -> String { 
     base2ofn(t)
 }
 
