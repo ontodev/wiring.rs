@@ -1,7 +1,7 @@
 use serde_json::{Value};
 //use serde::{Deserialize, Serialize};
 
-use crate::axiom_translation as axiom_translation; 
+use crate::thick2ofn::axiom_translation as axiom_translation; 
 
 //#[derive(Debug,Serialize, Deserialize)]
 //pub struct ThickTriple {

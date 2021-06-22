@@ -1,4 +1,4 @@
-use crate::class_translation as class_translation; 
+use crate::thick2ofn::class_translation as class_translation; 
 
 pub fn translate_subclass_of_axiom(sub: &str, sup: &str) -> String {
 
