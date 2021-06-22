@@ -191,12 +191,7 @@ pub enum OWL {
     RDFlist(RDFlist),
 }
 
-//TODO: rename base2ofn thick2ofn?
-pub fn thick2ofn(t: &OWL ) -> String { 
-    base2ofn(t)
-}
-
-pub fn base2ofn(b: &OWL) -> String {
+pub fn translate(b: &OWL) -> String {
      match &*b {//TODO: don't quite understand why &* is necessary here
         //OWL::Named(x) => println!("Got 50 {:?}", x),
          OWL::Named(x) => translate_named(x.to_string()),
@@ -230,81 +225,81 @@ pub fn translate_named(s: String) -> String {
 }
 
 pub fn translate_some_values_from(s: &SomeValuesFrom) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let filler =  base2ofn(&s.owl_some_values_from[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let filler =  translate(&s.owl_some_values_from[0].object);
     let expression = format!("[\"ObjectSomeValuesFrom\",{},{}]", property, filler);
     expression
 }
 
 pub fn translate_all_values_from(s: &AllValuesFrom) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let filler =  base2ofn(&s.owl_all_values_from[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let filler =  translate(&s.owl_all_values_from[0].object);
     let expression = format!("[\"ObjectAllValuesFrom\",{},{}]", property, filler);
     expression
 }
 
 pub fn translate_has_value(s: &HasValue) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let filler =  base2ofn(&s.owl_has_value[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let filler =  translate(&s.owl_has_value[0].object);
     let expression = format!("[\"ObjectHasValue\",{},{}]", property, filler);
     expression
 }
 
 pub fn translate_has_self(s: &HasSelf) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
+    let property = translate(&s.owl_on_property[0].object);
     let expression = format!("[\"ObjectHasSelf\",{}]", property);
     //ignoring "owl_has_self" because that only contains "true^^xsd:boolean"
     expression
 }
 
 pub fn translate_min_cardinality(s: &MinCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_min_cardinality[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_min_cardinality[0].object);
     let expression = format!("[\"ObjectMinCardinality\",{},{}]", property, cardinality);
     expression
 }
 
 pub fn translate_min_qualified_cardinality(s: &MinQualifiedCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_min_qualified_cardinality[0].object);
-    let filler =  base2ofn(&s.owl_on_class[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_class[0].object);
     let expression = format!("[\"ObjectMinCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 }
 
 pub fn translate_max_cardinality(s: &MaxCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_max_cardinality[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_max_cardinality[0].object);
     let expression = format!("[\"ObjectMaxCardinality\",{},{}]", property, cardinality);
     expression
 }
 
 pub fn translate_max_qualified_cardinality(s: &MaxQualifiedCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_max_qualified_cardinality[0].object);
-    let filler =  base2ofn(&s.owl_on_class[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_class[0].object);
     let expression = format!("[\"ObjectMaxCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 }
 
 pub fn translate_exact_cardinality(s: &ExactCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_cardinality[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_cardinality[0].object);
     let expression = format!("[\"ObjectExactCardinality\",{},{}]", property, cardinality);
     expression
 }
 
 pub fn translate_exact_qualified_cardinality(s: &ExactQualifiedCardinality) -> String { 
-    let property = base2ofn(&s.owl_on_property[0].object);
-    let cardinality =  base2ofn(&s.owl_qualified_cardinality[0].object);
-    let filler =  base2ofn(&s.owl_on_class[0].object);
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_class[0].object);
     let expression = format!("[\"ObjectExactCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 } 
 
 pub fn translate_list(s: &RDFlist) -> String { 
-    let first = base2ofn(&s.rdf_first[0].object);
-    let rest =  base2ofn(&s.rdf_rest[0].object);
+    let first = translate(&s.rdf_first[0].object);
+    let rest =  translate(&s.rdf_rest[0].object);
 
     //match &rest[..] {
     match &*rest {
@@ -314,25 +309,25 @@ pub fn translate_list(s: &RDFlist) -> String {
 }
 
 pub fn translate_intersection_of(s: &IntersectionOf) -> String { 
-    let intersection_of = base2ofn(&s.owl_intersection_of[0].object);
+    let intersection_of = translate(&s.owl_intersection_of[0].object);
     let expression = format!("[\"ObjectIntersectionOf\",{}]", intersection_of);
     expression
 }
 
 pub fn translate_union_of(s: &UnionOf) -> String { 
-    let union_of = base2ofn(&s.owl_union_of[0].object);
+    let union_of = translate(&s.owl_union_of[0].object);
     let expression = format!("[\"ObjectUnionOf\",{}]", union_of);
     expression
 }
 
 pub fn translate_one_of(s: &OneOf) -> String { 
-    let one_of = base2ofn(&s.owl_one_of[0].object);
+    let one_of = translate(&s.owl_one_of[0].object);
     let expression = format!("[\"ObjectOneOf\",{}]", one_of);
     expression
 }
 
 pub fn translate_complement_of(s: &ComplementOf) -> String { 
-    let complement_of = base2ofn(&s.owl_complement_of[0].object);
+    let complement_of = translate(&s.owl_complement_of[0].object);
     let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
     expression
 }
