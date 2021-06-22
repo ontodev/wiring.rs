@@ -163,6 +163,20 @@ pub struct ComplementOf {
     owl_complement_of: Vec<Object>,
 }
 
+//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+//           OWL Object Properties
+//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+//TODO: think about refactoring this into a separate module
+//Pro: separation of concerns (class translation vs. property translation)
+//Con: will make the code harder to read/understand 
+
+#[derive(Debug,Serialize, Deserialize)]
+pub struct InverseOf {
+    #[serde(rename = "owl:inverseOf")]
+    owl_inverse_of: Vec<Object>,
+}
+
 #[derive(Debug,Serialize, Deserialize)]
 pub struct Object {
     object: OWL
@@ -188,6 +202,8 @@ pub enum OWL {
     UnionOf(UnionOf),
     OneOf(OneOf),
     ComplementOf(ComplementOf),
+    //InverseOf(property_translation::InverseOf),
+    InverseOf(InverseOf),
     RDFlist(RDFlist),
 }
 
@@ -215,7 +231,9 @@ pub fn translate(b: &OWL) -> String {
         OWL::OneOf(x) => translate_one_of(x),
         OWL::ComplementOf(x) => translate_complement_of(x),
         OWL::RDFlist(x) => translate_list(x),
-        //_ => println!("Default case, x = {:?}", x),
+        //_ => println!("Default case, x = {:?}", x), 
+        //OWL::InverseOf(x) => property_translation::translate(x),
+        OWL::InverseOf(x) => translate_inverse_of(x),
     }
 }
 
@@ -329,5 +347,11 @@ pub fn translate_one_of(s: &OneOf) -> String {
 pub fn translate_complement_of(s: &ComplementOf) -> String { 
     let complement_of = translate(&s.owl_complement_of[0].object);
     let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
+    expression
+}
+
+pub fn translate_inverse_of(s: &InverseOf) -> String { 
+    let inverse_of = translate(&s.owl_inverse_of[0].object);
+    let expression = format!("[\"ObjectInverseOf\",{}]", inverse_of);
     expression
 }
