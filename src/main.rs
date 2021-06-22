@@ -34,5 +34,9 @@ let n_ary_equivalent_classes = r#" {"subject": "_:genid1", "predicate": "owl:equ
     let test_n_ary_equivalent_classes = thick2ofn::thick_triple_parser::parse_tiple(n_ary_equivalent_classes); 
     println!("{}", test_n_ary_equivalent_classes);
 
+    let inverse = r#" {"subject": "ex:A", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": {"owl:inverseOf": [{"object": ":exprop"}]}}], "owl:someValuesFrom": [{"object": ":exB"}]}} "#;
+    let test_inverse = thick2ofn::thick_triple_parser::parse_tiple(inverse); 
+    println!("{}", test_inverse);
+
 }
 
