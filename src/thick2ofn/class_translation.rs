@@ -67,7 +67,7 @@ pub struct MinQualifiedCardinality {
     rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:minQalifiedCardinality")]
+    #[serde(rename = "owl:minQualifiedCardinality")]
     owl_min_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     owl_on_class: Vec<Object>, 
@@ -89,7 +89,7 @@ pub struct MaxQualifiedCardinality {
     rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:maxQalifiedCardinality")]
+    #[serde(rename = "owl:maxQualifiedCardinality")]
     owl_max_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     owl_on_class: Vec<Object>, 
@@ -111,7 +111,7 @@ pub struct ExactQualifiedCardinality {
     rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:qalifiedCardinality")]
+    #[serde(rename = "owl:qualifiedCardinality")]
     owl_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     owl_on_class: Vec<Object>, 
@@ -170,6 +170,9 @@ pub struct ComplementOf {
 //TODO: think about refactoring this into a separate module
 //Pro: separation of concerns (class translation vs. property translation)
 //Con: will make the code harder to read/understand 
+//I am leaning towards keeping everything in here - that will blow this file up though
+//Alternatively: we keep all typing in here and facotr the translation methods out
+//so, we would have a 'central' translation method for everything
 
 #[derive(Debug,Serialize, Deserialize)]
 pub struct InverseOf {
