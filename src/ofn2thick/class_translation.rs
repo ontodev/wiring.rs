@@ -1,8 +1,31 @@
 use serde_json::{Value};
 use crate::owl::typing as owl;
-use crate::ofn2thick::owl as owlTranslation;
 
+//Note that (thick) triples are not OWL
+pub fn translate(v : &Value) -> owl::OWL {
 
+    let owl_operator: String = v[0].to_string();
+
+     match owl_operator.as_str() {
+         "\"ObjectSomeValuesFrom\"" => translate_some_values_from(v), 
+         "\"ObjectAllValuesFrom\"" => translate_all_values_from(v), 
+         "\"ObjectHasValue\"" => translate_has_value(v), 
+         "\"ObjectMinCardinality\"" => translate_min_cardinality(v), 
+         "\"ObjectMinQualifiedCardinality\"" => translate_min_qualified_cardinality(v), 
+         "\"ObjectMaxCardinality\"" => translate_max_cardinality(v), 
+         "\"ObjectMaxQualifiedCardinality\"" => translate_max_qualified_cardinality(v), 
+         "\"ObjectExactCardinality\"" => translate_exact_cardinality(v), 
+         "\"ObjectExactQualifiedCardinality\"" => translate_exact_qualified_cardinality(v), 
+         "\"ObjectHasSelf\"" => translate_has_self(v), 
+         "\"ObjectIntersectionOf\"" => translate_intersection_of(v), 
+         "\"ObjectUnionOf\"" => translate_union_of(v), 
+         "\"ObjectOneOf\"" => translate_one_of(v), 
+         "\"ObjectComplementOf\"" => translate_complement_of(v), 
+         "\"ObjectInverseOf\"" => translate_inverse_of(v), 
+         _ => owl::OWL::Named(v.to_string().replace("\"","")),//return named entity (without quotes)
+         //TODO: this way of removing quotes is somewhat crude
+     }
+} 
 
 pub fn get_object(owl : owl::OWL) -> owl::Object {
     owl::Object{object : owl }
@@ -12,8 +35,8 @@ pub fn translate_some_values_from(v : &Value) -> owl::OWL {
 
     //translate recursively
     //let op: &Value = &v[0];//don't need OWL constructor 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let filler: owl::OWL = translate(&v[2]); 
 
     //build objects
     let property_o : owl::Object = get_object(property);
@@ -31,8 +54,8 @@ pub fn translate_some_values_from(v : &Value) -> owl::OWL {
 
 pub fn translate_all_values_from(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let filler: owl::OWL = translate(&v[2]); 
 
     let property_o : owl::Object = get_object(property);
     let filler_o : owl::Object = get_object(filler);
@@ -46,8 +69,8 @@ pub fn translate_all_values_from(v : &Value) -> owl::OWL {
 
 pub fn translate_has_value(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let filler: owl::OWL = translate(&v[2]); 
 
     let property_o : owl::Object = get_object(property);
     let filler_o : owl::Object = get_object(filler);
@@ -61,7 +84,7 @@ pub fn translate_has_value(v : &Value) -> owl::OWL {
 
 pub fn translate_has_self(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
+    let property: owl::OWL = translate(&v[1]); 
 
     let property_o : owl::Object = get_object(property);
     let has_self_o : owl::Object = get_object(owl::OWL::Named("true^^xsd:boolean".to_string()));
@@ -77,8 +100,8 @@ pub fn translate_has_self(v : &Value) -> owl::OWL {
 
 pub fn translate_min_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -92,9 +115,9 @@ pub fn translate_min_cardinality(v : &Value) -> owl::OWL {
 
 pub fn translate_min_qualified_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[3]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
+    let filler: owl::OWL = translate(&v[3]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -110,8 +133,8 @@ pub fn translate_min_qualified_cardinality(v : &Value) -> owl::OWL {
 
 pub fn translate_max_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -125,9 +148,9 @@ pub fn translate_max_cardinality(v : &Value) -> owl::OWL {
 
 pub fn translate_max_qualified_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[3]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
+    let filler: owl::OWL = translate(&v[3]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -143,8 +166,8 @@ pub fn translate_max_qualified_cardinality(v : &Value) -> owl::OWL {
 
 pub fn translate_exact_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -158,9 +181,9 @@ pub fn translate_exact_cardinality(v : &Value) -> owl::OWL {
 
 pub fn translate_exact_qualified_cardinality(v : &Value) -> owl::OWL {
 
-    let property: owl::OWL = owlTranslation::translate_owl(&v[1]); 
-    let cardinliaty: owl::OWL = owlTranslation::translate_owl(&v[2]); 
-    let filler: owl::OWL = owlTranslation::translate_owl(&v[3]); 
+    let property: owl::OWL = translate(&v[1]); 
+    let cardinliaty: owl::OWL = translate(&v[2]); 
+    let filler: owl::OWL = translate(&v[3]); 
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
@@ -178,7 +201,7 @@ pub fn translate_list(v : &[Value]) -> owl::OWL {
 
     //TODO: refactor common parts
     if v.len() == 1 {
-        let first: owl::OWL = owlTranslation::translate_owl(&v[0]); 
+        let first: owl::OWL = translate(&v[0]); 
         let rest = owl::OWL::Named("rdf:nil".to_string());
 
         let first_o : owl::Object = get_object(first);
@@ -192,7 +215,7 @@ pub fn translate_list(v : &[Value]) -> owl::OWL {
         //owl::OWL::Named("rdf:Restriction".to_string()) 
     } else { 
 
-        let first: owl::OWL = owlTranslation::translate_owl(&v[0]); 
+        let first: owl::OWL = translate(&v[0]); 
         let rest: owl::OWL = translate_list(&v[1..]);
 
         let first_o : owl::Object = get_object(first);
@@ -242,7 +265,7 @@ pub fn translate_one_of(v : &Value) -> owl::OWL {
 
 pub fn translate_complement_of(v : &Value) -> owl::OWL {
 
-    let argument: owl::OWL = owlTranslation::translate_owl(&v[1]); 
+    let argument: owl::OWL = translate(&v[1]); 
 
     let argument_o : owl::Object = get_object(argument);
     let type_o : owl::Object = get_object(owl::OWL::Named("owl:Class".to_string()));
@@ -254,7 +277,7 @@ pub fn translate_complement_of(v : &Value) -> owl::OWL {
 
 pub fn translate_inverse_of(v : &Value) -> owl::OWL {
 
-    let argument: owl::OWL = owlTranslation::translate_owl(&v[1]); 
+    let argument: owl::OWL = translate(&v[1]); 
 
     let argument_o : owl::Object = get_object(argument);
 

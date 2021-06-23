@@ -1,13 +1,13 @@
 use serde_json::{Value};
 use serde_json::json; 
-//use crate::ofn2thick::class_translation as class_translation; 
-use crate::ofn2thick::owl as owl; 
+use crate::ofn2thick::class_translation as class_translation; 
+//use crate::ofn2thick::owl as owl; 
 
 pub fn translate_subclass_of_axiom(v : &Value) -> String {
 
     //translate OWL classes
-    let subclass = owl::translate_owl(&v[1]);
-    let superclass = owl::translate_owl(&v[2]); 
+    let subclass = class_translation::translate(&v[1]);
+    let superclass = class_translation::translate(&v[2]); 
 
     //serialise to JSON
     let sub_json = json!(subclass);
