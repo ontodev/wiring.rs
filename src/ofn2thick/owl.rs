@@ -1,7 +1,5 @@
 use serde_json::{Value};
-//use crate::ofn2thick::class_translation as class_translation; 
 use crate::ofn2thick::axiom_translation as axiom_translation; 
-//use crate::owl::typing as owl;
 
 pub fn parse_ofn(t: &str) -> String {
     //deserialise JSON as a (serde) Value
