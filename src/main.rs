@@ -1,4 +1,5 @@
 pub mod thick2ofn;
+pub mod ofn2thick;
 
 fn main() {
 
@@ -34,9 +35,45 @@ let n_ary_equivalent_classes = r#" {"subject": "_:genid1", "predicate": "owl:equ
     let test_n_ary_equivalent_classes = thick2ofn::thick_triple_parser::parse_tiple(n_ary_equivalent_classes); 
     println!("{}", test_n_ary_equivalent_classes);
 
-    let inverse = r#" {"subject": "ex:A", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": {"owl:inverseOf": [{"object": ":exprop"}]}}], "owl:someValuesFrom": [{"object": ":exB"}]}} "#;
+    let inverse = r#" {"subject": "ex:A", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": {"owl:inverseOf": [{"object": "ex:prop"}]}}], "owl:someValuesFrom": [{"object": "ex:B"}]}} "#;
     let test_inverse = thick2ofn::thick_triple_parser::parse_tiple(inverse); 
     println!("{}", test_inverse);
+
+    let min = r#" {"subject": "ex:minCardinality", "predicate": "owl:equivalentClass", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pMinCardinality"}], "owl:minCardinality": [{"object": "1^^xsd:nonNegativeInteger"}]}} "#;
+    let test_min = thick2ofn::thick_triple_parser::parse_tiple(min); 
+    println!("{}", test_min);
+
+    let min_qualified = r#" {"subject": "ex:minQualifiedCardinality", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pMinQualifiedCardinality"}], "owl:minQualifiedCardinality": [{"object": "1^^xsd:nonNegativeInteger"}], "owl:onClass": [{"object": "ex:minCardinalityFiller"}]}} "#;
+    let test_min_qualified = thick2ofn::thick_triple_parser::parse_tiple(min_qualified); 
+    println!("{}", test_min_qualified);
+
+    let has_self = r#" {"subject": "ex:hasSelf", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "ex:pHasSelf"}], "owl:hasSelf": [{"object": "true^^xsd:boolean"}]}} "#;
+    let test_has_self = thick2ofn::thick_triple_parser::parse_tiple(has_self); 
+    println!("{}", test_has_self);
+
+
+
+
+    //
+    // OFN back to thick
+    //
+    let ofn = r#" ["SubClassOf","ex:A",["ObjectSomeValuesFrom","ex:prop","ex:B"]] "#;
+    let test_ofn = ofn2thick::owl::parse_ofn(ofn);
+    println!("{}", test_ofn);
+
+    //let ofn_min = r#" ["SubClassOf","ex:A",["ObjectMinCardinality","ex:prop","1"]] "#;
+    let ofn_min = r#" ["SubClassOf","ex:minCardinality",["ObjectMinCardinality","ex:pMinCardinality","1^^xsd:nonNegativeInteger"]] "#;
+    let test_min = ofn2thick::owl::parse_ofn(ofn_min);
+    println!("{}", test_min);
+
+    let ofn_min_qualified = r#" ["SubClassOf","ex:minQualifiedCardinality",["ObjectMinCardinality","ex:pMinQualifiedCardinality","1^^xsd:nonNegativeInteger","ex:minCardinalityFiller"]] "#;
+    let test_min_qualified = ofn2thick::owl::parse_ofn(ofn_min_qualified);
+    println!("{}", test_min_qualified);
+
+    let ofn_intersection = r#" ["SubClassOf","ex:intersection",["ObjectIntersectionOf","ex:I1","ex:I2","ex:I3"]] "#;
+    let test_intersection = ofn2thick::owl::parse_ofn(ofn_intersection);
+    println!("{}", test_intersection);
+
 
 }
 
