@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn2thick::typing as owl;
+use crate::owl::typing as owl;
 use crate::ofn2thick::owl as owlTranslation;
 
 
