@@ -1,9 +1,10 @@
 use crate::thick2ofn::class_translation as class_translation; 
+use crate::owl::typing as owl;
 
 pub fn translate_subclass_of_axiom(sub: &str, sup: &str) -> String {
 
-    let subclass: class_translation::OWL = serde_json::from_str(sub).unwrap(); 
-    let superclass: class_translation::OWL = serde_json::from_str(sup).unwrap(); 
+    let subclass: owl::OWL = serde_json::from_str(sub).unwrap(); 
+    let superclass: owl::OWL = serde_json::from_str(sup).unwrap(); 
 
     let lhs : String = class_translation::translate(&subclass);
     let rhs: String = class_translation::translate(&superclass); 
@@ -13,8 +14,8 @@ pub fn translate_subclass_of_axiom(sub: &str, sup: &str) -> String {
 
 pub fn translate_equivalent_class(sub: &str, sup: &str) -> String {
 
-    let subclass: class_translation::OWL = serde_json::from_str(sub).unwrap(); 
-    let superclass: class_translation::OWL = serde_json::from_str(sup).unwrap(); 
+    let subclass: owl::OWL = serde_json::from_str(sub).unwrap(); 
+    let superclass: owl::OWL = serde_json::from_str(sup).unwrap(); 
 
     let lhs : String = class_translation::translate(&subclass);
     let rhs: String = class_translation::translate(&superclass); 
@@ -24,7 +25,7 @@ pub fn translate_equivalent_class(sub: &str, sup: &str) -> String {
 
 pub fn translate_disjoint_classes(ops: &str) -> String {
 
-    let operands : class_translation::OWL = serde_json::from_str(ops).unwrap(); 
+    let operands : owl::OWL = serde_json::from_str(ops).unwrap(); 
     let arguments: String = class_translation::translate(&operands); 
     let expression = format!("[\"DisjointClassses\",{}]", arguments);
     expression 
@@ -32,8 +33,8 @@ pub fn translate_disjoint_classes(ops: &str) -> String {
 
 pub fn translate_disjoint_union(u: &str, ops: &str) -> String {
 
-    let union: class_translation::OWL = serde_json::from_str(u).unwrap(); 
-    let operands: class_translation::OWL = serde_json::from_str(ops).unwrap(); 
+    let union: owl::OWL = serde_json::from_str(u).unwrap(); 
+    let operands: owl::OWL = serde_json::from_str(ops).unwrap(); 
 
     let lhs : String = class_translation::translate(&union);
     let rhs: String = class_translation::translate(&operands); 
