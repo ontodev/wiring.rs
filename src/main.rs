@@ -59,20 +59,20 @@ let n_ary_equivalent_classes = r#" {"subject": "_:genid1", "predicate": "owl:equ
     // OFN back to thick
     //
     let ofn = r#" ["SubClassOf","ex:A",["ObjectSomeValuesFrom","ex:prop","ex:B"]] "#;
-    let test_ofn = ofn2thick::owl::parse_ofn(ofn);
+    let test_ofn = ofn2thick::ofn_parser::parse_ofn(ofn);
     println!("{}", test_ofn);
 
     //let ofn_min = r#" ["SubClassOf","ex:A",["ObjectMinCardinality","ex:prop","1"]] "#;
     let ofn_min = r#" ["SubClassOf","ex:minCardinality",["ObjectMinCardinality","ex:pMinCardinality","1^^xsd:nonNegativeInteger"]] "#;
-    let test_min = ofn2thick::owl::parse_ofn(ofn_min);
+    let test_min = ofn2thick::ofn_parser::parse_ofn(ofn_min);
     println!("{}", test_min);
 
     let ofn_min_qualified = r#" ["SubClassOf","ex:minQualifiedCardinality",["ObjectMinCardinality","ex:pMinQualifiedCardinality","1^^xsd:nonNegativeInteger","ex:minCardinalityFiller"]] "#;
-    let test_min_qualified = ofn2thick::owl::parse_ofn(ofn_min_qualified);
+    let test_min_qualified = ofn2thick::ofn_parser::parse_ofn(ofn_min_qualified);
     println!("{}", test_min_qualified);
 
     let ofn_intersection = r#" ["SubClassOf","ex:intersection",["ObjectIntersectionOf","ex:I1","ex:I2","ex:I3"]] "#;
-    let test_intersection = ofn2thick::owl::parse_ofn(ofn_intersection);
+    let test_intersection = ofn2thick::ofn_parser::parse_ofn(ofn_intersection);
     println!("{}", test_intersection);
 
 
