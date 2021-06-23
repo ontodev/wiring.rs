@@ -76,7 +76,7 @@ pub struct MinQualifiedCardinality {
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:minQalifiedCardinality")]
+    #[serde(rename = "owl:minQualifiedCardinality")]
     pub owl_min_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
@@ -98,7 +98,7 @@ pub struct MaxQualifiedCardinality {
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:maxQalifiedCardinality")]
+    #[serde(rename = "owl:maxQualifiedCardinality")]
     pub owl_max_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
@@ -120,7 +120,7 @@ pub struct ExactQualifiedCardinality {
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:qalifiedCardinality")]
+    #[serde(rename = "owl:qualifiedCardinality")]
     pub owl_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
