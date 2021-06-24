@@ -1,5 +1,6 @@
 use serde_json::{Value};
 use crate::owl::typing as owl;
+use crate::ofn2thick::property_translation as property_translation;
 
 //Note that (thick) triples are not OWL
 pub fn translate(v : &Value) -> owl::OWL {
@@ -21,7 +22,7 @@ pub fn translate(v : &Value) -> owl::OWL {
          "\"ObjectUnionOf\"" => translate_union_of(v), 
          "\"ObjectOneOf\"" => translate_one_of(v), 
          "\"ObjectComplementOf\"" => translate_complement_of(v), 
-         "\"ObjectInverseOf\"" => translate_inverse_of(v), 
+         "\"ObjectInverseOf\"" => property_translation::translate_inverse_of(v), 
          _ => owl::OWL::Named(v.to_string().replace("\"","")),//return named entity (without quotes)
          //TODO: this way of removing quotes is somewhat crude
      }
@@ -273,14 +274,4 @@ pub fn translate_complement_of(v : &Value) -> owl::OWL {
     let res : owl::ComplementOf = owl::ComplementOf{ rdf_type : Some(vec![type_o]),
                                                           owl_complement_of : vec![argument_o]}; 
     owl::OWL::ComplementOf(res) 
-} 
-
-pub fn translate_inverse_of(v : &Value) -> owl::OWL {
-
-    let argument: owl::OWL = translate(&v[1]); 
-
-    let argument_o : owl::Object = get_object(argument);
-
-    let res : owl::InverseOf = owl::InverseOf{ owl_inverse_of : vec![argument_o]}; 
-    owl::OWL::InverseOf(res) 
 } 
