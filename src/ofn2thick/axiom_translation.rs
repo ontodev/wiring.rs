@@ -1,6 +1,9 @@
 use serde_json::{Value};
 use serde_json::json; 
+use crate::owl::typing as owl;
 use crate::ofn2thick::class_translation as class_translation; 
+use rand::Rng; 
+
 //use crate::ofn2thick::owl as owl; 
 
 pub fn translate_subclass_of_axiom(v : &Value) -> String {
@@ -21,3 +24,21 @@ pub fn translate_subclass_of_axiom(v : &Value) -> String {
     let expression = format!("{{\"subject\": {}, \"predicate\": \"rdfs:subClassOf\", \"object\": {}}}", sub_string, sup_string);
     expression
 }
+
+pub fn translate_disjoint_classes_axiom(v : &Value) -> String {
+
+    // TODO make sure generated blank node ID's are unique
+    // this will be done as part of some post-processing
+    let mut rng = rand::thread_rng(); 
+    let blank_id: u8 = rng.gen();
+
+    let operands : owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]); 
+    let operads_json = json!(operands); 
+    let operands_string = operads_json.to_string();
+
+    let expression = format!("{{\"subject\": _:gen{}, \"predicate\": \"rdfs:subClassOf\", \"object\": {{\"owl:members\": {}}}}}", blank_id, operands_string);
+    expression
+
+}
+
+//TODO:: disjointClasses, disjointUnion, equivalent classe

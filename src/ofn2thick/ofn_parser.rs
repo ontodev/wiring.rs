@@ -15,6 +15,7 @@ pub fn translate_triple(v : &Value) -> String {
 
      let res : String = match owl_operator.as_str() {
          "\"SubClassOf\"" => axiom_translation::translate_subclass_of_axiom(v),
+         "\"DisjointClasses\"" => axiom_translation::translate_disjoint_classes_axiom(v),
          _ => v.to_string(),//return named entity TODO: this should be an error
      };
 
