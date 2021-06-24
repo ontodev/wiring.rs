@@ -229,7 +229,7 @@ pub fn translate_list(v : &[Value]) -> owl::OWL {
 
 pub fn translate_intersection_of(v : &Value) -> owl::OWL {
 
-    let operands : owl::OWL = translate_list(&(v.as_array().unwrap()));
+    let operands : owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o : owl::Object = get_object(operands);
     let type_o : owl::Object = get_object(owl::OWL::Named("owl:Class".to_string()));
@@ -241,7 +241,7 @@ pub fn translate_intersection_of(v : &Value) -> owl::OWL {
 
 pub fn translate_union_of(v : &Value) -> owl::OWL {
 
-    let operands : owl::OWL = translate_list(&(v.as_array().unwrap()));
+    let operands : owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o : owl::Object = get_object(operands);
     let type_o : owl::Object = get_object(owl::OWL::Named("owl:Class".to_string()));
@@ -253,7 +253,7 @@ pub fn translate_union_of(v : &Value) -> owl::OWL {
 
 pub fn translate_one_of(v : &Value) -> owl::OWL {
 
-    let operands : owl::OWL = translate_list(&(v.as_array().unwrap()));
+    let operands : owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o : owl::Object = get_object(operands);
     let type_o : owl::Object = get_object(owl::OWL::Named("owl:Class".to_string()));
