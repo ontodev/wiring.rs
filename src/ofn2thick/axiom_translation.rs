@@ -36,9 +36,23 @@ pub fn translate_disjoint_classes_axiom(v : &Value) -> String {
     let operads_json = json!(operands); 
     let operands_string = operads_json.to_string();
 
-    let expression = format!("{{\"subject\": _:gen{}, \"predicate\": \"rdfs:subClassOf\", \"object\": {{\"owl:members\": {}}}}}", blank_id, operands_string);
-    expression
-
+    let expression = format!("{{\"subject\": _:gen{}, \"predicate\": \"owl:AllDisjointClasses\", \"object\": {{\"owl:members\": {}}}}}", blank_id, operands_string);
+    expression 
 }
 
-//TODO:: disjointClasses, disjointUnion, equivalent classe
+pub fn translate_disjoint_union_of_axiom(v : &Value) -> String {
+
+    let lhs = class_translation::translate(&v[1]);
+    let operands : owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[2..]); 
+
+    let lhs_json = json!(lhs);
+    let operads_json = json!(operands); 
+
+    let lhs_string =  lhs_json.to_string();
+    let operands_string = operads_json.to_string();
+
+    let expression = format!("{{\"subject\": {}, \"predicate\": \"owl:disjointUnionOf\", \"object\": {}}}", lhs_string, operands_string);
+    expression 
+}
+
+//TODO::  disjointUnion, equivalent classe
