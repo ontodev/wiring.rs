@@ -14,13 +14,22 @@ pub fn translate_subclass_of_axiom(sub: &str, sup: &str) -> String {
 
 pub fn translate_equivalent_class(sub: &str, sup: &str) -> String {
 
-    let subclass: owl::OWL = serde_json::from_str(sub).unwrap(); 
-    let superclass: owl::OWL = serde_json::from_str(sup).unwrap(); 
+    let subject: owl::OWL = serde_json::from_str(sub).unwrap(); 
+    let object: owl::OWL = serde_json::from_str(sup).unwrap(); 
 
-    let lhs : String = class_translation::translate(&subclass);
-    let rhs: String = class_translation::translate(&superclass); 
-    let expression = format!("[\"EquivalentClasses\",{},{}]", lhs, rhs);
-    expression 
+    let lhs : String = class_translation::translate(&subject);
+    let rhs: String = class_translation::translate(&object); 
+
+    match object {
+        owl::OWL::RDFList(_) => {
+            let expression = format!("[\"EquivalentClasses\",{}]", rhs);
+            expression 
+        },
+        _ => {
+            let expression = format!("[\"EquivalentClasses\",{},{}]", lhs, rhs);
+            expression 
+        },
+    }
 }
 
 pub fn translate_disjoint_classes(ops: &str) -> String {
