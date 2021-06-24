@@ -75,6 +75,22 @@ let n_ary_equivalent_classes = r#" {"subject": "_:genid1", "predicate": "owl:equ
     let test_intersection = ofn2thick::ofn_parser::parse_ofn(ofn_intersection);
     println!("{}", test_intersection);
 
+    let ofn_disjoint_classes = r#" ["DisjointClasses","ex:disjointClass1","ex:disjointClass2","ex:disjointClass3"] "#;
+    let test_disjoint_classes = ofn2thick::ofn_parser::parse_ofn(ofn_disjoint_classes);
+    println!("{}", test_disjoint_classes);
+
+    let ofn_disjoint_union_of = r#" ["DisjointUnionOf","ex:disjointUnion","ex:u1","ex:u2","ex:u3"] "#;
+    let test_disjoint_union_of = ofn2thick::ofn_parser::parse_ofn(ofn_disjoint_union_of);
+    println!("{}", test_disjoint_union_of);
+
+    let ofn_nary_equivalence = r#" ["EquivalentClasses","_:genid1","ex:equivalent3","ex:equivalent1","ex:equivalent2"] "#;
+    let test_ofn_nary_equivalence = ofn2thick::ofn_parser::parse_ofn(ofn_nary_equivalence);
+    println!("{}", test_ofn_nary_equivalence);
+
+    let ofn_binary_equivalence = r#" ["EquivalentClasses","ex:equivalent1","ex:equivalent2"] "#;
+    let test_ofn_binary_equivalence = ofn2thick::ofn_parser::parse_ofn(ofn_binary_equivalence);
+    println!("{}", test_ofn_binary_equivalence);
+
 
 }
 
