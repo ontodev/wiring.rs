@@ -1,10 +1,9 @@
 use crate::owl::typing as owl;
+use crate::thick2ofn::property_translation as property_translation;
 
 pub fn translate(b: &owl::OWL) -> String {
      match &*b {//TODO: don't quite understand why &* is necessary here
-        //OWL::Named(x) => println!("Got 50 {:?}", x),
          owl::OWL::Named(x) => translate_named(x.to_string()),
-        //OWL::SomeValuesFrom(y) => println!("Matched, y = {:?}", y),
 
         //restrictions
         owl::OWL::SomeValuesFrom(x) => translate_some_values_from(x),
@@ -24,9 +23,9 @@ pub fn translate(b: &owl::OWL) -> String {
         owl::OWL::OneOf(x) => translate_one_of(x),
         owl::OWL::ComplementOf(x) => translate_complement_of(x),
         owl::OWL::RDFList(x) => translate_list(x),
-        //_ => println!("Default case, x = {:?}", x), 
-        //OWL::InverseOf(x) => property_translation::translate(x),
-        owl::OWL::InverseOf(x) => translate_inverse_of(x),
+
+        //object properties
+        owl::OWL::InverseOf(x) => property_translation::translate_inverse_of(x),
     }
 }
 
@@ -141,10 +140,4 @@ pub fn translate_complement_of(s: &owl::ComplementOf) -> String {
     let complement_of = translate(&s.owl_complement_of[0].object);
     let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
     expression
-}
-
-pub fn translate_inverse_of(s: &owl::InverseOf) -> String { 
-    let inverse_of = translate(&s.owl_inverse_of[0].object);
-    let expression = format!("[\"ObjectInverseOf\",{}]", inverse_of);
-    expression
-}
+} 
