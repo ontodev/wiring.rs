@@ -17,6 +17,7 @@ pub fn translate_triple(v : &Value) -> String {
          "\"SubClassOf\"" => axiom_translation::translate_subclass_of_axiom(v),
          "\"DisjointClasses\"" => axiom_translation::translate_disjoint_classes_axiom(v),
          "\"DisjointUnionOf\"" => axiom_translation::translate_disjoint_union_of_axiom(v),
+         "\"EquivalentClasses\"" => axiom_translation::translate_equivalent_classes_axiom(v),
          _ => v.to_string(),//return named entity TODO: this should be an error
      };
 
