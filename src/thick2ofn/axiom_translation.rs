@@ -27,7 +27,7 @@ pub fn translate_disjoint_classes(ops: &str) -> String {
 
     let operands : owl::OWL = serde_json::from_str(ops).unwrap(); 
     let arguments: String = class_translation::translate(&operands); 
-    let expression = format!("[\"DisjointClassses\",{}]", arguments);
+    let expression = format!("[\"DisjointClasses\",{}]", arguments);
     expression 
 }
 
