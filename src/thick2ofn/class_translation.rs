@@ -73,7 +73,7 @@ pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
-    let expression = format!("[\"ObjectMinCardinality\",{},{},{}]", property, cardinality, filler);
+    let expression = format!("[\"ObjectMinQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 }
 
@@ -88,7 +88,7 @@ pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
-    let expression = format!("[\"ObjectMaxCardinality\",{},{},{}]", property, cardinality, filler);
+    let expression = format!("[\"ObjectMaxQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 }
 
@@ -103,7 +103,7 @@ pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality)
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
-    let expression = format!("[\"ObjectExactCardinality\",{},{},{}]", property, cardinality, filler);
+    let expression = format!("[\"ObjectExactQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
     expression
 } 
 
