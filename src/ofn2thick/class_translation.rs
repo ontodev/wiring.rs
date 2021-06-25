@@ -42,7 +42,7 @@ pub fn translate_some_values_from(v : &Value) -> owl::OWL {
     //build objects
     let property_o : owl::Object = get_object(property);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     //build struct
     let res : owl::SomeValuesFrom = owl::SomeValuesFrom{ rdf_type : Some(vec![type_o]),
@@ -60,7 +60,7 @@ pub fn translate_all_values_from(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::AllValuesFrom = owl::AllValuesFrom{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -75,7 +75,7 @@ pub fn translate_has_value(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::HasValue = owl::HasValue{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -89,7 +89,7 @@ pub fn translate_has_self(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let has_self_o : owl::Object = get_object(owl::OWL::Named("true^^xsd:boolean".to_string()));
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::HasSelf = owl::HasSelf{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -106,7 +106,7 @@ pub fn translate_min_cardinality(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::MinCardinality = owl::MinCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -123,7 +123,7 @@ pub fn translate_min_qualified_cardinality(v : &Value) -> owl::OWL {
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::MinQualifiedCardinality = owl::MinQualifiedCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -139,7 +139,7 @@ pub fn translate_max_cardinality(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::MaxCardinality = owl::MaxCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -156,7 +156,7 @@ pub fn translate_max_qualified_cardinality(v : &Value) -> owl::OWL {
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::MaxQualifiedCardinality = owl::MaxQualifiedCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -172,7 +172,7 @@ pub fn translate_exact_cardinality(v : &Value) -> owl::OWL {
 
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::ExactCardinality = owl::ExactCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -189,7 +189,7 @@ pub fn translate_exact_qualified_cardinality(v : &Value) -> owl::OWL {
     let property_o : owl::Object = get_object(property);
     let cardinality_o : owl::Object = get_object(cardinliaty);
     let filler_o : owl::Object = get_object(filler);
-    let type_o : owl::Object = get_object(owl::OWL::Named("rdf:Restriction".to_string()));
+    let type_o : owl::Object = get_object(owl::OWL::Named("owl:Restriction".to_string()));
 
     let res : owl::ExactQualifiedCardinality = owl::ExactQualifiedCardinality{ rdf_type : Some(vec![type_o]),
                                                           owl_on_property : vec![property_o],
@@ -213,7 +213,7 @@ pub fn translate_list(v : &[Value]) -> owl::OWL {
         owl::OWL::RDFList(res)
 
         //println!("FINSH");//base case with rdf:nil
-        //owl::OWL::Named("rdf:Restriction".to_string()) 
+        //owl::OWL::Named("owl:Restriction".to_string()) 
     } else { 
 
         let first: owl::OWL = translate(&v[0]); 
