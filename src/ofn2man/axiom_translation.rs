@@ -1,11 +1,5 @@
 use serde_json::{Value};
-//use serde_json::json; 
-//use crate::owl::typing as owl;
 use crate::ofn2man::class_translation as class_translation; 
-
-//use rand::Rng; 
-
-//use crate::ofn2thick::owl as owl; 
 
 pub fn translate_subclass_of_axiom(v : &Value) -> String {
 
@@ -33,7 +27,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value) -> String {
 
 }
 
-// equivalent classe 
+// equivalent classes
 // Note: Manchester Syntax does not encode Equivalence Classes as lists
 // but as binary equivalence axiom chains - I don't see why we want to do that here
 // so I don't
