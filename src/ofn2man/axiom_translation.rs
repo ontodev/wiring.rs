@@ -18,21 +18,12 @@ pub fn translate_subclass_of_axiom(v : &Value) -> String {
     expression
 }
 
-//pub fn translate_disjoint_classes_axiom(v : &Value) -> String {
-//
-//    // TODO make sure generated blank node ID's are unique
-//    // this will be done as part of some post-processing
-//    let mut rng = rand::thread_rng(); 
-//    let blank_id: u8 = rng.gen();
-//
-//    let operands : owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]); 
-//    let operads_json = json!(operands); 
-//    let operands_string = operads_json.to_string();
-//
-//    let expression = format!("{{\"subject\": _:gen{}, \"predicate\": \"owl:AllDisjointClasses\", \"object\": {{\"owl:members\": {}}}}}", blank_id, operands_string);
-//    expression 
-//}
-//
+pub fn translate_disjoint_classes_axiom(v : &Value) -> String { 
+    let operands: Vec<String> = (&(v.as_array().unwrap())[1..]).into_iter().map(|x| class_translation::translate(&x)).collect(); 
+    let merged = operands.join(", ");
+    format!("DisjointClasses: {} ", merged) 
+}
+
 //pub fn translate_disjoint_union_of_axiom(v : &Value) -> String {
 //
 //    let lhs = class_translation::translate(&v[1]);
