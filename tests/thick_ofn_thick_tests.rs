@@ -17,7 +17,7 @@ use serde_json::{Value};
 fn round_trip(input : &str) -> bool {
 
     //translate thick -> ofn -> thick
-    let thick2ofn = thick2ofn::thick_triple_parser::parse_tiple(input);
+    let thick2ofn = thick2ofn::thick_triple_parser::parse_triple(input);
     let ofn2thick = ofn2thick::ofn_parser::parse_ofn(&thick2ofn); 
 
     //parse both original input and round-trip translation as JSON

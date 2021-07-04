@@ -1,17 +1,8 @@
 use serde_json::{Value};
-//use serde::{Deserialize, Serialize};
 
 use crate::thick2ofn::axiom_translation as axiom_translation; 
 
-//#[derive(Debug,Serialize, Deserialize)]
-//pub struct ThickTriple {
-//    subject: String,
-//    predicate: String,
-//    object: String, //This causes an issue because the value of objects cannot be parsed as a
-//    string
-//}
-
-pub fn parse_tiple(t: &str) -> String {
+pub fn parse_triple(t: &str) -> String {
 
     //println!("{}", t);
     let thick_triple: Value = serde_json::from_str(t).unwrap();
@@ -37,4 +28,4 @@ pub fn parse_tiple(t: &str) -> String {
         "\"owl:disjointUnionOf\"" => axiom_translation::translate_disjoint_union(subj, obj),
         _ => String::from("Fail"),
     } 
-}
+} 
