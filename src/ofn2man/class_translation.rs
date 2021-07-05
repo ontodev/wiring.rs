@@ -140,22 +140,41 @@ pub fn translate_exact_qualified_cardinality(v : &Value) -> String {
     }
 } 
 
+pub fn parenthesis(v : &Value) -> String {
+    if is_named_class(v) { 
+        translate(v)
+    } else {
+        format!("({})", translate(v))
+    }
+}
+
 pub fn translate_intersection_of(v : &Value) -> String {
-    let operands: Vec<String> = (&(v.as_array().unwrap())[1..]).into_iter().map(|x| translate(&x)).collect(); 
+    let operands: Vec<String> = (&(v.as_array().unwrap())[1..])
+                                               .into_iter()
+                                               //.map(|x| translate(&x))
+                                               .map(|x| parenthesis(&x))
+                                               .collect(); 
     let merged = operands.join(" and ");
-    format!("( {} )", merged) 
+    format!("{}", merged) 
 } 
 
 pub fn translate_union_of(v : &Value) -> String {
-    let operands: Vec<String> = (&(v.as_array().unwrap())[1..]).into_iter().map(|x| translate(&x)).collect(); 
+    let operands: Vec<String> = (&(v.as_array().unwrap())[1..])
+                                               .into_iter()
+                                               //map(|x| translate(&x)).
+                                               .map(|x| parenthesis(&x))
+                                               .collect(); 
     let merged = operands.join(" or ");
-    format!("( {} )", merged) 
+    format!("{}", merged) 
 } 
 
 pub fn translate_one_of(v : &Value) -> String {
-    let operands: Vec<String> = (&(v.as_array().unwrap())[1..]).into_iter().map(|x| translate(&x)).collect(); 
-    let merged = operands.join(" , ");
-    format!("{{ {} }}", merged) 
+    let operands: Vec<String> = (&(v.as_array().unwrap())[1..])
+                                               .into_iter()
+                                               .map(|x| translate(&x))
+                                               .collect(); 
+    let merged = operands.join(", ");
+    format!("{{{}}}", merged) 
 } 
 
 pub fn translate_complement_of(v : &Value) -> String { 
