@@ -9,7 +9,8 @@ use std::collections::HashMap;
 pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> String {
     let element : String = v.to_string();
     if e2l.contains_key(&element) {
-        e2l.get(&element).unwrap().to_string()
+        let inter  = e2l.get(&element).unwrap().to_string().replace("\"","");
+        format!("\"'{}'\"", inter) //introduce single quotes
     } else {
         element
     } 
