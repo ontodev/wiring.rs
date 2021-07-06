@@ -2,11 +2,25 @@ use serde_json::{Value};
 
 use crate::thick2ofn::axiom_translation as axiom_translation; 
 
+//Note that (some) thick triples are ambiguous due to missing type information.
+//In case of ambiguity, a thick triple is parsed into an *abstract* OFN-S expression.
+//Consider the following trick triple as an example: 
+//
+//{"subject": "ex:A",
+// "predicate": "rdfs:subClassOf",
+// "object": {"owl:onProperty":[{"object":"ex:prop"}],
+//            "owl:someValuesFrom":[{"object":"ex:B"}],
+//            "rdf:type":[{"object":"owl:Restriction"}]}}
+//
+//Without type information about either the property or the filler of the existential restriction,
+//we cannot decide whether it is
+//an *ObjectSomeValuesFrom* expression or a *DataSomeValuesFrom* expression.
+//So, we parse it into an abstract expression *SomeValuesFrom*
+//and determine its actual type using the modules in crate::ofn_typing.
+
 pub fn parse_triple(t: &str) -> String {
 
-    //println!("{}", t);
     let thick_triple: Value = serde_json::from_str(t).unwrap();
-    //println!("{}", thick_triple["subject"]);
 
     //TODO: I cannot chain to_string() and as_str() - why?
     let subj_helper : String  = thick_triple["subject"].to_string();
