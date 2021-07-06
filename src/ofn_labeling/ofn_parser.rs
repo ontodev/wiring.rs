@@ -16,10 +16,10 @@ pub fn translate_triple(v : &Value, m :&HashMap<String, String>) -> String {
 
      let res : String = match owl_operator.as_str() {
          "\"SubClassOf\"" => axiom_translation::translate_subclass_of_axiom(v,m),
-         //"\"DisjointClasses\"" => axiom_translation::translate_disjoint_classes_axiom(v),
-         //"\"DisjointUnionOf\"" => axiom_translation::translate_disjoint_union_of_axiom(v),
-         //"\"EquivalentClasses\"" => axiom_translation::translate_equivalent_classes_axiom(v),
-         _ => v.to_string(),//return named entity TODO: this should be an error
+         "\"DisjointClasses\"" => axiom_translation::translate_disjoint_classes_axiom(v,m),
+         "\"DisjointUnionOf\"" => axiom_translation::translate_disjoint_union_of_axiom(v,m),
+         "\"EquivalentClasses\"" => axiom_translation::translate_equivalent_classes_axiom(v,m),
+         _ => v.to_string(),//return named entity TODO: this should be an error?
      };
 
      res
