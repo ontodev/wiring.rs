@@ -17,7 +17,7 @@ pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> String {
 } 
 
 //returns a map from entity names to their labels
-pub fn extract_labeling(path : String) -> HashMap<String,String> {
+pub fn extract_labeling(path : &str) -> HashMap<String,String> {
     let file = File::open(path).unwrap();
     let reader = BufReader::new(file);
 
