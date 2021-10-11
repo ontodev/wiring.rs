@@ -136,28 +136,71 @@ pub fn translate_list(s: &owl::RDFList) -> String {
     }
 }
 
-//TODO: test type information here? yes
+pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool { 
+    let mut res : bool = false;
+     match v {
+        Some(types) => {//check if there is type information
+                            for t in types.iter() {//check all types
+                                match &t.object {//look for an owl:Class
+                                    owl::OWL::Named(s) => if s == "owl:Class" { res = true },
+                                    _ => (),
+
+                                }
+                            }
+                        },
+        None => (),
+    }
+    return res;
+}
+
+//TODO: introduce case for data types
 pub fn translate_intersection_of(s: &owl::IntersectionOf) -> String { 
     let intersection_of = translate(&s.owl_intersection_of[0].object);
-    let expression = format!("[\"ObjectIntersectionOf\",{}]", intersection_of);
-    expression
+
+    let is_class = check_class_type(&s.rdf_type);
+    if is_class { 
+        format!("[\"ObjectIntersectionOf\",{}]", intersection_of)
+    } else {
+        format!("[\"IntersectionOf\",{}]", intersection_of)
+    } 
 }
 
 //TODO: test type information here?
 pub fn translate_union_of(s: &owl::UnionOf) -> String { 
     let union_of = translate(&s.owl_union_of[0].object);
-    let expression = format!("[\"ObjectUnionOf\",{}]", union_of);
-    expression
+
+    let is_class = check_class_type(&s.rdf_type);
+    if is_class { 
+        format!("[\"ObjectUnionOf\",{}]", union_of)
+    } else {
+        format!("[\"UnionOf\",{}]", union_of) 
+    } 
+    //let expression = format!("[\"ObjectUnionOf\",{}]", union_of);
+    //expression
 }
 
 pub fn translate_one_of(s: &owl::OneOf) -> String { 
     let one_of = translate(&s.owl_one_of[0].object);
-    let expression = format!("[\"ObjectOneOf\",{}]", one_of);
-    expression
+
+    let is_class = check_class_type(&s.rdf_type);
+    if is_class { 
+        format!("[\"ObjectOneOf\",{}]", one_of)
+    } else {
+        format!("[\"OneOf\",{}]", one_of)
+    } 
+    //let expression = format!("[\"ObjectOneOf\",{}]", one_of);
+    //expression
 }
 
 pub fn translate_complement_of(s: &owl::ComplementOf) -> String { 
     let complement_of = translate(&s.owl_complement_of[0].object);
-    let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
-    expression
+    let is_class = check_class_type(&s.rdf_type);
+    if is_class { 
+        format!("[\"ObjectComplementOf\",{}]", complement_of)
+    } else {
+        format!("[\"ComplementOf\",{}]", complement_of)
+    } 
+
+    //let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
+    //expression
 } 
