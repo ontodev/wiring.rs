@@ -1,5 +1,6 @@
 use crate::thick2ofn::class_translation as class_translation; 
 use crate::owl::typing as owl;
+use serde_json::{Value};
 
 pub fn translate_subclass_of_axiom(sub: &str, sup: &str) -> String {
 
@@ -23,6 +24,8 @@ pub fn translate_equivalent_class(sub: &str, sup: &str) -> String {
     match object {
         owl::OWL::RDFList(_) => {
             let expression = format!("[\"EquivalentClasses\",{}]", rhs);
+            let operator = Value::String(String::from("EquivalentClasses"));
+            let v = vec![operator, Value::String(rhs)];
             expression 
         },
         _ => {
