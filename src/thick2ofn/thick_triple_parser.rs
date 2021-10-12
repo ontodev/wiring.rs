@@ -18,7 +18,7 @@ use crate::thick2ofn::axiom_translation as axiom_translation;
 //So, we parse it into an abstract expression *SomeValuesFrom*
 //and determine its actual type using the modules in crate::ofn_typing.
 
-pub fn parse_triple(t: &str) -> String {
+pub fn parse_triple(t: &str) -> Value {
 
     let thick_triple: Value = serde_json::from_str(t).unwrap();
 
@@ -40,6 +40,6 @@ pub fn parse_triple(t: &str) -> String {
                 axiom_translation::translate_disjoint_classes(members) 
             }, 
         "\"owl:disjointUnionOf\"" => axiom_translation::translate_disjoint_union(subj, obj),
-        _ => String::from("Fail"),
+        _ => Value::String(String::from("Fail")),
     } 
 } 

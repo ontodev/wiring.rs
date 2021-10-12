@@ -1,7 +1,8 @@
 use crate::owl::typing as owl;
 use crate::thick2ofn::property_translation as property_translation;
+use serde_json::{Value};
 
-pub fn translate(b: &owl::OWL) -> String {
+pub fn translate(b: &owl::OWL) -> Value {
      match &*b {//TODO: don't quite understand why &* is necessary here
          owl::OWL::Named(x) => translate_named(x.to_string()),
 
@@ -29,110 +30,184 @@ pub fn translate(b: &owl::OWL) -> String {
     }
 }
 
-pub fn translate_named(s: String) -> String {
-    let expression = format!("\"{}\"", s);
-        expression
+pub fn is_class_expression(s: &str) -> bool {
+     match s {
+         "SomeValuesFrom" => true,
+         "ObjectSomeValuesFrom" => true,
+         "AllValuesFrom" => true,
+         "ObjectAllValuesFrom" => true,
+         "ObjectHasValue" => true,
+         "ObjectHasSelf" => true,
+         "HasSelf" => true,
+         "HasValue" => true,
+         "ObjectMinCardinality" => true,
+         "ObjectMinQualifiedCardinality" => true,
+         "MinCardinality" => true,
+         "MinQualifiedCardinality" => true,
+         "ObjectMaxCardinality" => true,
+         "ObjectMaxQualifiedCardinality" => true,
+         "MaxCardinality" => true,
+         "MaxQualifiedCardinality" => true,
+         "ObjectExactCardinality" => true,
+         "ObjectExactQualifiedCardinality" => true,
+         "ExactCardinality" => true,
+         "ExactQualifiedCardinality" => true,
+         "ObjectOneOf" => true,
+         "ObjectComplementOf" => true,
+         "ObjectUnionOf" => true,
+         "UnionOf" => true,
+         "ObjectIntersectionOf" => true,
+         "IntersectionOf" => true,
+         "ObjectInverseOf" => true,
+         "InverseOf" => true,
+         _ => false,
+     } 
+}
+
+pub fn translate_named(s: String) -> Value {
+    Value::String(s)
 }
 
 //Note that a SomeValuesFrom expression
 //can be either an ObjectSomeValuesFrom or a DataSomeValuesFrom
-pub fn translate_some_values_from(s: &owl::SomeValuesFrom) -> String { 
+pub fn translate_some_values_from(s: &owl::SomeValuesFrom) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let filler =  translate(&s.owl_some_values_from[0].object);
-    //let expression = format!("[\"ObjectSomeValuesFrom\",{},{}]", property, filler);
-    let expression = format!("[\"SomeValuesFrom\",{},{}]", property, filler);
-    expression
+
+    let operator = Value::String(String::from("SomeValuesFrom"));
+    let v = vec![operator, property, filler];
+    Value::Array(v) 
 }
 
 //Note that a AllValuesFrom expression
 //can be either an ObjectAllValuesFrom or a DataAllValuesFrom
-pub fn translate_all_values_from(s: &owl::AllValuesFrom) -> String { 
+pub fn translate_all_values_from(s: &owl::AllValuesFrom) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let filler =  translate(&s.owl_all_values_from[0].object);
-    //let expression = format!("[\"ObjectAllValuesFrom\",{},{}]", property, filler);
-    let expression = format!("[\"AllValuesFrom\",{},{}]", property, filler);
-    expression
+
+    let operator = Value::String(String::from("AllValuesFrom"));
+    let v = vec![operator, property, filler];
+    Value::Array(v)
 }
 
 //Note that a HasValue expression
 //can be either an ObjectHasValue or a DataHasValue
-pub fn translate_has_value(s: &owl::HasValue) -> String { 
+pub fn translate_has_value(s: &owl::HasValue) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let filler =  translate(&s.owl_has_value[0].object);
-    //let expression = format!("[\"ObjectHasValue\",{},{}]", property, filler);
-    let expression = format!("[\"HasValue\",{},{}]", property, filler);
-    expression
+
+    let operator = Value::String(String::from("HasValue"));
+    let v = vec![operator, property, filler];
+    Value::Array(v)
 }
 
-pub fn translate_has_self(s: &owl::HasSelf) -> String { 
-    let property = translate(&s.owl_on_property[0].object);
-    let expression = format!("[\"ObjectHasSelf\",{}]", property);
+pub fn translate_has_self(s: &owl::HasSelf) -> Value { 
+    let property = translate(&s.owl_on_property[0].object); 
+    let operator = Value::String(String::from("ObjectHasSelf"));
+    let v = vec![operator, property];
+    Value::Array(v)
+
     //ignoring "owl_has_self" because that only contains "true^^xsd:boolean"
-    expression
+    //expression
 }
 
 //Note that a MinCardinality expression
 //can be either an ObjectMinCardinality or a DataMinCardinality
-pub fn translate_min_cardinality(s: &owl::MinCardinality) -> String { 
+pub fn translate_min_cardinality(s: &owl::MinCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_min_cardinality[0].object);
-    //let expression = format!("[\"ObjectMinCardinality\",{},{}]", property, cardinality);
-    let expression = format!("[\"MinCardinality\",{},{}]", property, cardinality);
-    expression
+
+    let operator = Value::String(String::from("MinCardinality"));
+    let v = vec![operator, property, cardinality];
+    Value::Array(v)
 }
 
-pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> String { 
+pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
-    let expression = format!("[\"ObjectMinQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression
+
+    let operator = Value::String(String::from("ObjectMinQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
+    Value::Array(v)
 }
 
 //Note that a MaxCardinality expression
 //can be either an ObjectMaxCardinality or a DataMaxCardinality
-pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> String { 
+pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_cardinality[0].object);
-    //let expression = format!("[\"ObjectMaxCardinality\",{},{}]", property, cardinality);
-    let expression = format!("[\"MaxCardinality\",{},{}]", property, cardinality);
-    expression
+
+    let operator = Value::String(String::from("ObjectMaxCardinality"));
+    let v = vec![operator, property, cardinality];
+    Value::Array(v)
+
 }
 
-pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> String { 
+pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
-    let expression = format!("[\"ObjectMaxQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression
+
+    let operator = Value::String(String::from("ObjectMaxQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
+    Value::Array(v)
 }
 
 //Note that an ExactCardinality expression
 //can be either an ObjectExactCardinality or a DataExactCardinality
-pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> String { 
+pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_cardinality[0].object);
-    //let expression = format!("[\"ObjectExactCardinality\",{},{}]", property, cardinality);
-    let expression = format!("[\"ExactCardinality\",{},{}]", property, cardinality);
-    expression
+
+    let operator = Value::String(String::from("ExactCardinality"));
+    let v = vec![operator, property, cardinality];
+    Value::Array(v)
 }
 
-pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality) -> String { 
+pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
-    let expression = format!("[\"ObjectExactQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression
+
+    let operator = Value::String(String::from("ObjectExactQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
+    Value::Array(v)
 } 
 
-pub fn translate_list(s: &owl::RDFList) -> String { 
-    let first = translate(&s.rdf_first[0].object);
-    let rest =  translate(&s.rdf_rest[0].object);
+pub fn translate_list(s: &owl::RDFList) -> Value { 
+    //translate RDF list recursively
+    let mut first = translate(&s.rdf_first[0].object);
+    let mut rest =  translate(&s.rdf_rest[0].object);
 
-    //match &rest[..] {
-    match &*rest {
-        "\"rdf:nil\"" => format!("{}", first),
-        _ => format!("{},{}", first, rest),
+    //base case for RDF lists
+    if rest.is_string() && rest.as_str().unwrap() == "rdf:nil"  {
+        first
+    } else {
+        //lists (serde arrays) are build up recursively.
+        //So, if first = f and rest = [r1, r2], then
+        //we want to return [f, r1, r2] instead of 
+        //[f, [r1, r2]], unless r1 is a class expression constructor
+        let mut v = Vec::new();
+        if first.is_array() &&
+            !is_class_expression(first.as_array().unwrap()[0].as_str().unwrap())
+            { 
+                let f = first.as_array_mut().unwrap();
+                v.append(f); 
+            } else {
+                v.push(first); 
+            }
+
+        if rest.is_array() &&
+            !is_class_expression(rest.as_array().unwrap()[0].as_str().unwrap())
+            {
+                let r = rest.as_array_mut().unwrap();
+                v.append(r); 
+            } else {
+                v.push(rest); 
+            } 
+
+        Value::Array(v) 
     }
 }
 
@@ -154,53 +229,75 @@ pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool {
 }
 
 //TODO: introduce case for data types
-pub fn translate_intersection_of(s: &owl::IntersectionOf) -> String { 
-    let intersection_of = translate(&s.owl_intersection_of[0].object);
+pub fn translate_intersection_of(s: &owl::IntersectionOf) -> Value { 
+    let mut intersection_of = translate(&s.owl_intersection_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
     if is_class { 
-        format!("[\"ObjectIntersectionOf\",{}]", intersection_of)
-    } else {
-        format!("[\"IntersectionOf\",{}]", intersection_of)
-    } 
+        let operator = Value::String(String::from("ObjectIntersectionOf"));
+        let mut intersection = vec![operator];
+        let arguments = intersection_of.as_array_mut().unwrap();
+        intersection.append(arguments);
+        Value::Array(intersection.to_vec()) 
+    } else { 
+        let operator = Value::String(String::from("IntersectionOf"));
+        let mut intersection = vec![operator];
+        let arguments = intersection_of.as_array_mut().unwrap();
+        intersection.append(arguments);
+        Value::Array(intersection.to_vec()) 
+    }
 }
 
 //TODO: test type information here?
-pub fn translate_union_of(s: &owl::UnionOf) -> String { 
-    let union_of = translate(&s.owl_union_of[0].object);
+pub fn translate_union_of(s: &owl::UnionOf) -> Value { 
+    let mut union_of = translate(&s.owl_union_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
     if is_class { 
-        format!("[\"ObjectUnionOf\",{}]", union_of)
+        let operator = Value::String(String::from("ObjectUnionOf"));
+        let mut union = vec![operator];
+        let arguments = union_of.as_array_mut().unwrap();
+        union.append(arguments);
+        Value::Array(union.to_vec())
     } else {
-        format!("[\"UnionOf\",{}]", union_of) 
+        let operator = Value::String(String::from("UnionOf"));
+        let mut union = vec![operator];
+        let arguments = union_of.as_array_mut().unwrap();
+        union.append(arguments);
+        Value::Array(union.to_vec())
     } 
-    //let expression = format!("[\"ObjectUnionOf\",{}]", union_of);
-    //expression
 }
 
-pub fn translate_one_of(s: &owl::OneOf) -> String { 
-    let one_of = translate(&s.owl_one_of[0].object);
+pub fn translate_one_of(s: &owl::OneOf) -> Value { 
+    let mut one_of = translate(&s.owl_one_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
     if is_class { 
-        format!("[\"ObjectOneOf\",{}]", one_of)
+        let operator = Value::String(String::from("ObjectOneOf"));
+        let mut one = vec![operator];
+        let arguments = one_of.as_array_mut().unwrap();
+        one.append(arguments);
+        Value::Array(one.to_vec()) 
     } else {
-        format!("[\"OneOf\",{}]", one_of)
+        let operator = Value::String(String::from("OneOf"));
+        let mut one = vec![operator];
+        let arguments = one_of.as_array_mut().unwrap();
+        one.append(arguments);
+        Value::Array(one.to_vec()) 
     } 
-    //let expression = format!("[\"ObjectOneOf\",{}]", one_of);
-    //expression
 }
 
-pub fn translate_complement_of(s: &owl::ComplementOf) -> String { 
+pub fn translate_complement_of(s: &owl::ComplementOf) -> Value { 
     let complement_of = translate(&s.owl_complement_of[0].object);
     let is_class = check_class_type(&s.rdf_type);
     if is_class { 
-        format!("[\"ObjectComplementOf\",{}]", complement_of)
-    } else {
-        format!("[\"ComplementOf\",{}]", complement_of)
-    } 
+        let operator = Value::String(String::from("ObjectComplementOf"));
+        let v = vec![operator, complement_of];
+        Value::Array(v)
 
-    //let expression = format!("[\"ObjectComplementOf\",{}]", complement_of);
-    //expression
+    } else {
+        let operator = Value::String(String::from("ComplementOf"));
+        let v = vec![operator, complement_of];
+        Value::Array(v)
+    } 
 } 
