@@ -189,25 +189,36 @@ pub fn translate_list(s: &owl::RDFList) -> Value {
         //we want to return [f, r1, r2] instead of 
         //[f, [r1, r2]], unless r1 is a class expression constructor
         let mut v = Vec::new();
-        if first.is_array() &&
-            first.as_array().unwrap()[0].is_string() &&
-            !is_class_expression(first.as_array().unwrap()[0].as_str().unwrap())
-            { 
-                let f = first.as_array_mut().unwrap();
-                v.append(f); 
-            } else {
-                v.push(first); 
-            }
 
-        if rest.is_array() &&
+        //check whether 'first' is an array of named classes
+        let first_is_array_of_atomics = first.is_array() &&
+            first.as_array().unwrap()[0].is_string() &&
+            !is_class_expression(first.as_array().unwrap()[0].as_str().unwrap());
+
+        //check whether 'first' is an array of compound class expressions
+        let first_is_array_of_arrays = first.is_array() &&
+            first.as_array().unwrap()[0].is_array();
+
+        if first_is_array_of_atomics || first_is_array_of_arrays { 
+            let f = first.as_array_mut().unwrap();
+            v.append(f); 
+        } else {
+            v.push(first); 
+        }
+
+        let rest_is_array_of_atomics = rest.is_array() &&
             rest.as_array().unwrap()[0].is_string() &&
-            !is_class_expression(rest.as_array().unwrap()[0].as_str().unwrap())
-            {
-                let r = rest.as_array_mut().unwrap();
-                v.append(r); 
-            } else {
-                v.push(rest); 
-            } 
+            !is_class_expression(rest.as_array().unwrap()[0].as_str().unwrap());
+
+        let rest_is_array_of_arrays = rest.is_array() && 
+            rest.as_array().unwrap()[0].is_array();
+
+        if rest_is_array_of_atomics || rest_is_array_of_arrays {
+            let r = rest.as_array_mut().unwrap();
+            v.append(r); 
+        } else {
+            v.push(rest); 
+        } 
 
         Value::Array(v) 
     }
