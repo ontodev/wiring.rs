@@ -53,6 +53,19 @@ pub fn translate_disjoint_classes(ops: &str) -> Value {
     Value::Array(disjoint.to_vec())
 }
 
+pub fn translate_disjoint_with(lhs: &str, rhs: &str) -> Value {
+
+    let l: owl::OWL = serde_json::from_str(lhs).unwrap(); 
+    let r: owl::OWL = serde_json::from_str(rhs).unwrap(); 
+
+    let lhs : Value = class_translation::translate(&l);
+    let rhs: Value = class_translation::translate(&r); 
+
+    let operator = Value::String(String::from("DisjointClasses"));
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+}
+
 pub fn translate_disjoint_union(u: &str, ops: &str) -> Value {
 
     let union: owl::OWL = serde_json::from_str(u).unwrap(); 

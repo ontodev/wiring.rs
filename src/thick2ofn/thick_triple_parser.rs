@@ -22,14 +22,16 @@ pub fn parse_triple(t: &str) -> Value {
 
     let thick_triple: Value = serde_json::from_str(t).unwrap();
 
-    //TODO: I cannot chain to_string() and as_str() - why?
+    //we convert subcomponents of a thick_triple to strings,
+    //so that we can serialise them into owl::OWL using serde
     let subj_helper : String  = thick_triple["subject"].to_string();
     let subj : &str = subj_helper.as_str();
 
     let predicate : String = thick_triple["predicate"].to_string();
 
     let obj_helper : String  = thick_triple["object"].to_string();
-    let obj : &str = obj_helper.as_str();
+    let obj : &str = obj_helper.as_str(); 
+
 
     match predicate.as_str() {
         "\"rdfs:subClassOf\"" => axiom_translation::translate_subclass_of_axiom(subj, obj),
@@ -40,6 +42,7 @@ pub fn parse_triple(t: &str) -> Value {
                 axiom_translation::translate_disjoint_classes(members) 
             }, 
         "\"owl:disjointUnionOf\"" => axiom_translation::translate_disjoint_union(subj, obj),
+        "\"owl:disjointWith\"" => axiom_translation::translate_disjoint_with(subj, obj),
         _ => Value::String(String::from("Fail")),
     } 
 } 
