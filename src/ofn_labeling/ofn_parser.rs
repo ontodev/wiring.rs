@@ -2,11 +2,19 @@ use serde_json::{Value};
 use crate::ofn_labeling::axiom_translation as axiom_translation; 
 use std::collections::HashMap;
 
-pub fn parse_ofn(t: &str, m : &HashMap<String,String>) -> String {
+//pub fn parse_ofn(t: &str, m : &HashMap<String,String>) -> String {
+//    //deserialise JSON as a (serde) Value
+//    let thick_triple: Value = serde_json::from_str(t).unwrap(); 
+//    //start the translation process
+//    let out = translate_triple(&thick_triple, m); 
+//    out 
+//}
+
+pub fn parse_ofn(t: &Value, m : &HashMap<String,String>) -> String {
     //deserialise JSON as a (serde) Value
-    let thick_triple: Value = serde_json::from_str(t).unwrap(); 
+    //let thick_triple: Value = serde_json::from_str(t).unwrap(); 
     //start the translation process
-    let out = translate_triple(&thick_triple, m); 
+    let out = translate_triple(t, m); 
     out 
 }
 
