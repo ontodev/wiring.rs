@@ -3,7 +3,7 @@ use crate::ofn_typing::property_translation as property_translation;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
     let owl_operator: String = v[0].to_string();
 
@@ -38,7 +38,7 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
          "\"ObjectComplementOf\"" => id(v,m), 
 
          "\"ObjectInverseOf\"" => id(v,m),  //there is no data inverse
-         _ => v.to_string(),
+         _ => Value::String(String::from(v.as_str().unwrap())),
      }
 } 
 
@@ -101,137 +101,168 @@ pub fn type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool {
     }
 }
 
-pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> String { 
+pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
 
-    let mut res: String = "[".to_owned();
-
-    let owl_operator: String = v[0].to_string();
-    res.push_str(&owl_operator);
+    let mut res = Vec::new();
+    //let operator = Value::String(String::from(v[0].to_string()));
+    let operator = Value::String(String::from(v[0].as_str().unwrap()));
+    res.push(operator);
 
     let arguments  = &(v.as_array().unwrap())[1..]; 
     for argument in arguments  {
-        res.push_str(",");
-        let test : String = translate(argument, m);
-        res.push_str(&test);
+        let test : Value = translate(argument, m);
+        res.push(test);
     } 
-
-    res.push_str("]");
-    res
+    Value::Array(res)
 }
 
-pub fn translate_some_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_some_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
 
     //TODO: check data type
     if is_class_expression(&v[2], m) || property_translation::is_object_property(&v[1],m) { 
-        format!("[\"ObjectSomeValuesFrom\",{},{}]", property, filler)
+        let operator = Value::String(String::from("ObjectSomeValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     } else { 
-        format!("[\"ErrorSomeValuesFrom\",{},{}]", property, filler) 
+        let operator = Value::String(String::from("ErrorSomeValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     }
 } 
 
-pub fn translate_all_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_all_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
 
     //TODO: check data type
     if is_class_expression(&v[2], m) || property_translation::is_object_property(&v[1],m) {
-        format!("[\"ObjectAllValuesFrom\",{},{}]", property, filler)
+        let operator = Value::String(String::from("ObjectAllValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     } else { 
-        format!("[\"ErrorAllValuesFrom\",{},{}]", property, filler) 
+        let operator = Value::String(String::from("ErrorAllValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     }
 } 
 
-pub fn translate_has_value(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_has_value(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
 
     if is_class_expression(&v[2], m) || property_translation::is_object_property(&v[1],m) {
-        format!("[\"ObjectHasValue\",{},{}]", property, filler)
+        let operator = Value::String(String::from("ObjectHasValue"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     } else {
-        format!("[\"ErrorHasValue\",{},{}]", property, filler) 
-    } 
+        let operator = Value::String(String::from("ErrorHasValue"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
+    }
 } 
 
+pub fn translate_min_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-pub fn translate_min_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-
-    if property_translation::is_object_property(&v[1],m) {
-        format!("[\"ObjectMinCardinality\",{},{}]", property, cardinality)
+    if property_translation::is_object_property(&v[1],m) { 
+        let operator = Value::String(String::from("ObjectMinCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } else { 
-        format!("[\"ErrorMinCardinality\",{},{}]", property, cardinality)
+        let operator = Value::String(String::from("ErrorMinCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } 
 } 
 
-pub fn translate_max_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_max_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
 
     if property_translation::is_object_property(&v[1],m) {
-        format!("[\"ObjectMaxCardinality\",{},{}]", property, cardinality)
+        let operator = Value::String(String::from("ObjectMaxCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } else {
-        format!("[\"ErrorMaxCardinality\",{},{}]", property, cardinality) 
+        let operator = Value::String(String::from("ErrorMaxCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } 
 } 
 
-pub fn translate_exact_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_exact_cardinality(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
 
     if property_translation::is_object_property(&v[1],m) {
-        format!("[\"ObjectExactCardinality\",{},{}]", property, cardinality)
+        let operator = Value::String(String::from("ObjectExactCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } else {
-        format!("[\"ErrorExactCardinality\",{},{}]", property, cardinality)
+        let operator = Value::String(String::from("ErrorExactCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     }
 }
 
-pub fn translate_list(v : &[Value], m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_list(v : &[Value], m : &HashMap<String, HashSet<String>>) -> Value {
 
-    if v.len() == 1 {
-        let first: String = translate(&v[0],m);
-        first
-    } else { 
-
-        let first: String = translate(&v[0],m); 
-        let rest: String = translate_list(&v[1..],m);
-        format!("{},{}", first, rest) 
-    } 
+    let mut res = Vec::new();
+    for argument in v {
+        let t: Value = translate(&argument,m); 
+        res.push(t) 
+    }
+    Value::Array(res) 
 }
 
 //TODO: check arguments for propert type
-pub fn translate_intersection_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_intersection_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectIntersectionOf\",{}]", operands);
-    expression 
+    let mut res = Vec::new();
+    let operator = Value::String(String::from("ObjectIntersectionOf"));
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res) 
+
 } 
 
-pub fn translate_union_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_union_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectUnionOf\",{}]", operands);
-    expression 
+    let mut res = Vec::new();
+    let operator = Value::String(String::from("ObjectUnionOf"));
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res)
 } 
 
-pub fn translate_one_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_one_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectOneOf\",{}]", operands);
-    expression 
+    let mut res = Vec::new();
+    let operator = Value::String(String::from("ObjectOneOf"));
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res) 
 } 
 
-pub fn translate_complement_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> String {
+pub fn translate_complement_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let argument: String = translate(&v[1],m); 
-    let expression = format!("[\"ObjectComplementOf\",{}]", argument);
-    expression 
+    let argument: Value = translate(&v[1],m); 
+    let operator = Value::String(String::from("ObjectComplementOf"));
+    let v = vec![operator, argument];
+    Value::Array(v) 
 } 
