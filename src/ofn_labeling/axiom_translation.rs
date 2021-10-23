@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn_labeling::class_translation_serde as class_translation; //TODO: class translation
+use crate::ofn_labeling::class_translation as class_translation; //TODO: class translation
 use std::collections::HashMap;
 
 

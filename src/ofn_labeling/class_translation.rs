@@ -1,7 +1,7 @@
 use serde_json::{Value};
-use crate::ofn_labeling::property_translation_serde as property_translation;
+use crate::ofn_labeling::property_translation as property_translation;
 use std::collections::HashMap;
-use crate::ofn_labeling::labeling_serde as labeling;
+use crate::ofn_labeling::labeling as labeling;
 
 //Note that (thick) triples are not OWL
 pub fn translate(v : &Value, m : &HashMap<String, String>) -> Value {
