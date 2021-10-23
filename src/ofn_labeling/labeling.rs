@@ -6,17 +6,22 @@ use std::io::{prelude::*, BufReader};
 use serde_json::{Value};
 use std::collections::HashMap;
 
-pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> String {
+//TODO: handling of double quotes is ad hoc
+pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> Value {
+    //v is (necessarily) a String
     let element : String = v.to_string();
     if e2l.contains_key(&element) {
         let inter  = e2l.get(&element).unwrap().to_string().replace("\"","");
-        format!("\"'{}'\"", inter) //introduce single quotes
+        let single_quote = format!("'{}'", inter); //introduce single quotes
+        Value::String(String::from(single_quote)) 
     } else {
-        element
+        let inter  = element.replace("\"","");
+        Value::String(String::from(inter)) 
     } 
 } 
 
 //returns a map from entity names to their labels
+//TODO: this currently assumes that there is exactly one label for each term 
 pub fn extract_labeling(path : &str) -> HashMap<String,String> {
     let file = File::open(path).unwrap();
     let reader = BufReader::new(file);

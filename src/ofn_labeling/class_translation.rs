@@ -1,10 +1,10 @@
 use serde_json::{Value};
-use crate::ofn_labeling::property_translation as property_translation;
+use crate::ofn_labeling::property_translation_serde as property_translation;
 use std::collections::HashMap;
-use crate::ofn_labeling::labeling as labeling;
+use crate::ofn_labeling::labeling_serde as labeling;
 
 //Note that (thick) triples are not OWL
-pub fn translate(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate(v : &Value, m : &HashMap<String, String>) -> Value {
 
     let owl_operator: String = v[0].to_string();
 
@@ -29,132 +29,155 @@ pub fn translate(v : &Value, m : &HashMap<String, String>) -> String {
 } 
 
 
-pub fn translate_some_values_from(v : &Value, m : &HashMap<String, String>) -> String {
+//TODO: introduce identify function
 
-    //translate recursively
-    //let op: &Value = &v[0];//don't need OWL constructor 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
+pub fn translate_some_values_from(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let expression = format!("[\"ObjectSomeValuesFrom\",{},{}]", property, filler); 
-    expression
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
+
+    let expression = vec![operator, property, filler];
+    Value::Array(expression)
 } 
 
-pub fn translate_all_values_from(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_all_values_from(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
-    let expression = format!("[\"ObjectAllValuesFrom\",{},{}]", property, filler);
-    expression 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
+
+    let expression = vec![operator, property, filler];
+    Value::Array(expression) 
 } 
 
-pub fn translate_has_value(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_has_value(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let filler: String = translate(&v[2],m); 
-    let expression = format!("[\"ObjectHasValue\",{},{}]", property, filler);
-    expression
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let filler: Value = translate(&v[2],m); 
+    let expression = vec![operator, property, filler];
+    Value::Array(expression) 
 } 
 
-pub fn translate_has_self(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_has_self(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let expression = format!("[\"ObjectHasSelf\",{}]", property);
-    expression 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let expression = vec![operator, property];
+    Value::Array(expression) 
 } 
 
-pub fn translate_min_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_min_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-    let expression = format!("[\"ObjectMinCardinality\",{},{}]", property, cardinality);
-    expression 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
+    let expression = vec![operator, property, cardinality];
+    Value::Array(expression) 
 } 
 
-pub fn translate_min_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_min_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-    let filler: String = translate(&v[3],m); 
-    let expression = format!("[\"ObjectMinQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
+    let filler: Value = translate(&v[3],m); 
+    let expression = vec![operator, property, cardinality, filler];
+    Value::Array(expression) 
 } 
 
-pub fn translate_max_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_max_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
 
-    let expression = format!("[\"ObjectMaxCardinality\",{},{}]", property, cardinality);
-    expression
-
+    let expression = vec![operator, property, cardinality];
+    Value::Array(expression) 
 } 
 
-pub fn translate_max_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_max_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-    let filler: String = translate(&v[3],m); 
-
-    let expression = format!("[\"ObjectMaxQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
+    let filler: Value = translate(&v[3],m); 
+    let expression = vec![operator, property, cardinality, filler];
+    Value::Array(expression) 
 } 
 
-pub fn translate_exact_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_exact_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-    let expression = format!("[\"ObjectExactCardinality\",{},{}]", property, cardinality);
-    expression 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
+
+    let expression = vec![operator, property, cardinality];
+    Value::Array(expression) 
 } 
 
-pub fn translate_exact_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_exact_qualified_cardinality(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let property: String = translate(&v[1],m); 
-    let cardinality: String = translate(&v[2],m); 
-    let filler: String = translate(&v[3],m); 
+    let operator: Value = v[0].clone();
+    let property: Value = translate(&v[1],m); 
+    let cardinality: Value = translate(&v[2],m); 
+    let filler: Value = translate(&v[3],m); 
 
-    let expression = format!("[\"ObjectExactQualifiedCardinality\",{},{},{}]", property, cardinality, filler);
-    expression 
+    let expression = vec![operator, property, cardinality, filler];
+    Value::Array(expression) 
 } 
 
-pub fn translate_list(v : &[Value], m : &HashMap<String, String>) -> String {
+pub fn translate_list(v : &[Value], m : &HashMap<String, String>) -> Value {
 
-    if v.len() == 1 {
-        let first: String = translate(&v[0],m);
-        first
-    } else { 
-
-        let first: String = translate(&v[0],m); 
-        let rest: String = translate_list(&v[1..],m);
-        format!("{},{}", first, rest) 
-    } 
+    let mut res = Vec::new();
+    for argument in v {
+        let t: Value = translate(&argument,m); 
+        res.push(t) 
+    }
+    Value::Array(res) 
 }
 
-pub fn translate_intersection_of(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_intersection_of(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectIntersectionOf\",{}]", operands);
-    expression 
+    let operator: Value = v[0].clone();
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+
+    let mut res = Vec::new();
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res) 
 } 
 
-pub fn translate_union_of(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_union_of(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectUnionOf\",{}]", operands);
-    expression 
+    let operator: Value = v[0].clone();
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+
+    let mut res = Vec::new();
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res) 
 } 
 
-pub fn translate_one_of(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_one_of(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let operands : String = translate_list(&(v.as_array().unwrap())[1..],m);
-    let expression = format!("[\"ObjectOneOf\",{}]", operands);
-    expression 
+    let operator: Value = v[0].clone();
+    let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
+
+    let mut res = Vec::new();
+    let r = operands.as_array_mut().unwrap();
+    res.push(operator);
+    res.append(r); 
+    Value::Array(res) 
 } 
 
-pub fn translate_complement_of(v : &Value, m : &HashMap<String, String>) -> String {
+pub fn translate_complement_of(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    let argument: String = translate(&v[1],m); 
-    let expression = format!("[\"ObjectComplementOf\",{}]", argument);
-    expression 
+    let operator: Value = v[0].clone(); 
+    let argument: Value = translate(&v[1],m); 
+    let v = vec![operator, argument];
+    Value::Array(v) 
 } 
