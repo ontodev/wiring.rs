@@ -126,6 +126,10 @@ pub fn translate_some_values_from(v : &Value, m : &HashMap<String, HashSet<Strin
         let operator = Value::String(String::from("ObjectSomeValuesFrom"));
         let v = vec![operator, property, filler];
         Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataSomeValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     } else { 
         let operator = Value::String(String::from("ErrorSomeValuesFrom"));
         let v = vec![operator, property, filler];
@@ -141,6 +145,10 @@ pub fn translate_all_values_from(v : &Value, m : &HashMap<String, HashSet<String
     //TODO: check data type
     if is_class_expression(&v[2], m) || property_translation::is_object_property(&v[1],m) {
         let operator = Value::String(String::from("ObjectAllValuesFrom"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataAllValuesFrom"));
         let v = vec![operator, property, filler];
         Value::Array(v) 
     } else { 
@@ -159,6 +167,10 @@ pub fn translate_has_value(v : &Value, m : &HashMap<String, HashSet<String>>) ->
         let operator = Value::String(String::from("ObjectHasValue"));
         let v = vec![operator, property, filler];
         Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataHasValue"));
+        let v = vec![operator, property, filler];
+        Value::Array(v) 
     } else {
         let operator = Value::String(String::from("ErrorHasValue"));
         let v = vec![operator, property, filler];
@@ -173,6 +185,10 @@ pub fn translate_min_cardinality(v : &Value, m : &HashMap<String, HashSet<String
 
     if property_translation::is_object_property(&v[1],m) { 
         let operator = Value::String(String::from("ObjectMinCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataMinCardinality"));
         let v = vec![operator, property, cardinality];
         Value::Array(v) 
     } else { 
@@ -191,6 +207,10 @@ pub fn translate_max_cardinality(v : &Value, m : &HashMap<String, HashSet<String
         let operator = Value::String(String::from("ObjectMaxCardinality"));
         let v = vec![operator, property, cardinality];
         Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataMaxCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
     } else {
         let operator = Value::String(String::from("ErrorMaxCardinality"));
         let v = vec![operator, property, cardinality];
@@ -205,6 +225,10 @@ pub fn translate_exact_cardinality(v : &Value, m : &HashMap<String, HashSet<Stri
 
     if property_translation::is_object_property(&v[1],m) {
         let operator = Value::String(String::from("ObjectExactCardinality"));
+        let v = vec![operator, property, cardinality];
+        Value::Array(v) 
+    } else if property_translation::is_data_property(&v[1],m) {
+        let operator = Value::String(String::from("DataExactCardinality"));
         let v = vec![operator, property, cardinality];
         Value::Array(v) 
     } else {

@@ -24,11 +24,24 @@ pub fn is_object_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> 
 
      match owl_operator.clone().as_str() {
          "\"ObjectInverseOf\"" => true,
-         _ => type_look_up(owl_operator.clone(), m),
+         _ => object_type_look_up(owl_operator.clone(), m),
      } 
 }
 
-pub fn type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
+pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
+
+    if let Value::Array(_) = v { 
+        return false;
+    } else { 
+        let s = v.to_string();    //named entity
+        match m.get(&s) {
+            Some(set) => set.contains("owl:DatatypeProperty"),
+            _ => false, 
+        }
+    } 
+}
+
+pub fn object_type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
     match m.get(&s) {
         Some(set) => set.contains("owl:ObjectProperty"),
         _ => false,
