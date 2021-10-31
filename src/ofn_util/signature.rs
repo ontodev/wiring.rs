@@ -1,6 +1,19 @@
 use serde_json::{Value};
 
-//TODO: extract prefixes
+//extract prefixes occuring in an OFN S-expression
+pub fn get_prefixes(v : &Value) -> Vec<String> {
+    let mut prefixes = Vec::new();
+    let sig = extract(v);
+    for s in sig {
+        let h = s.as_str().unwrap();
+        let split: Vec<&str> = h.split(":").collect();
+        let p = split[0];
+        prefixes.push(String::from(p)); 
+    } 
+    prefixes.sort_unstable();
+    prefixes.dedup();
+    prefixes
+}
 
 //extract signature of an OFN S-expression
 pub fn extract(v : &Value) -> Vec<Value> { 
@@ -13,6 +26,7 @@ pub fn extract(v : &Value) -> Vec<Value> {
          "\"DisjointUnionOf\"" => translate_disjoint_union_of(v), 
          "\"EquivalentClasses\"" => translate_equivalent_classes(v), 
          "\"ObjectSomeValuesFrom\"" => translate_some_values_from(v), 
+         "\"DataSomeValuesFrom\"" => translate_some_values_from(v), 
          "\"ObjectAllValuesFrom\"" => translate_all_values_from(v), 
          "\"ObjectHasValue\"" => translate_has_value(v), 
          "\"ObjectMinCardinality\"" => translate_min_cardinality(v), 
@@ -20,6 +34,7 @@ pub fn extract(v : &Value) -> Vec<Value> {
          "\"ObjectMaxCardinality\"" => translate_max_cardinality(v), 
          "\"ObjectMaxQualifiedCardinality\"" => translate_max_qualified_cardinality(v), 
          "\"ObjectExactCardinality\"" => translate_exact_cardinality(v), 
+         "\"DataExactCardinality\"" => translate_exact_cardinality(v), 
          "\"ObjectExactQualifiedCardinality\"" => translate_exact_qualified_cardinality(v), 
          "\"ObjectHasSelf\"" => translate_has_self(v), 
          "\"ObjectIntersectionOf\"" => translate_intersection_of(v), 
