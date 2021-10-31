@@ -8,15 +8,25 @@ pub fn translate(v : &Value, m : &HashMap<String, String>) -> Value {
 
 pub fn substitute(v : &Value, m : &HashMap<String, String>) -> Value {
 
-    //TODO: find a better way to deal with quotes
-    let element : String = v.to_string().replace("\"",""); 
+    let element = v.as_str().unwrap();
+    //remove enclosing angle brackets < > of an IRI
+    let element = rem_first_and_last(element);
 
     for (key, value) in m { 
-        if element.contains(key) {
-            //TODO: make sure that the identified prefix is indeed a prefix
-            let iri = element.replace(key, value); 
+        //remove enclosing angle brackets < > of prefix IRI
+        let trimmed_key = rem_first_and_last(key);
+        //if element.contains(key) {
+        if element.starts_with(trimmed_key) {
+            let iri = element.replace(trimmed_key, value); 
             return Value::String(String::from(iri))
         }
     }
     Value::String(String::from(element)) 
+}
+
+fn rem_first_and_last(value: &str) -> &str {
+    let mut chars = value.chars();
+    chars.next();
+    chars.next_back();
+    chars.as_str()
 }
