@@ -5,87 +5,79 @@ use std::collections::HashSet;
 
 pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let owl_operator: String = v[0].to_string();
-
-     match owl_operator.as_str() {
-         "\"SomeValuesFrom\"" => translate_some_values_from(v,m), 
-         "\"AllValuesFrom\"" =>  translate_all_values_from(v,m), 
-         "\"HasValue\"" => translate_has_value(v,m), 
-         "\"MinCardinality\"" => translate_min_cardinality(v,m), 
-         "\"MaxCardinality\"" => translate_max_cardinality(v,m), 
-         "\"ExactCardinality\"" => translate_exact_cardinality(v,m), 
-
-         "\"ObjectSomeValuesFrom\"" => id(v,m),
-         "\"ObjectAllValuesFrom\"" => id(v,m),
-         "\"ObjectHasValue\"" =>  id(v,m),
-         "\"ObjectMinCardinality\"" =>  id(v,m),
-         "\"ObjectMinQualifiedCardinality\"" => id(v,m), 
-         "\"ObjectMaxCardinality\"" =>  id(v,m),
-         "\"ObjectMaxQualifiedCardinality\"" => id(v,m), 
-         "\"ObjectExactCardinality\"" =>  id(v,m),
-         "\"ObjectExactQualifiedCardinality\"" => id(v,m), 
-         "\"ObjectHasSelf\"" => id(v,m), 
+     match v[0].as_str() {
+         Some("SomeValuesFrom") => translate_some_values_from(v,m), 
+         Some("AllValuesFrom") =>  translate_all_values_from(v,m), 
+         Some("HasValue") => translate_has_value(v,m), 
+         Some("MinCardinality") => translate_min_cardinality(v,m), 
+         Some("MaxCardinality") => translate_max_cardinality(v,m), 
+         Some("ExactCardinality") => translate_exact_cardinality(v,m), 
 
          //TODO: (note DataIntersection is not a class expression)
-         //"\"IntersectionOf\"" => id(v,m), 
-         //"\"UnionOf\"" => id(v,m), 
-         //"\"OneOf\"" => id(v,m), 
-         //"\"ComplementOf\"" => id(v,m), 
+         //NB: we are currently relying on an exclicit typing for the followiong:
+         //Some("IntersectionOf") => id(v,m), 
+         //Some("UnionOf") => id(v,m), 
+         //Some("OneOf") => id(v,m), 
+         //Some("ComplementOf") => id(v,m), 
 
-         "\"ObjectIntersectionOf\"" => id(v,m), 
-         "\"ObjectUnionOf\"" => id(v,m), 
-         "\"ObjectOneOf\"" => id(v,m), 
-         "\"ObjectComplementOf\"" => id(v,m), 
+         Some("ObjectSomeValuesFrom") => id(v,m),
+         Some("ObjectAllValuesFrom") => id(v,m),
+         Some("ObjectHasValue") =>  id(v,m),
+         Some("ObjectMinCardinality") =>  id(v,m),
+         Some("ObjectMinQualifiedCardinality") => id(v,m), 
+         Some("ObjectMaxCardinality") =>  id(v,m),
+         Some("ObjectMaxQualifiedCardinality") => id(v,m), 
+         Some("ObjectExactCardinality") =>  id(v,m),
+         Some("ObjectExactQualifiedCardinality") => id(v,m), 
+         Some("ObjectHasSelf") => id(v,m), 
+         Some("ObjectIntersectionOf") => id(v,m), 
+         Some("ObjectUnionOf") => id(v,m), 
+         Some("ObjectOneOf") => id(v,m), 
+         Some("ObjectComplementOf") => id(v,m), 
 
-         "\"ObjectInverseOf\"" => id(v,m),  //there is no data inverse
-         _ => Value::String(String::from(v.as_str().unwrap())),
+         Some("ObjectInverseOf") => id(v,m),  //there is no data inverse
+         Some(_) => panic!(),  //there is no data inverse
+         None => Value::String(String::from(v.as_str().unwrap())),
      }
 } 
 
 pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
 
-    let owl_operator : String ;
-
-    if let Value::Array(_) = v { 
-        owl_operator = v[0].to_string(); //compound expression
-    } else {
-        owl_operator = v.to_string();    //named entity
-    } 
-
-     match owl_operator.clone().as_str() {
+     match v[0].as_str() {
          //abstract
-         "\"SomeValuesFrom\"" => true,
-         "\"AllValuesFrom\"" => true,
-         "\"HasValue\"" => true,
-         "\"MinCardinality\"" => true,
-         "\"MaxCardinality\"" => true,
-         "\"ExactCardinality\"" => true,
+         Some("SomeValuesFrom") => true,
+         Some("AllValuesFrom") => true,
+         Some("HasValue") => true,
+         Some("MinCardinality") => true,
+         Some("MaxCardinality") => true,
+         Some("ExactCardinality") => true,
 
          //data - note that data restrictions are still class expressions
-         "\"DataSomeValuesFrom\"" => true,
-         "\"DataAllValuesFrom\"" => true,
-         "\"DataHasValue\"" => true,
-         "\"DataMinCardinality\"" => true,
-         "\"DataMaxCardinality\"" => true,
-         "\"DataExactCardinality\"" => true,
+         Some("DataSomeValuesFrom") => true,
+         Some("DataAllValuesFrom") => true,
+         Some("DataHasValue") => true,
+         Some("DataMinCardinality") => true,
+         Some("DataMaxCardinality") => true,
+         Some("DataExactCardinality") => true,
 
-         "\"ObjectSomeValuesFrom\"" => true,
-         "\"ObjectAllValuesFrom\"" => true,
-         "\"ObjectHasValue\"" =>  true,
-         "\"ObjectMinCardinality\"" =>  true,
-         "\"ObjectMinQualifiedCardinality\"" => true,
-         "\"ObjectMaxCardinality\"" =>  true,
-         "\"ObjectMaxQualifiedCardinality\"" => true,
-         "\"ObjectExactCardinality\"" =>  true,
-         "\"ObjectExactQualifiedCardinality\"" => true, 
-         "\"ObjectHasSelf\"" => true,
+         Some("ObjectSomeValuesFrom") => true,
+         Some("ObjectAllValuesFrom") => true,
+         Some("ObjectHasValue") =>  true,
+         Some("ObjectMinCardinality") =>  true,
+         Some("ObjectMinQualifiedCardinality") => true,
+         Some("ObjectMaxCardinality") =>  true,
+         Some("ObjectMaxQualifiedCardinality") => true,
+         Some("ObjectExactCardinality") =>  true,
+         Some("ObjectExactQualifiedCardinality") => true, 
+         Some("ObjectHasSelf") => true,
 
          //object (not that DataIntersections, etc. are NOT class expressions
-         "\"ObjectIntersectionOf\"" => true,
-         "\"ObjectUnionOf\"" => true,
-         "\"ObjectOneOf\"" => true,
-         "\"ObjectComplementOf\"" => true,
-         _ => type_look_up(owl_operator.clone(), m),
+         Some("ObjectIntersectionOf") => true,
+         Some("ObjectUnionOf") => true,
+         Some("ObjectOneOf") => true,
+         Some("ObjectComplementOf") => true,
+         Some(_) => panic!(),  //there is no data inverse
+         None => type_look_up(v.to_string().clone(), m),
      }
 }
 
@@ -163,6 +155,7 @@ pub fn translate_has_value(v : &Value, m : &HashMap<String, HashSet<String>>) ->
     let property: Value = translate(&v[1],m); 
     let filler: Value = translate(&v[2],m); 
 
+    //TODO: the filler would be an individual..
     if is_class_expression(&v[2], m) || property_translation::is_object_property(&v[1],m) {
         let operator = Value::String(String::from("ObjectHasValue"));
         let v = vec![operator, property, filler];
