@@ -88,7 +88,7 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
 
 pub fn type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
     match m.get(&s) {
-        Some(set) => set.contains("owl:Class"),
+        Some(set) => set.contains("\"owl:Class\""),
         _ => false,
     }
 }

@@ -35,7 +35,7 @@ pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bo
     } else { 
         let s = v.to_string();    //named entity
         match m.get(&s) {
-            Some(set) => set.contains("owl:DatatypeProperty"),
+            Some(set) => set.contains("\"owl:DatatypeProperty\""),
             _ => false, 
         }
     } 
@@ -43,7 +43,7 @@ pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bo
 
 pub fn object_type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
     match m.get(&s) {
-        Some(set) => set.contains("owl:ObjectProperty"),
+        Some(set) => set.contains("\"owl:ObjectProperty\""),
         _ => false,
     }
 }

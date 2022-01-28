@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 //returns a map from entity names to their types
+//TODO: think about whether you want this mapping to work on Values too
 pub fn extract_typing(path : &str) -> HashMap<String,HashSet<String>> {
     let file = File::open(path).unwrap();
     let reader = BufReader::new(file);
@@ -12,6 +13,7 @@ pub fn extract_typing(path : &str) -> HashMap<String,HashSet<String>> {
     let mut entity_2_type = HashMap::new();
 
     for line in reader.lines() {
+        //we read the input from a file as a string
         let content : String = line.unwrap();
         if is_typing_triple(content.clone().as_str()){
             let (entity, rdf_type) : (String, String) = get_type_mapping(content.clone().as_str());
@@ -34,7 +36,7 @@ fn get_type_mapping(t: &str) -> (String, String) {
 
     let thick_triple: Value = serde_json::from_str(t).unwrap(); 
     let subj_helper : String  = thick_triple["subject"].to_string(); 
-    let obj_helper : String  = thick_triple["object"].to_string().replace("\"","");
+    let obj_helper : String  = thick_triple["object"].to_string();
 
     (subj_helper, obj_helper) 
 }
