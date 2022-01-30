@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn_labeling::axiom_translation_serde as axiom_translation; 
+use crate::ofn_labeling::axiom_translation as axiom_translation; 
 use std::collections::HashMap;
 
 //pub fn parse_ofn(t: &str, m : &HashMap<String,String>) -> String {
