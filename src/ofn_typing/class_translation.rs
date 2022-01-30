@@ -96,7 +96,6 @@ pub fn type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool {
 pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
 
     let mut res = Vec::new();
-    //let operator = Value::String(String::from(v[0].to_string()));
     let operator = Value::String(String::from(v[0].as_str().unwrap()));
     res.push(operator);
 

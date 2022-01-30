@@ -4,27 +4,19 @@ use std::collections::HashSet;
 
 pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
-    let owl_operator: String = v[0].to_string();
-
-     match owl_operator.as_str() {
-         "\"ObjectInverseOf\"" => translate_inverse_of(v,m), 
-         _ => Value::String(v.to_string())
+     match v[0].as_str() {
+         Some("ObjectInverseOf") => translate_inverse_of(v,m), 
+         Some(_) => panic!(),
+         None => Value::String(String::from(v.as_str().unwrap())),
      }
 }
 
 pub fn is_object_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
 
-    let owl_operator : String ;
-
-    if let Value::Array(_) = v { 
-        owl_operator = v[0].to_string(); //compound expression
-    } else {
-        owl_operator = v.to_string();    //named entity
-    } 
-
-     match owl_operator.clone().as_str() {
-         "\"ObjectInverseOf\"" => true,
-         _ => object_type_look_up(owl_operator.clone(), m),
+     match v[0].as_str() { 
+         Some("ObjectInverseOf") => true,
+         Some(_) => panic!(),
+         None => object_type_look_up(v.to_string().clone(), m),
      } 
 }
 
@@ -35,7 +27,7 @@ pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bo
     } else { 
         let s = v.to_string();    //named entity
         match m.get(&s) {
-            Some(set) => set.contains("\"owl:DatatypeProperty\""),
+            Some(set) => set.contains("\"owl:DatatypeProperty\""),//we are using JSON Strings here
             _ => false, 
         }
     } 
