@@ -2,48 +2,78 @@ use serde_json::{Value};
 use crate::ofn2man::property_translation as property_translation;
 
 pub fn translate(v : &Value) -> String { 
-    let owl_operator: String = v[0].to_string();
+     match v[0].as_str() {
+         Some("ObjectSomeValuesFrom") => translate_some_values_from(v), 
+         Some("ObjectAllValuesFrom") => translate_all_values_from(v), 
+         Some("ObjectHasValue") => translate_has_value(v), 
+         Some("ObjectMinCardinality") => translate_min_cardinality(v), 
+         Some("ObjectMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
+         Some("ObjectMaxCardinality") => translate_max_cardinality(v), 
+         Some("ObjectMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
+         Some("ObjectExactCardinality") => translate_exact_cardinality(v), 
+         Some("ObjectExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+         Some("ObjectHasSelf") => translate_has_self(v), 
+         Some("ObjectIntersectionOf") => translate_intersection_of(v), 
+         Some("ObjectUnionOf") => translate_union_of(v), 
+         Some("ObjectOneOf") => translate_one_of(v), 
+         Some("ObjectComplementOf") => translate_complement_of(v), 
+         Some("ObjectInverseOf") => property_translation::translate_inverse_of(v), 
+         Some("DataSomeValuesFrom") => translate_some_values_from(v), 
+         Some("DataAllValuesFrom") => translate_all_values_from(v), 
+         Some("DataHasValue") => translate_has_value(v), 
+         Some("DataMinCardinality") => translate_min_cardinality(v), 
+         Some("DataMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
+         Some("DataMaxCardinality") => translate_max_cardinality(v), 
+         Some("DataMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
+         Some("DataExactCardinality") => translate_exact_cardinality(v), 
+         Some("DataExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+         Some("DataHasSelf") => translate_has_self(v), 
+         Some("DataIntersectionOf") => translate_intersection_of(v), 
+         Some("DataUnionOf") => translate_union_of(v), 
+         Some("DataOneOf") => translate_one_of(v), 
+         Some("DataComplementOf") => translate_complement_of(v), 
 
-     match owl_operator.as_str() {
-         "\"ObjectSomeValuesFrom\"" => translate_some_values_from(v), 
-         "\"ObjectAllValuesFrom\"" => translate_all_values_from(v), 
-         "\"ObjectHasValue\"" => translate_has_value(v), 
-         "\"ObjectMinCardinality\"" => translate_min_cardinality(v), 
-         "\"ObjectMinQualifiedCardinality\"" => translate_min_qualified_cardinality(v), 
-         "\"ObjectMaxCardinality\"" => translate_max_cardinality(v), 
-         "\"ObjectMaxQualifiedCardinality\"" => translate_max_qualified_cardinality(v), 
-         "\"ObjectExactCardinality\"" => translate_exact_cardinality(v), 
-         "\"ObjectExactQualifiedCardinality\"" => translate_exact_qualified_cardinality(v), 
-         "\"ObjectHasSelf\"" => translate_has_self(v), 
-         "\"ObjectIntersectionOf\"" => translate_intersection_of(v), 
-         "\"ObjectUnionOf\"" => translate_union_of(v), 
-         "\"ObjectOneOf\"" => translate_one_of(v), 
-         "\"ObjectComplementOf\"" => translate_complement_of(v), 
-         "\"ObjectInverseOf\"" => property_translation::translate_inverse_of(v), 
-         _ => v.to_string().replace("\"",""),//return named entity (without quotes)
-         //TODO: this way of removing quotes is somewhat crude
+         Some(_) => panic!(),
+         None => String::from(v.as_str().unwrap()),
      }
 } 
 
 pub fn is_named_class(v : &Value) -> bool { 
-    let owl_operator: String = v[0].to_string();
+    //let owl_operator: String = v[0].to_string();
 
-     match owl_operator.as_str() {
-         "\"ObjectSomeValuesFrom\"" => false, 
-         "\"ObjectAllValuesFrom\"" => false, 
-         "\"ObjectHasValue\"" => false, 
-         "\"ObjectMinCardinality\"" => false, 
-         "\"ObjectMinQualifiedCardinality\"" => false, 
-         "\"ObjectMaxCardinality\"" => false, 
-         "\"ObjectMaxQualifiedCardinality\"" => false, 
-         "\"ObjectExactCardinality\"" => false, 
-         "\"ObjectExactQualifiedCardinality\"" => false, 
-         "\"ObjectHasSelf\"" => false, 
-         "\"ObjectIntersectionOf\"" => false, 
-         "\"ObjectUnionOf\"" => false, 
-         "\"ObjectOneOf\"" => false, 
-         "\"ObjectComplementOf\"" => false, 
-         _ => true,
+     //match owl_operator.as_str() {
+
+    match v[0].as_str() {
+         Some("ObjectSomeValuesFrom") => false, 
+         Some("ObjectAllValuesFrom") => false, 
+         Some("ObjectHasValue") => false, 
+         Some("ObjectMinCardinality") => false, 
+         Some("ObjectMinQualifiedCardinality") => false, 
+         Some("ObjectMaxCardinality") => false, 
+         Some("ObjectMaxQualifiedCardinality") => false, 
+         Some("ObjectExactCardinality") => false, 
+         Some("ObjectExactQualifiedCardinality") => false, 
+         Some("ObjectHasSelf") => false, 
+         Some("ObjectIntersectionOf") => false, 
+         Some("ObjectUnionOf") => false, 
+         Some("ObjectOneOf") => false, 
+         Some("ObjectComplementOf") => false, 
+         Some("DataSomeValuesFrom") => false, 
+         Some("DataAllValuesFrom") => false, 
+         Some("DataHasValue") => false, 
+         Some("DataMinCardinality") => false, 
+         Some("DataMinQualifiedCardinality") => false, 
+         Some("DataMaxCardinality") => false, 
+         Some("DataMaxQualifiedCardinality") => false, 
+         Some("DataExactCardinality") => false, 
+         Some("DataExactQualifiedCardinality") => false, 
+         Some("DataHasSelf") => false, 
+         Some("DataIntersectionOf") => false, 
+         Some("DataUnionOf") => false, 
+         Some("DataOneOf") => false, 
+         Some("DataComplementOf") => false, 
+         Some(_) => panic!(),
+         None => true,
      } 
 }
 
