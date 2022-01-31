@@ -25,14 +25,15 @@ pub fn extract_class_expression_axioms(path : &str) -> Vec<Value> {
 
 fn is_class_expression_axiom(v: &Value) -> bool {
 
-    let predicate : String = v["predicate"].to_string();
+    let predicate = v["predicate"].as_str();
 
-     match predicate.as_str() {
-         "\"rdfs:subClassOf\""  => true,
-         "\"owl:equivalentClass\""  => true,
-         "\"owl:disjointWith\""  => true,
-         "\"owl:AllDisjointClasses\""  => true,
-         "\"owl:disjointUnionOf\""  => true,
-         _ => false,
+     match predicate {
+         Some("rdfs:subClassOf")  => true,
+         Some("owl:equivalentClass")  => true,
+         Some("owl:disjointWith")  => true,
+         Some("owl:AllDisjointClasses")  => true,
+         Some("owl:disjointUnionOf")  => true,
+         Some(_) => false,
+         None => false,
      } 
 }

@@ -1,12 +1,10 @@
 use serde_json::{Value};
 
-pub fn translate(v : &Value) -> String {
-
-    let owl_operator: String = v[0].to_string();
-
-     match owl_operator.as_str() {
-         "\"ObjectInverseOf\"" => translate_inverse_of(v), 
-         _ => v.to_string().replace("\"",""),//return named entity (without quotes)
+pub fn translate(v : &Value) -> String { 
+    match v[0].as_str() {
+         Some("ObjectInverseOf") => translate_inverse_of(v), 
+         Some(_) => panic!(),
+         None => String::from(v.as_str().unwrap()),//return named entity (without quotes)
      }
 }
 

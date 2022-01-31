@@ -28,8 +28,10 @@ pub fn extract_typing(path : &str) -> HashMap<String,HashSet<String>> {
 
 fn is_typing_triple(t: &str) -> bool {
     let thick_triple: Value = serde_json::from_str(t).unwrap(); 
-    let predicate : String = thick_triple["predicate"].to_string(); 
-     predicate == "\"rdf:type\"" 
+    //let predicate : String = thick_triple["predicate"].to_string(); 
+    //predicate == "\"rdf:type\"" 
+    let predicate : &str = thick_triple["predicate"].as_str().unwrap();
+    predicate.eq("rdf:type")
 }
 
 fn get_type_mapping(t: &str) -> (String, String) {

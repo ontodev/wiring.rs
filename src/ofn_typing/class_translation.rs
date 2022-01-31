@@ -71,7 +71,7 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
          Some("ObjectExactQualifiedCardinality") => true, 
          Some("ObjectHasSelf") => true,
 
-         //object (not that DataIntersections, etc. are NOT class expressions
+         //object (note that DataIntersections, etc. are NOT class expressions)
          Some("ObjectIntersectionOf") => true,
          Some("ObjectUnionOf") => true,
          Some("ObjectOneOf") => true,

@@ -1,5 +1,8 @@
 use serde_json::{Value};
 
+//extract language tags + datatypes
+//command line interface
+
 //extract prefixes occuring in an OFN S-expression
 pub fn get_prefixes(v : &Value) -> Vec<String> {
     let mut prefixes = Vec::new();
@@ -17,32 +20,32 @@ pub fn get_prefixes(v : &Value) -> Vec<String> {
 
 //extract signature of an OFN S-expression
 pub fn extract(v : &Value) -> Vec<Value> { 
-    let owl_operator: String = v[0].to_string(); 
 
-     let res = match owl_operator.as_str() {
+    let res = match v[0].as_str() {
          //TODO: ambiguous expressions?
-         "\"SubClassOf\"" => translate_subclass_of(v), 
-         "\"DisjointClasses\"" => translate_disjoint_classes(v), 
-         "\"DisjointUnionOf\"" => translate_disjoint_union_of(v), 
-         "\"EquivalentClasses\"" => translate_equivalent_classes(v), 
-         "\"ObjectSomeValuesFrom\"" => translate_some_values_from(v), 
-         "\"DataSomeValuesFrom\"" => translate_some_values_from(v), 
-         "\"ObjectAllValuesFrom\"" => translate_all_values_from(v), 
-         "\"ObjectHasValue\"" => translate_has_value(v), 
-         "\"ObjectMinCardinality\"" => translate_min_cardinality(v), 
-         "\"ObjectMinQualifiedCardinality\"" => translate_min_qualified_cardinality(v), 
-         "\"ObjectMaxCardinality\"" => translate_max_cardinality(v), 
-         "\"ObjectMaxQualifiedCardinality\"" => translate_max_qualified_cardinality(v), 
-         "\"ObjectExactCardinality\"" => translate_exact_cardinality(v), 
-         "\"DataExactCardinality\"" => translate_exact_cardinality(v), 
-         "\"ObjectExactQualifiedCardinality\"" => translate_exact_qualified_cardinality(v), 
-         "\"ObjectHasSelf\"" => translate_has_self(v), 
-         "\"ObjectIntersectionOf\"" => translate_intersection_of(v), 
-         "\"ObjectUnionOf\"" => translate_union_of(v), 
-         "\"ObjectOneOf\"" => translate_one_of(v), 
-         "\"ObjectComplementOf\"" => translate_complement_of(v), 
-         "\"ObjectInverseOf\"" => translate_inverse_of(v),
-         _ => vec!(Value::String(String::from(v.as_str().unwrap()))),
+         Some("SubClassOf") => translate_subclass_of(v), 
+         Some("DisjointClasses") => translate_disjoint_classes(v), 
+         Some("DisjointUnionOf") => translate_disjoint_union_of(v), 
+         Some("EquivalentClasses") => translate_equivalent_classes(v), 
+         Some("ObjectSomeValuesFrom") => translate_some_values_from(v), 
+         Some("DataSomeValuesFrom") => translate_some_values_from(v), 
+         Some("ObjectAllValuesFrom") => translate_all_values_from(v), 
+         Some("ObjectHasValue") => translate_has_value(v), 
+         Some("ObjectMinCardinality") => translate_min_cardinality(v), 
+         Some("ObjectMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
+         Some("ObjectMaxCardinality") => translate_max_cardinality(v), 
+         Some("ObjectMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
+         Some("ObjectExactCardinality") => translate_exact_cardinality(v), 
+         Some("DataExactCardinality") => translate_exact_cardinality(v), 
+         Some("ObjectExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+         Some("ObjectHasSelf") => translate_has_self(v), 
+         Some("ObjectIntersectionOf") => translate_intersection_of(v), 
+         Some("ObjectUnionOf") => translate_union_of(v), 
+         Some("ObjectOneOf") => translate_one_of(v), 
+         Some("ObjectComplementOf") => translate_complement_of(v), 
+         Some("ObjectInverseOf") => translate_inverse_of(v),
+         Some(_) => panic!(),
+         None => vec!(Value::String(String::from(v.as_str().unwrap()))),
      };
 
      dedup_vector(&res)
@@ -69,10 +72,8 @@ pub fn dedup_vector(v : &Vec<Value>) -> Vec<Value> {
         res.push(Value::String(String::from(s)));
     }
 
-    res
-
-}
-
+    res 
+} 
 
 pub fn translate_subclass_of(v : &Value) -> Vec<Value> {
 
