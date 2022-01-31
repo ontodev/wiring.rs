@@ -37,11 +37,9 @@ pub fn translate(v : &Value) -> owl::OWL {
         Some("DataOneOf") => translate_one_of(v), 
         Some("DataComplementOf") => translate_complement_of(v), 
         Some(_) => panic!(),
-        //None => owl::OWL::Named(v.to_string().replace("\"","")),//return named entity (without quotes)
-        None => owl::OWL::Named(String::from(v.as_str().unwrap())),//return named entity (without quotes)
-        //TODO: this way of removing quotes is somewhat crude
+        None => owl::OWL::Named(String::from(v.as_str().unwrap())),
     }
-} 
+}
 
 pub fn get_object(owl : owl::OWL) -> owl::Object {
     owl::Object{object : owl }
@@ -227,8 +225,6 @@ pub fn translate_list(v : &[Value]) -> owl::OWL {
                        rdf_rest : vec![rest_o]};
         owl::OWL::RDFList(res)
 
-        //println!("FINSH");//base case with rdf:nil
-        //owl::OWL::Named("owl:Restriction".to_string()) 
     } else { 
 
         let first: owl::OWL = translate(&v[0]); 

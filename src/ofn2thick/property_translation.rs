@@ -3,12 +3,11 @@ use crate::owl::typing as owl;
 
 pub fn translate(v : &Value) -> owl::OWL {
 
-    let owl_operator: String = v[0].to_string();
-
-     match owl_operator.as_str() {
-         "\"ObjectInverseOf\"" => translate_inverse_of(v), 
-         _ => owl::OWL::Named(v.to_string().replace("\"","")),//return named entity (without quotes)
-     }
+    match v[0].as_str() {
+        Some("ObjectInverseOf") => translate_inverse_of(v), 
+        Some(_) => panic!(),
+        None => owl::OWL::Named(String::from(v.as_str().unwrap())),
+    }
 }
 
 pub fn translate_inverse_of(v : &Value) -> owl::OWL {

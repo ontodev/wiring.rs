@@ -1,7 +1,7 @@
 use serde_json::{Value};
 use crate::ofn2thick::axiom_translation as axiom_translation; 
 
-pub fn parse_ofn(t: &str) -> String {
+pub fn parse_ofn(t: &str) -> Value {
     //deserialise JSON as a (serde) Value
     let thick_triple: Value = serde_json::from_str(t).unwrap(); 
     //start the translation process
@@ -9,17 +9,15 @@ pub fn parse_ofn(t: &str) -> String {
     out 
 }
 
-pub fn translate_triple(v : &Value) -> String {
+pub fn translate_triple(v : &Value) -> Value {
 
-    let owl_operator: String = v[0].to_string();
+     match v[0].as_str() {
+         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v),
+         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
+         Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v),
+         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v),
+         Some(_) => panic!(),
+         None => panic!(),
+     }
 
-     let res : String = match owl_operator.as_str() {
-         "\"SubClassOf\"" => axiom_translation::translate_subclass_of_axiom(v),
-         "\"DisjointClasses\"" => axiom_translation::translate_disjoint_classes_axiom(v),
-         "\"DisjointUnionOf\"" => axiom_translation::translate_disjoint_union_of_axiom(v),
-         "\"EquivalentClasses\"" => axiom_translation::translate_equivalent_classes_axiom(v),
-         _ => v.to_string(),//return named entity TODO: this should be an error
-     };
-
-     res
 } 
