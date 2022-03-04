@@ -179,34 +179,13 @@ pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality)
     Value::Array(v)
 } 
 
-//THIS is an AXIOM
 pub fn translate_members(s: &owl::Members) -> Value { 
 
-    //extract opertor
-    let rdf_type = match &s.rdf_type {
-        Some(x) => match &x[0].object {
-            owl::OWL::Named(t) => String::from(t),  //match on type
-            _ => String::from("Error"), 
-        }
-        None => String::from("Error"),
-    };
+    translate(&s.members[0].object)
 
-    let operator =  match rdf_type.as_str() {
-        "owl:AllDisjointClasses" => Value::String(String::from("DisjointClasses")),
-        "owl:AllDisjointProperties" => Value::String(String::from("DisjointProperties")),
-        "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")), 
-        _ => Value::String(String::from("Error")),
-    };
-
-    let mut members = translate(&s.members[0].object);
-
-    let mut expression = vec![operator];
-    let arguments = members.as_array_mut().unwrap();
-    expression.append(arguments);
-    Value::Array(expression.to_vec()) 
 }
 
-//THIS is an AXIOM
+//TODO: this translation is for an AXIOM (and needs to be refactored)
 pub fn translate_distinct_members(s: &owl::DistinctMembers) -> Value { 
     //extract opertor
     let rdf_type = match &s.rdf_type {
