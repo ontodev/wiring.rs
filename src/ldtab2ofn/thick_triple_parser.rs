@@ -15,11 +15,11 @@ struct Statement {
     annotation: Option<String>,
 }
 
-pub fn translate() -> Result<()> {
+pub fn get_entity(databse: &str, subject: &str) -> Vec<Value> {
 
-    let mut conn = Connection::open("a.db")?;
-    //TODO: query for specific subjects instead of everything
-    let statements = get_statements(&mut conn).expect("Get statements");
+    let mut conn = Connection::open(databse).unwrap();
+    let statements = get_statements(&mut conn, subject).expect("Get statements");
+    let mut axioms = Vec::new();
 
     for statement in statements.iter() { 
 
@@ -28,23 +28,20 @@ pub fn translate() -> Result<()> {
         let object = statement.object.as_str(); 
 
         let subject_json = parse_thick_triple(subject); 
-        //let predicate_json = parse_thick_triple(predicate); 
         let object_json = parse_thick_triple(object);
 
-        let ofn = match predicate {
+        let ofn_expression = match predicate {
            "rdfs:subClassOf"  => axiom_translation::translate_subclass_of_axiom(&subject_json, &object_json),
            "owl:equivalentClass" => axiom_translation::translate_equivalent_class(&subject_json, &object_json),
            "owl:AllDisjointClasses" => axiom_translation::translate_disjoint_classes(&object_json),
            "owl:disjointUnionOf" => axiom_translation::translate_disjoint_union(&subject_json,&object_json),
            "owl:disjointWith" => axiom_translation::translate_disjoint_with(&subject_json, &object_json), 
             _ => axiom_translation::translate_thin_triple(subject, predicate, object),
-            //_ => Value::String(String::from("Fail")),
         };
 
-        println!("OFN-2: {}", ofn); 
-    } 
-
-    Ok(()) 
+        axioms.push(ofn_expression);
+    }
+    axioms
 }
 
 fn parse_thick_triple(triple : &str) -> tt::OWL {
@@ -56,9 +53,11 @@ fn parse_thick_triple(triple : &str) -> tt::OWL {
     } 
 }
 
-fn get_statements(conn: &mut Connection) -> Result<Vec<Statement>> {
+fn get_statements(conn: &mut Connection, subject: &str) -> Result<Vec<Statement>> {
 
-    let mut stmt = conn.prepare("SELECT * FROM statement")?;
+    let query: String = format!("SELECT * FROM statement WHERE subject='{}'", subject);
+
+    let mut stmt = conn.prepare(query.as_str())?;
     let mut rows = stmt.query(params![])?;
     let mut prefixes = Vec::new();
     while let Some(row) = rows.next()? {
