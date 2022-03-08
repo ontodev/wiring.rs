@@ -77,7 +77,7 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
          Some("ObjectOneOf") => true,
          Some("ObjectComplementOf") => true,
          Some(_) => panic!(),  //there is no data inverse
-         None => type_look_up(v.to_string().clone(), m),
+         None => type_look_up(v.as_str().unwrap(), m),
      }
 }
 
@@ -86,9 +86,10 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
 //
 //}
 
-pub fn type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
-    match m.get(&s) {
-        Some(set) => set.contains("\"owl:Class\""),
+pub fn type_look_up(s : &str, m: &HashMap<String, HashSet<String>>) -> bool { 
+
+    match m.get(s) {
+        Some(set) => set.contains("owl:Class"),
         _ => false,
     }
 }

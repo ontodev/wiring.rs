@@ -37,8 +37,21 @@ fn is_typing_triple(t: &str) -> bool {
 fn get_type_mapping(t: &str) -> (String, String) {
 
     let thick_triple: Value = serde_json::from_str(t).unwrap(); 
-    let subj_helper : String  = thick_triple["subject"].to_string(); 
-    let obj_helper : String  = thick_triple["object"].to_string();
 
-    (subj_helper, obj_helper) 
+    //let subj_helper : String  = thick_triple["subject"].to_string(); 
+    //let obj_helper : String  = thick_triple["object"].to_string();
+    //(subj_helper, obj_helper) 
+
+    let subject = match thick_triple["subject"].as_str() {
+        Some(s) => String::from(s),
+        None => thick_triple["subject"].to_string(), 
+    };
+
+    let object = match thick_triple["object"].as_str() {
+        Some(s) => String::from(s),
+        None => thick_triple["object"].to_string(), 
+    };
+
+    (subject, object) 
+
 }
