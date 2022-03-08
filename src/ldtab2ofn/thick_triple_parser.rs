@@ -15,10 +15,9 @@ struct Statement {
     annotation: Option<String>,
 }
 
-pub fn get_entity(databse: &str, subject: &str) -> Vec<Value> {
+pub fn get_entity(conn: &mut Connection, subject: &str) -> Vec<Value> {
 
-    let mut conn = Connection::open(databse).unwrap();
-    let statements = get_statements(&mut conn, subject).expect("Get statements");
+    let statements = get_statements(conn, subject).expect("Get statements");
     let mut axioms = Vec::new();
 
     for statement in statements.iter() { 
