@@ -22,7 +22,6 @@ pub fn get_prefixes(v : &Value) -> Vec<String> {
 pub fn extract(v : &Value) -> Vec<Value> { 
 
     let res = match v[0].as_str() {
-         //TODO: ambiguous expressions?
          Some("SubClassOf") => translate_subclass_of(v), 
          Some("DisjointClasses") => translate_disjoint_classes(v), 
          Some("DisjointUnionOf") => translate_disjoint_union_of(v), 
@@ -44,6 +43,18 @@ pub fn extract(v : &Value) -> Vec<Value> {
          Some("ObjectOneOf") => translate_one_of(v), 
          Some("ObjectComplementOf") => translate_complement_of(v), 
          Some("ObjectInverseOf") => translate_inverse_of(v),
+
+         //ambiguous expressions
+         Some("SomeValuesFrom") => translate_some_values_from(v),
+         Some("AllValuesFrom") =>  translate_all_values_from(v), 
+         Some("HasValue") => translate_has_value(v), 
+         Some("MinCardinality") => translate_min_cardinality(v), 
+         Some("MaxCardinality") => translate_max_cardinality(v), 
+         Some("ExactCardinality") => translate_exact_cardinality(v), 
+         Some("IntersectionOf") => translate_intersection_of(v), 
+         Some("UnionOf") => translate_union_of(v), 
+         Some("OneOf") => translate_one_of(v), 
+         Some("ComplementOf") => translate_complement_of(v), 
          Some(_) => panic!(),
          None => vec!(Value::String(String::from(v.as_str().unwrap()))),
      };
