@@ -9,18 +9,21 @@ use std::collections::HashMap;
 
 pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> Value {
     //substitute is only called when v is a string
-    let element : String = v.to_string();
+    //let element : String = v.to_string();
+
+    let element = match v.as_str() {
+        Some(s) => String::from(s),
+        None => v.to_string(), 
+    };
+
     if e2l.contains_key(&element) {
-        let inter = e2l.get(&element).unwrap().as_str();
-        let l = inter.len();
-        let inter = &inter[1..l-1];//remove enclosing double quotes
-        let single_quote = format!("'{}'", &inter); //introduce single quotes
+        let label = e2l.get(&element).unwrap().as_str(); 
+        let single_quote = format!("'{}'", &label); //introduce single quotes
         Value::String(String::from(single_quote)) 
     } else {
-        let inter = element.as_str();
-        let l = inter.len();
-        let single_quote = &inter[1..l-1]; 
-        Value::String(String::from(single_quote)) 
+        //return input
+        let iri = element.as_str();
+        Value::String(String::from(iri)) 
     }
 }
 
@@ -55,9 +58,15 @@ fn get_label_mapping(t: &str) -> (String, String) {
 
     let thick_triple: Value = serde_json::from_str(t).unwrap();
 
-    let subj_helper : String  = thick_triple["subject"].to_string();
+    let subject = match thick_triple["subject"].as_str() {
+        Some(s) => String::from(s),
+        None => thick_triple["subject"].to_string(), 
+    };
 
-    let obj_helper : String  = thick_triple["object"].to_string();
+    let object = match thick_triple["object"].as_str() {
+        Some(s) => String::from(s),
+        None => thick_triple["object"].to_string(), 
+    };
 
-    (subj_helper, obj_helper) 
+    (subject, object) 
 }
