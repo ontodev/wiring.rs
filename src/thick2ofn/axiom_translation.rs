@@ -82,4 +82,19 @@ pub fn translate_disjoint_union(u: &str, ops: &str) -> Value {
     Value::Array(union.to_vec())
 }
 
+pub fn translate_thin_triple(v : &Value) -> Value {
+
+    let s = v["subject"].as_str().unwrap();
+    let p = v["predicate"].as_str().unwrap();
+    let o = v["object"].as_str().unwrap();
+
+    let subject = Value::String(String::from(s));
+    let predicate = Value::String(String::from(p));
+    let object = Value::String(String::from(o));
+
+    let operator = Value::String(String::from("ThinTriple"));
+    let v = vec![operator, subject, predicate, object];
+    Value::Array(v) 
+}
+
 

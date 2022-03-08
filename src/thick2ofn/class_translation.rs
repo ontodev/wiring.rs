@@ -188,8 +188,7 @@ pub fn translate_list(s: &owl::RDFList) -> Value {
     } else {
         //lists (serde arrays) are build up recursively.
         //So, if first = f and rest = [r1, r2], then
-        //we want to return [f, r1, r2] instead of 
-        //[f, [r1, r2]], unless r1 is a class expression constructor
+        //we want to return [f, r1, r2] instead of [f, [r1, r2]]
         let mut v = Vec::new();
         v.push(first); 
         let r = rest.as_array_mut().unwrap();

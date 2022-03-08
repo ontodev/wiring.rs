@@ -42,7 +42,7 @@ pub fn parse_triple(t: &str) -> Value {
             }, 
         Some("owl:disjointUnionOf") => axiom_translation::translate_disjoint_union(subj, obj),
         Some("owl:disjointWith") => axiom_translation::translate_disjoint_with(subj, obj),
-        Some(_) => panic!(),
+        Some(_) => axiom_translation::translate_thin_triple(&thick_triple),
         None => Value::String(String::from("Fail")),
     } 
 } 
