@@ -3,8 +3,6 @@ use crate::ofn_labeling::class_translation as class_translation; //TODO: class t
 use std::collections::HashMap;
 
 
-
-//todo return expression
 pub fn translate_subclass_of_axiom(v : &Value, m : &HashMap<String,String>) -> Value {
 
     //translate OWL classes
@@ -15,6 +13,19 @@ pub fn translate_subclass_of_axiom(v : &Value, m : &HashMap<String,String>) -> V
     let v = vec![operator, subclass, superclass];
     Value::Array(v) 
 }
+
+pub fn translate_thin_triple(v : &Value, m : &HashMap<String,String>) -> Value {
+
+    //NB: we are abusing the class_translation methods to translate named entities
+    let subject : Value = class_translation::translate(&v[1], m);
+    let predicate : Value = class_translation::translate(&v[2], m); 
+    let object : Value = class_translation::translate(&v[2], m); 
+
+    let operator = Value::String(String::from("ThinTriples"));
+    let v = vec![operator, subject, predicate, object];
+    Value::Array(v) 
+}
+
 
 pub fn translate_disjoint_classes_axiom(v : &Value, m : &HashMap<String,String>) -> Value {
 

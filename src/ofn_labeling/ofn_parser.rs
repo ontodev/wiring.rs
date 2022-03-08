@@ -12,6 +12,7 @@ pub fn parse_ofn(v: &Value, m : &HashMap<String,String>) -> Value {
         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v,m),
         Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v,m),
         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v,m),
+        Some("ThinTriple") => axiom_translation::translate_thin_triple(v,m),
         Some(_) => panic!(),
         None => Value::String(String::from(v.as_str().unwrap())),
     }
