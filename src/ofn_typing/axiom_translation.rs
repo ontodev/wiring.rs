@@ -56,3 +56,29 @@ pub fn translate_equivalent_classes_axiom(v : &Value, m : &HashMap<String,HashSe
         Value::Array(v) 
     }
 }
+
+//TODO: need to distinguish:
+//-types
+//-Object Property Assertions
+//-Data Property Assertions
+//-Annotation assertions
+//-same as 
+//-property axioms ...
+//
+//the type cannot always be determined by looking at the predicate alone
+//so, we need to use the type look-up table here as well
+pub fn translate_thin_triple(v : &Value) -> Value {
+    //this just creates a copy of an OFN-S thin triple
+    let s = v[1].as_str().unwrap();
+    let p = v[2].as_str().unwrap();
+    let o = v[3].as_str().unwrap();
+
+    let subject = Value::String(String::from(s));
+    let predicate = Value::String(String::from(p));
+    let object = Value::String(String::from(o));
+
+    let operator = Value::String(String::from("ThinTriple"));
+    let v = vec![operator, subject, predicate, object];
+    Value::Array(v) 
+
+}
