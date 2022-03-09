@@ -1,4 +1,5 @@
 pub mod thick2ofn;
+pub mod ofn_util;
 pub mod ofn_typing;
 pub mod ofn_labeling;
 pub mod ofn2man;
