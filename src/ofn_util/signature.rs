@@ -55,6 +55,8 @@ pub fn extract(v : &Value) -> Vec<Value> {
          Some("UnionOf") => translate_union_of(v), 
          Some("OneOf") => translate_one_of(v), 
          Some("ComplementOf") => translate_complement_of(v), 
+
+         Some("ThinTriple") => translate_thin_triple(v), 
          Some(_) => panic!(),
          None => vec!(Value::String(String::from(v.as_str().unwrap()))),
      };
@@ -85,6 +87,21 @@ pub fn dedup_vector(v : &Vec<Value>) -> Vec<Value> {
 
     res 
 } 
+
+pub fn translate_thin_triple(v :&Value) -> Vec<Value> {
+    let mut res = Vec::new(); 
+
+    let mut subject = extract(&v[1]); 
+    let mut predicate = extract(&v[2]); 
+    let mut object = extract(&v[3]); 
+
+    res.append(&mut subject);
+    res.append(&mut predicate);
+    res.append(&mut object);
+
+    res 
+
+}
 
 pub fn translate_subclass_of(v : &Value) -> Vec<Value> {
 
