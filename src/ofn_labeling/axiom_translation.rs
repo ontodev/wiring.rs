@@ -21,7 +21,7 @@ pub fn translate_thin_triple(v : &Value, m : &HashMap<String,String>) -> Value {
     let predicate : Value = class_translation::translate(&v[2], m); 
     let object : Value = class_translation::translate(&v[2], m); 
 
-    let operator = Value::String(String::from("ThinTriples"));
+    let operator = Value::String(String::from("ThinTriple"));
     let v = vec![operator, subject, predicate, object];
     Value::Array(v) 
 }
