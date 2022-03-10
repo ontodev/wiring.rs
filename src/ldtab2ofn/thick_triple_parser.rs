@@ -56,7 +56,7 @@ fn parse_thick_triple_object(object : &str) -> tt::OWL {
     } 
 }
 
-fn parse_thick_triple(subject: &str, predicate: &str, object: &str) -> Value {
+pub fn parse_thick_triple(subject: &str, predicate: &str, object: &str) -> Value {
 
     let subject_json = parse_thick_triple_object(subject); 
     let object_json = parse_thick_triple_object(object); 
