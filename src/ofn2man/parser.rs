@@ -16,6 +16,7 @@ pub fn translate_triple(v : &Value) -> String {
          Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
          Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v),
          Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v),
+         Some("ThinTriple") => axiom_translation::translate_thin_triple(v),
          Some(_) => panic!(),
          None => panic!(),
      }

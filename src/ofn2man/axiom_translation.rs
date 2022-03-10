@@ -1,6 +1,18 @@
 use serde_json::{Value};
 use crate::ofn2man::class_translation as class_translation; 
 
+pub fn translate_thin_triple(v : &Value) -> String {
+
+    //translate OWL classes
+    let subject = String::from(v[1].as_str().unwrap());
+    let predicate = String::from(v[2].as_str().unwrap());
+    let object = String::from(v[3].as_str().unwrap());
+
+    //putting it all together
+    let expression = format!("ThinTriple: {} {} {}", subject, predicate, object);
+    expression
+}
+
 pub fn translate_subclass_of_axiom(v : &Value) -> String {
 
     //translate OWL classes
