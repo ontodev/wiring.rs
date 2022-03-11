@@ -6,4 +6,3 @@ pub mod ldtab2ofn;
 pub mod ofn2man;
 pub mod ofn2thick;
 pub mod owl;
-mod python_module;
