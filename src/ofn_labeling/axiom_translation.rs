@@ -19,7 +19,7 @@ pub fn translate_thin_triple(v : &Value, m : &HashMap<String,String>) -> Value {
     //NB: we are abusing the class_translation methods to translate named entities
     let subject : Value = class_translation::translate(&v[1], m);
     let predicate : Value = class_translation::translate(&v[2], m); 
-    let object : Value = class_translation::translate(&v[2], m); 
+    let object : Value = class_translation::translate(&v[3], m); 
 
     let operator = Value::String(String::from("ThinTriple"));
     let v = vec![operator, subject, predicate, object];
