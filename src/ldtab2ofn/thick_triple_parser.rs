@@ -2,7 +2,7 @@ use serde_json::{Value, Result as SResult};
 use crate::owl::thick_triple as tt;
 use crate::ldtab2ofn::axiom_translation as axiom_translation; 
 
-fn parse_thick_triple_object(object : &str) -> tt::OWL {
+pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
     let triple_json: SResult<tt::OWL> = serde_json::from_str(object); 
 
     match triple_json {
