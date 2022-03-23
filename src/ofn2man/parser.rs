@@ -13,6 +13,7 @@ pub fn parse_ofn(t: &str) -> String {
 
 pub fn translate_triple(v : &Value) -> String {
 
+
     match v[0].as_str() {
          Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v),
          Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
@@ -51,6 +52,6 @@ pub fn translate_triple(v : &Value) -> String {
 
          Some("ObjectInverseOf") => property_translation::translate_inverse_of(v), 
          Some(_) => panic!(),
-         None => panic!(),
+         None => String::from(v.as_str().unwrap()), //named entity
      }
 }
