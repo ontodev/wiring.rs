@@ -1,7 +1,5 @@
 use serde_json::{Value};
 use serde_json::json; 
-use crate::owl::typing as owl;
-use std::collections::HashMap;
 use crate::ofn_2_rdfa::class_translation as class_translation; 
 
 pub fn is_named_class(ofn: &Value) -> bool {

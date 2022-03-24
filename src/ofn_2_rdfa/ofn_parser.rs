@@ -1,6 +1,5 @@
 use serde_json::{Value};
 use serde_json::json; 
-use std::collections::HashMap;
 
 use crate::ofn_2_rdfa::axiom_translation as axiom_translation; 
 

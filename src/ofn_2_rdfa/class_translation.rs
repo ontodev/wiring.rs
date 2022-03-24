@@ -1,6 +1,5 @@
 use serde_json::{Value};
 use serde_json::json; 
-use std::collections::HashMap; 
 
 //TODO: need to encode literals differntly from named entities? 
 
