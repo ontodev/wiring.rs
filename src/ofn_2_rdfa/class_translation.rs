@@ -49,70 +49,62 @@ pub fn is_named_class(ofn: &Value) -> bool {
     } 
 }
 
-pub fn translate(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
+pub fn translate(ofn: &Value, rdfa_property: Option<&str>) -> Value {
 
      match ofn[0].as_str() {
-         Some("ObjectSomeValuesFrom") => translate_some_values_from(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectAllValuesFrom") => translate_all_values_from(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectMinCardinality") => translate_min_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectMinQualifiedCardinality") => translate_min_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectMaxCardinality") => translate_max_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectMaxQualifiedCardinality") => translate_max_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectExactCardinality") => translate_exact_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectExactQualifiedCardinality") => translate_exact_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectHasValue") => translate_has_value(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectHasSelf") => translate_has_self(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectIntersectionOf") => translate_intersection_of(ofn, subject_2_label, rdfa_property), 
-         Some("ObjectUnionOf") => translate_union_of(ofn,subject_2_label,rdfa_property), 
-         Some("ObjectOneOf") => translate_one_of(ofn,subject_2_label,rdfa_property), 
-         Some("ObjectComplementOf") => translate_complement_of(ofn,subject_2_label,rdfa_property), 
+         Some("ObjectSomeValuesFrom") => translate_some_values_from(ofn, rdfa_property), 
+         Some("ObjectAllValuesFrom") => translate_all_values_from(ofn, rdfa_property), 
+         Some("ObjectMinCardinality") => translate_min_cardinality(ofn, rdfa_property), 
+         Some("ObjectMinQualifiedCardinality") => translate_min_qualified_cardinality(ofn, rdfa_property), 
+         Some("ObjectMaxCardinality") => translate_max_cardinality(ofn, rdfa_property), 
+         Some("ObjectMaxQualifiedCardinality") => translate_max_qualified_cardinality(ofn, rdfa_property), 
+         Some("ObjectExactCardinality") => translate_exact_cardinality(ofn, rdfa_property), 
+         Some("ObjectExactQualifiedCardinality") => translate_exact_qualified_cardinality(ofn, rdfa_property), 
+         Some("ObjectHasValue") => translate_has_value(ofn, rdfa_property), 
+         Some("ObjectHasSelf") => translate_has_self(ofn, rdfa_property), 
+         Some("ObjectIntersectionOf") => translate_intersection_of(ofn, rdfa_property), 
+         Some("ObjectUnionOf") => translate_union_of(ofn, rdfa_property), 
+         Some("ObjectOneOf") => translate_one_of(ofn,rdfa_property), 
+         Some("ObjectComplementOf") => translate_complement_of(ofn,rdfa_property), 
 
-         Some("ObjectInverseOf") => translate_inverse_of(ofn,subject_2_label,rdfa_property), 
+         Some("ObjectInverseOf") => translate_inverse_of(ofn,rdfa_property), 
 
-         Some("DataSomeValuesFrom") => translate_some_values_from(ofn, subject_2_label, rdfa_property), 
-         Some("DataAllValuesFrom") => translate_all_values_from(ofn, subject_2_label, rdfa_property), 
-         Some("DataMinCardinality") => translate_min_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataMinQualifiedCardinality") => translate_min_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataMaxCardinality") => translate_max_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataMaxQualifiedCardinality") => translate_max_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataExactCardinality") => translate_exact_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataExactQualifiedCardinality") => translate_exact_qualified_cardinality(ofn, subject_2_label, rdfa_property), 
-         Some("DataHasValue") => translate_has_value(ofn, subject_2_label, rdfa_property), 
-         Some("DataHasSelf") => translate_has_self(ofn, subject_2_label, rdfa_property), 
-         Some("DataIntersectionOf") => translate_intersection_of(ofn, subject_2_label, rdfa_property), 
-         Some("DataUnionOf") => translate_union_of(ofn,subject_2_label,rdfa_property), 
-         Some("DataOneOf") => translate_one_of(ofn,subject_2_label,rdfa_property), 
-         Some("DataComplementOf") => translate_complement_of(ofn,subject_2_label,rdfa_property), 
+         Some("DataSomeValuesFrom") => translate_some_values_from(ofn, rdfa_property), 
+         Some("DataAllValuesFrom") => translate_all_values_from(ofn, rdfa_property), 
+         Some("DataMinCardinality") => translate_min_cardinality(ofn, rdfa_property), 
+         Some("DataMinQualifiedCardinality") => translate_min_qualified_cardinality(ofn, rdfa_property), 
+         Some("DataMaxCardinality") => translate_max_cardinality(ofn, rdfa_property), 
+         Some("DataMaxQualifiedCardinality") => translate_max_qualified_cardinality(ofn, rdfa_property), 
+         Some("DataExactCardinality") => translate_exact_cardinality(ofn, rdfa_property), 
+         Some("DataExactQualifiedCardinality") => translate_exact_qualified_cardinality(ofn, rdfa_property), 
+         Some("DataHasValue") => translate_has_value(ofn, rdfa_property), 
+         Some("DataHasSelf") => translate_has_self(ofn, rdfa_property), 
+         Some("DataIntersectionOf") => translate_intersection_of(ofn, rdfa_property), 
+         Some("DataUnionOf") => translate_union_of(ofn, rdfa_property), 
+         Some("DataOneOf") => translate_one_of(ofn,rdfa_property), 
+         Some("DataComplementOf") => translate_complement_of(ofn,rdfa_property), 
 
          Some(_) => json!("currently not supported"), //use instead of panicing for convenience
          //Some(_) => panic!(),
-         None => base_translation(ofn, subject_2_label, rdfa_property),
+         None => base_translation(ofn,  rdfa_property),
      }
 }
 
 
-pub fn base_translation(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
+pub fn base_translation(ofn: &Value, rdfa_property: Option<&str>) -> Value {
     let named_entity = ofn.as_str().unwrap();
-    if subject_2_label.contains_key(named_entity) {
-        let label = subject_2_label.get(named_entity).unwrap().as_str();
-        match rdfa_property {
-            Some(p) => json!(["a", {"property":p, "resource":named_entity}, label]), 
-            None => json!(["a", {"resource":named_entity}, label]),
-        }
-    } else {
-        match rdfa_property {
-            Some(p) => json!(["a", {"property":p,"resource":named_entity}, named_entity]),
-            None => json!(["a", {"resource":named_entity}, named_entity]), 
-        }
+    match rdfa_property {
+        Some(p) => json!(["a", {"property":p,"resource":named_entity}, named_entity]),
+        None => json!(["a", {"resource":named_entity}, named_entity]), 
     }
 }
 
-pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,String>, modifier: Value) -> Value{
+pub fn translate_list(arguments: Vec<Value>,  modifier: Value) -> Value{
     //1. reverse array 
     let y: Vec<_> = arguments.into_iter().rev().collect();
 
     //build first element
-    let first = translate(&y[0], subject_2_label, None);
+    let first = translate(&y[0], None);
     let mut list;
     if is_named_class(&y[0]) {
         list = json!(["span", {"property":"rdf:rest", "typeof":"rdf:List"},modifier,first,["span",{"resource":"rdf:nil", "property":"rdf:rest"}]] );
@@ -122,7 +114,7 @@ pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,St
 
     //build middle elements
     for arg in y[1..y.len()-1].iter() {
-        let t_arg = translate(&arg, subject_2_label, Some("rdf:first"));
+        let t_arg = translate(&arg, Some("rdf:first"));
         if is_named_class(&arg) {
             list = json!(["span",{"property":"rdf:rest","typeof":"rdf:List"},modifier,t_arg,list]);
         } else { 
@@ -131,7 +123,7 @@ pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,St
     } 
 
     //build last element
-    let last = translate(&y[y.len()-1], subject_2_label, Some("rdf:first"));
+    let last = translate(&y[y.len()-1], Some("rdf:first"));
     if is_named_class(&y[y.len()-1]) {
         list = json!(["span",last,list]);
     } else {
@@ -141,11 +133,11 @@ pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,St
 }
 
 
-pub fn translate_intersection_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
+pub fn translate_intersection_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
     let modifier = json!("and");
-    let ops = translate_list(operands, subject_2_label, modifier);
+    let ops = translate_list(operands, modifier);
 
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},"(",ops,")"]]),
@@ -153,11 +145,11 @@ pub fn translate_intersection_of(ofn: &Value, subject_2_label: &HashMap<String,S
     }
 }
 
-pub fn translate_union_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
+pub fn translate_union_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
     let modifier = json!("or");
-    let ops = translate_list(operands, subject_2_label, modifier);
+    let ops = translate_list(operands, modifier);
 
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},["span",{"property":"owl:unionOf","typeof":"rdf:List"},"(",ops,")"]]),
@@ -165,11 +157,11 @@ pub fn translate_union_of(ofn: &Value, subject_2_label: &HashMap<String,String>,
     }
 }
 
-pub fn translate_one_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
+pub fn translate_one_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
     let modifier = json!("");
-    let ops = translate_list(operands, subject_2_label, modifier);
+    let ops = translate_list(operands, modifier);
 
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},["span",{"property":"owl:oneOf","typeof":"rdf:List"},"{",ops,"}"]]),
@@ -240,21 +232,21 @@ pub fn span_opening(ofn: &Value, property : &str) -> Value {
     }
 } 
 
-pub fn label_substitution(named_class: &str, subject_2_label: &HashMap<String,String>) -> String {
+//pub fn label_substitution(named_class: &str, subject_2_label: &HashMap<String,String>) -> String {
+//
+//    let element = String::from(named_class);
+//
+//    if subject_2_label.contains_key(&element) {
+//        String::from(subject_2_label.get(&element).unwrap().as_str())
+//    } else {
+//        element
+//    }
+//}
 
-    let element = String::from(named_class);
-
-    if subject_2_label.contains_key(&element) {
-        String::from(subject_2_label.get(&element).unwrap().as_str())
-    } else {
-        element
-    }
-}
-
-pub fn translate_complement_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_complement_of(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let argument = translate(&ofn[1], subject_2_label, Some("owl:complementOf"));
+    let argument = translate(&ofn[1], Some("owl:complementOf"));
 
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},"not","(",argument,")"]),
@@ -262,10 +254,10 @@ pub fn translate_complement_of(ofn: &Value, subject_2_label: &HashMap<String,Str
     } 
 }
 
-pub fn translate_inverse_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_inverse_of(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let argument = translate(&ofn[1], subject_2_label, Some("owl:inverseOf"));
+    let argument = translate(&ofn[1], Some("owl:inverseOf"));
 
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},"inverse","(",argument,")"]),
@@ -274,12 +266,12 @@ pub fn translate_inverse_of(ofn: &Value, subject_2_label: &HashMap<String,String
 }
 
 
-pub fn translate_some_values_from(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_some_values_from(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("some"));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:someValuesFrom")); 
+    let filler = translate(&ofn[2], Some("owl:someValuesFrom")); 
 
     //check whether the filler of this expression is atomic or nested further
     if ofn[2].is_array() {
@@ -290,12 +282,12 @@ pub fn translate_some_values_from(ofn: &Value, subject_2_label: &HashMap<String,
     } 
 }
 
-pub fn translate_has_value(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_has_value(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("value"));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:hasValue")); 
+    let filler = translate(&ofn[2], Some("owl:hasValue")); 
 
     //check whether the filler of this expression is atomic or nested further
     if ofn[2].is_array() {
@@ -306,10 +298,10 @@ pub fn translate_has_value(ofn: &Value, subject_2_label: &HashMap<String,String>
     } 
 }
 
-pub fn translate_has_self(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_has_self(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("some Self"));
     let filler = json!(["span", {"property":"owl:hasSelf", "hidden":"true"}, "true^^xsd:boolean"]); 
 
@@ -322,12 +314,12 @@ pub fn translate_has_self(ofn: &Value, subject_2_label: &HashMap<String,String>,
     } 
 }
 
-pub fn translate_all_values_from(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_all_values_from(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("only"));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
+    let filler = translate(&ofn[2], Some("owl:allValuesFrom")); 
 
     if ofn[2].is_array() {
         render_restriction_nested(&property, &modifier, &filler, rdfa_property) 
@@ -336,10 +328,10 @@ pub fn translate_all_values_from(ofn: &Value, subject_2_label: &HashMap<String,S
     } 
 }
 
-pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_min_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("min"));
 
     //encode cardinality
@@ -358,10 +350,10 @@ pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
     } 
 }
 
-pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_min_qualified_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("min"));
 
     //encode cardinality
@@ -371,7 +363,7 @@ pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     //number.push_str("^^xsd:nonNegativeInteger");
     let card = json!(["span", {"property":"owl:minQualifiedCardinality"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3], Some("owl:onClass")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
@@ -380,10 +372,10 @@ pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     } 
 }
 
-pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_max_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("max"));
 
     //encode cardinality
@@ -402,10 +394,10 @@ pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
     } 
 }
 
-pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_max_qualified_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("max"));
 
     //encode cardinality
@@ -415,7 +407,7 @@ pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     //number.push_str("^^xsd:nonNegativeInteger");
     let card = json!(["span", {"property":"owl:maxQualifiedCardinality"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3], Some("owl:onClass")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
@@ -424,10 +416,10 @@ pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     } 
 }
 
-pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_exact_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("exactly"));
 
     //encode cardinality
@@ -446,10 +438,10 @@ pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String
     } 
 }
 
-pub fn translate_exact_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
+pub fn translate_exact_qualified_cardinality(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], Some("owl:onProperty"));
     let modifier = Value::String(String::from("exactly"));
 
     //encode cardinality
@@ -459,7 +451,7 @@ pub fn translate_exact_qualified_cardinality(ofn: &Value, subject_2_label: &Hash
     //number.push_str("^^xsd:nonNegativeInteger");
     let card = json!(["span", {"property":"owl:qualifiedCardinality"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3],  Some("owl:onClass")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
