@@ -40,9 +40,11 @@ pub fn is_named_class(ofn: &Value) -> bool {
          Some("ObjectHasSelf") => false,
          Some("ObjectIntersectionOf") => false,
          Some("ObjectUnionOf") => false,
-         Some("ObjectOneOf") => false,
          Some("ObjectComplementOf") => false,
          //TODO: datatype expressions
+
+         //TODO: handle OneOf expressions properly or rename function to 'needs_parenthesis'
+         Some("ObjectOneOf") => true,
          Some(_) => panic!(),
          None => true, 
     } 
@@ -139,7 +141,7 @@ pub fn translate_intersection_of(ofn: &Value, rdfa_property: Option<&str>) -> Va
     let ops = translate_list(operands, modifier);
 
     match rdfa_property {
-        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},"(",ops,")"]]),
+        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},ops]]),
         None => json!(["span",["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},ops]]) 
     }
 }
@@ -151,7 +153,7 @@ pub fn translate_union_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
     let ops = translate_list(operands, modifier);
 
     match rdfa_property {
-        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:unionOf","typeof":"rdf:List"},"(",ops,")"]]),
+        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:unionOf","typeof":"rdf:List"},ops]]),
         None => json!(["span",["span",{"property":"owl:unionOf","typeof":"rdf:List"},ops]]) 
     }
 }
@@ -162,6 +164,8 @@ pub fn translate_one_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
     let modifier = json!("");
     let ops = translate_list(operands, modifier);
 
+    //TODO: we need to check for OneOf operator when adding parenthesis
+    //currently, we translate ObjectOneOf(a,b,c) to ({a,b,c}) instead of {a,b,c}
     match rdfa_property {
         Some(p) => json!(["span",{"property":p},["span",{"property":"owl:oneOf","typeof":"rdf:List"},"{",ops,"}"]]),
         None => json!(["span",["span",{"property":"owl:oneOf","typeof":"rdf:List"},"{",ops,"}"]]) 
@@ -247,10 +251,17 @@ pub fn translate_complement_of(ofn: &Value, rdfa_property: Option<&str>) -> Valu
     //TODO: use propertytranslation?
     let argument = translate(&ofn[1], Some("owl:complementOf"));
 
-    match rdfa_property {
-        Some(p) => json!(["span",{"property":p},"not","(",argument,")"]),
-        None => json!(["span","not","(",argument,")"])
-    } 
+    if ofn[1].is_array() { 
+        match rdfa_property {
+            Some(p) => json!(["span",{"property":p},"not","(",argument,")"]),
+            None => json!(["span","not","(",argument,")"])
+        } 
+    } else { 
+        match rdfa_property {
+            Some(p) => json!(["span",{"property":p},"not",argument]),
+            None => json!(["span","not",argument])
+        } 
+    }
 }
 
 pub fn translate_inverse_of(ofn: &Value, rdfa_property: Option<&str>) -> Value { 
@@ -258,10 +269,17 @@ pub fn translate_inverse_of(ofn: &Value, rdfa_property: Option<&str>) -> Value {
     //TODO: use propertytranslation?
     let argument = translate(&ofn[1], Some("owl:inverseOf"));
 
-    match rdfa_property {
-        Some(p) => json!(["span",{"property":p},"inverse","(",argument,")"]),
-        None => json!(["span","inverse","(",argument,")"])
-    } 
+    if ofn[1].is_array() { 
+        match rdfa_property {
+            Some(p) => json!(["span",{"property":p},"inverse","(",argument,")"]),
+            None => json!(["span","inverse","(",argument,")"])
+        } 
+    } else {
+        match rdfa_property {
+            Some(p) => json!(["span",{"property":p},"inverse",argument]),
+            None => json!(["span","inverse",argument])
+        } 
+    }
 }
 
 
