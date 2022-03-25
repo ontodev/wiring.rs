@@ -1,5 +1,6 @@
 use serde_json::{Value};
 use serde_json::json; 
+use std::collections::HashMap;
 use crate::ofn_2_rdfa::class_translation as class_translation; 
 
 pub fn is_named_class(ofn: &Value) -> bool {
@@ -55,9 +56,9 @@ pub fn type_opening(ofn: &Value) -> Value {
     }
 }
 
-pub fn translate_subclass_of_axiom(sub: &Value, sup: &Value) -> Value {
+pub fn translate_subclass_of_axiom(sub: &Value, sup: &Value, subject_2_label: &HashMap<String,String>) -> Value {
     let opening = type_opening(sub);
-    let sub_class = class_translation::translate(sub, None);
-    let sup_class = class_translation::translate(sup, Some("rdfs:subClassOf"));
+    let sub_class = class_translation::translate(sub, subject_2_label, None);
+    let sup_class = class_translation::translate(sup, subject_2_label, Some("rdfs:subClassOf"));
     json!(["div", opening, sub_class, " SubClassOf ", sup_class]) 
 }
