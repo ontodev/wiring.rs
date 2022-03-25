@@ -145,7 +145,7 @@ pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,St
 pub fn translate_intersection_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
-    let modifier = json!("and");
+    let modifier = json!(" and ");
     let ops = translate_list(operands, subject_2_label, modifier);
 
     match rdfa_property {
@@ -157,7 +157,7 @@ pub fn translate_intersection_of(ofn: &Value, subject_2_label: &HashMap<String,S
 pub fn translate_union_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
-    let modifier = json!("or");
+    let modifier = json!(" or ");
     let ops = translate_list(operands, subject_2_label, modifier);
 
     match rdfa_property {
@@ -169,7 +169,7 @@ pub fn translate_union_of(ofn: &Value, subject_2_label: &HashMap<String,String>,
 pub fn translate_one_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value {
 
     let operands: Vec<Value> = ofn.as_array().unwrap()[1..].to_vec();
-    let modifier = json!("");
+    let modifier = json!(", ");
     let ops = translate_list(operands, subject_2_label, modifier);
 
     //TODO: we need to check for OneOf operator when adding parenthesis
@@ -205,8 +205,8 @@ pub fn render_qualified_cardinality_restriction_base(prop: &Value,
                                                      rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, filler]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, filler]),
+        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", filler]),
+        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", filler]),
     }
 }
 
@@ -217,8 +217,8 @@ pub fn render_qualified_cardinality_restriction_nested(prop: &Value,
                                                        rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, "(", filler, ")"]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, "(", filler, ")"]),
+        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
+        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
     }
 }
 
@@ -261,13 +261,13 @@ pub fn translate_complement_of(ofn: &Value, subject_2_label: &HashMap<String,Str
 
     if ofn[1].is_array() { 
         match rdfa_property {
-            Some(p) => json!(["span",{"property":p},"not","(",argument,")"]),
-            None => json!(["span","not","(",argument,")"])
+            Some(p) => json!(["span",{"property":p}," not ","(",argument,")"]),
+            None => json!(["span"," not ","(",argument,")"])
         } 
     } else { 
         match rdfa_property {
-            Some(p) => json!(["span",{"property":p},"not",argument]),
-            None => json!(["span","not",argument])
+            Some(p) => json!(["span",{"property":p}," not ",argument]),
+            None => json!(["span"," not ",argument])
         } 
     }
 }
@@ -280,12 +280,12 @@ pub fn translate_inverse_of(ofn: &Value, subject_2_label: &HashMap<String,String
     if ofn[1].is_array() { 
         match rdfa_property {
             Some(p) => json!(["span",{"property":p},"inverse","(",argument,")"]),
-            None => json!(["span","inverse","(",argument,")"])
+            None => json!(["span"," inverse ","(",argument,")"])
         } 
     } else {
         match rdfa_property {
             Some(p) => json!(["span",{"property":p},"inverse",argument]),
-            None => json!(["span","inverse",argument])
+            None => json!(["span"," inverse ",argument])
         } 
     }
 }
@@ -295,7 +295,7 @@ pub fn translate_some_values_from(ofn: &Value, subject_2_label: &HashMap<String,
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("some"));
+    let modifier = Value::String(String::from(" some "));
     let filler = translate(&ofn[2], subject_2_label, Some("owl:someValuesFrom")); 
 
     //check whether the filler of this expression is atomic or nested further
@@ -311,7 +311,7 @@ pub fn translate_has_value(ofn: &Value, subject_2_label: &HashMap<String,String>
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("value"));
+    let modifier = Value::String(String::from(" value "));
     let filler = translate(&ofn[2], subject_2_label, Some("owl:hasValue")); 
 
     //check whether the filler of this expression is atomic or nested further
@@ -327,7 +327,7 @@ pub fn translate_has_self(ofn: &Value, subject_2_label: &HashMap<String,String>,
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("some Self"));
+    let modifier = Value::String(String::from(" some Self "));
     let filler = json!(["span", {"property":"owl:hasSelf", "hidden":"true"}, "true^^xsd:boolean"]); 
 
     //check whether the filler of this expression is atomic or nested further
@@ -343,7 +343,7 @@ pub fn translate_all_values_from(ofn: &Value, subject_2_label: &HashMap<String,S
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("only"));
+    let modifier = Value::String(String::from(" only "));
     let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
 
     if ofn[2].is_array() {
@@ -357,7 +357,7 @@ pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("min"));
+    let modifier = Value::String(String::from(" min "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
@@ -379,7 +379,7 @@ pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("min"));
+    let modifier = Value::String(String::from(" min "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
@@ -401,7 +401,7 @@ pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("max"));
+    let modifier = Value::String(String::from(" max "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
@@ -423,7 +423,7 @@ pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("max"));
+    let modifier = Value::String(String::from(" max "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
@@ -445,7 +445,7 @@ pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("exactly"));
+    let modifier = Value::String(String::from(" exactly "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
@@ -467,7 +467,7 @@ pub fn translate_exact_qualified_cardinality(ofn: &Value, subject_2_label: &Hash
 
     //TODO: use propertytranslation?
     let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
-    let modifier = Value::String(String::from("exactly"));
+    let modifier = Value::String(String::from(" exactly "));
 
     //encode cardinality
     let number = String::from(ofn[2].as_str().unwrap());
