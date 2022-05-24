@@ -18,19 +18,16 @@ pub fn translate_literal(s: &str) -> Value {
             None => json!("Error"), 
         } 
     } else {
-        json!("asd")
+        json!("_plain")
     }
 }
 
-pub fn translate_string(s: &str) -> Value {
-
+pub fn translate_string(s: &str) -> Value { 
     let literal = Regex::new("^\"(.+)\"(.*)$").unwrap(); 
     let uri = Regex::new("^<(.+)>$").unwrap(); 
     let curie = Regex::new("^(.+):(.+)$").unwrap();
 
     if literal.is_match(s) {
-        //todo translate literals
-        //json!("_LITERAL")
         translate_literal(s)
     } else if uri.is_match(s) { 
         json!("_IRI")
