@@ -63,15 +63,8 @@ pub fn translate(v : &Value) -> Value {
 
 pub fn translate_named_entity(v: &Value) -> Value {
         let o: String = String::from(v.as_str().unwrap());
-        let d: String = String::from(util::translate_datatype(&v).as_str().unwrap());
-
-        json!({"object" : o,
-               "datatype" : d})
+        json!(o) 
 }
-
-//pub fn get_object(owl : owl::OWL) -> owl::Object {
-//    owl::Object{object : owl, datatype: String::from("asd"), meta: None }
-//}
 
 pub fn get_object(v : &Value) -> Value {
     let o: Value = translate(&v);

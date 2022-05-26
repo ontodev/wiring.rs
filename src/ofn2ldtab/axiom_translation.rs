@@ -1,6 +1,5 @@
 use serde_json::{Value};
 use serde_json::json; 
-use crate::owl::thick_triple as owl;
 use crate::ofn2ldtab::class_translation as class_translation; 
 use rand::Rng; 
 use crate::ofn2ldtab::util as util;
@@ -8,20 +7,16 @@ use crate::ofn2ldtab::util as util;
 pub fn translate_subclass_of_axiom(v : &Value) -> Value {
 
     //translate OWL classes
-    //NB: this returns owl:OWL
     let subclass = class_translation::translate(&v[1]);
     let superclass = class_translation::translate(&v[2]); 
-
-    //TODO:pull the object out of the translation (so that you drop the datatype) 
-    //let o = superclass.object;
 
     let triple = json!({ 
                      "assertion":"1",
                      "retraction":"0",
                      "graph":"TODO", //TODO
-                     "subject":subclass,
+                     "subject":subclass,//TODO: check whether datatype is IRI?
                      "predicate":"rdfs:subClassOf", 
-                     "object":superclass,//TODO remove datatype?
+                     "object":superclass,
                      "datatype":util::translate_datatype(&json!(superclass)), 
                      "annotation":"TODO" 
                      }); 
