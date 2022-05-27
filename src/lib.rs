@@ -4,6 +4,7 @@ pub mod ofn_typing;
 pub mod ofn_labeling;
 pub mod ldtab2ofn;
 pub mod ofn2man;
+pub mod ofn2ldtab;
 pub mod ofn_2_rdfa;
 pub mod ofn2thick;
 pub mod owl;
