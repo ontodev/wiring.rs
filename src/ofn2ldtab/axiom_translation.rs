@@ -13,8 +13,8 @@ pub fn translate_subclass_of_axiom(v : &Value) -> Value {
     let triple = json!({ 
                      "assertion":"1",
                      "retraction":"0",
-                     "graph":"TODO", //TODO
-                     "subject":subclass,//TODO: check whether datatype is IRI?
+                     "graph":"TODO", 
+                     "subject":subclass,
                      "predicate":"rdfs:subClassOf", 
                      "object":superclass,
                      "datatype":util::translate_datatype(&json!(superclass)), 
@@ -34,7 +34,7 @@ pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
-                        "graph":"TODO", //TODO
+                        "graph":"graph", //TODO
                         "subject":blank_node,
                         "predicate":"owl:AllDisjointClasses",
                         "object": {"owl:members":operands}, //TODO remove datatype
@@ -51,7 +51,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value) -> Value {
     let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
-                        "graph":"TODO", //TODO        
+                        "graph":"graph", //TODO
                         "subject":lhs,
                         "predicate":"owl:disjointUnionOf",
                         "object":operands,
@@ -72,10 +72,10 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
-                        "graph":"TODO", //TODO        
+                        "graph":"graph", //TODO
                         "subject":lhs,
                         "predicate":"owl:equivalentClass",
-                        "object":rhs, //TODO remove datatype?
+                        "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":"TODO"});
         triple 
@@ -88,10 +88,10 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
         let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[1..]); 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
-                            "graph":"TODO", //TODO        
+                            "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:equivalentClass",
-                            "object":operands,//TODO remove datatype
+                            "object":operands,
                             "datatype":"_JSON",
                             "annotation":"TODO"});
         triple 
