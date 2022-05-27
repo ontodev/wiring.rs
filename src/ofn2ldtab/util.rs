@@ -42,8 +42,8 @@ pub fn translate_datatype(v : &Value) -> Value {
 
     match v {
         Value::String(s) => translate_string(&s), 
-        Value::Array(x) => json!("_JSON"),
-        Value::Object(x) => json!("_JSON"), 
+        Value::Array(_x) => json!("_JSON"),
+        Value::Object(_x) => json!("_JSON"), 
         _ => json!("error"),
     }
     //check array & object

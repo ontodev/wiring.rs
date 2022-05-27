@@ -33,7 +33,7 @@ pub fn translate(b: &owl::OWL) -> Value {
         //object properties
         owl::OWL::InverseOf(x) => property_translation::translate_inverse_of(x),
 
-        owl::OWL::TerminalObject(x) => json!("TODO"),
+        owl::OWL::TerminalObject(_x) => json!("TODO"),
     }
 }
 

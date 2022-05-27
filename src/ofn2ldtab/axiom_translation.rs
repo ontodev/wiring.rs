@@ -13,7 +13,7 @@ pub fn translate_subclass_of_axiom(v : &Value) -> Value {
     let triple = json!({ 
                      "assertion":"1",
                      "retraction":"0",
-                     "graph":"TODO", 
+                     "graph":"graph", 
                      "subject":subclass,
                      "predicate":"rdfs:subClassOf", 
                      "object":superclass,
