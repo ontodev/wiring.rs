@@ -6,6 +6,21 @@ use crate::ofn_labeling::labeling as labeling;
 pub fn translate(v : &Value, m : &HashMap<String, String>) -> Value {
 
     match v[0].as_str() {
+        Some("SomeValuesFrom") => id(v,m), 
+        Some("AllValuesFrom") => id(v,m), 
+        Some("HasValue") => id(v,m), 
+        Some("MinCardinality") => id(v,m), 
+        Some("MinQualifiedCardinality") => id(v,m), 
+        Some("MaxCardinality") => id(v,m), 
+        Some("MaxQualifiedCardinality") => id(v,m), 
+        Some("ExactCardinality") => id(v,m), 
+        Some("ExactQualifiedCardinality") => id(v,m), 
+        Some("HasSelf") => id(v,m), 
+        Some("IntersectionOf") => id(v,m), 
+        Some("UnionOf") => id(v,m), 
+        Some("OneOf") => id(v,m), 
+        Some("ComplementOf") => id(v,m), 
+
         Some("ObjectSomeValuesFrom") => id(v,m), 
         Some("ObjectAllValuesFrom") => id(v,m), 
         Some("ObjectHasValue") => id(v,m), 
