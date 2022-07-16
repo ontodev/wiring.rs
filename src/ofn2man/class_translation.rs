@@ -3,6 +3,22 @@ use crate::ofn2man::property_translation as property_translation;
 
 pub fn translate(v : &Value) -> String { 
      match v[0].as_str() {
+         Some("SomeValuesFrom") => translate_some_values_from(v), 
+         Some("AllValuesFrom") => translate_all_values_from(v), 
+         Some("HasValue") => translate_has_value(v), 
+         Some("MinCardinality") => translate_min_cardinality(v), 
+         Some("MinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
+         Some("MaxCardinality") => translate_max_cardinality(v), 
+         Some("MaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
+         Some("ExactCardinality") => translate_exact_cardinality(v), 
+         Some("ExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+         Some("HasSelf") => translate_has_self(v), 
+         Some("IntersectionOf") => translate_intersection_of(v), 
+         Some("UnionOf") => translate_union_of(v), 
+         Some("OneOf") => translate_one_of(v), 
+         Some("ComplementOf") => translate_complement_of(v), 
+         Some("InverseOf") => property_translation::translate_inverse_of(v),  //this is necessarily an ObjectInverseOf
+
          Some("ObjectSomeValuesFrom") => translate_some_values_from(v), 
          Some("ObjectAllValuesFrom") => translate_all_values_from(v), 
          Some("ObjectHasValue") => translate_has_value(v), 
@@ -18,6 +34,7 @@ pub fn translate(v : &Value) -> String {
          Some("ObjectOneOf") => translate_one_of(v), 
          Some("ObjectComplementOf") => translate_complement_of(v), 
          Some("ObjectInverseOf") => property_translation::translate_inverse_of(v), 
+
          Some("DataSomeValuesFrom") => translate_some_values_from(v), 
          Some("DataAllValuesFrom") => translate_all_values_from(v), 
          Some("DataHasValue") => translate_has_value(v), 
@@ -44,6 +61,21 @@ pub fn is_named_class(v : &Value) -> bool {
      //match owl_operator.as_str() {
 
     match v[0].as_str() {
+         Some("SomeValuesFrom") => false, 
+         Some("AllValuesFrom") => false, 
+         Some("HasValue") => false, 
+         Some("MinCardinality") => false, 
+         Some("MinQualifiedCardinality") => false, 
+         Some("MaxCardinality") => false, 
+         Some("MaxQualifiedCardinality") => false, 
+         Some("ExactCardinality") => false, 
+         Some("ExactQualifiedCardinality") => false, 
+         Some("HasSelf") => false, 
+         Some("IntersectionOf") => false, 
+         Some("UnionOf") => false, 
+         Some("OneOf") => false, 
+         Some("ComplementOf") => false, 
+
          Some("ObjectSomeValuesFrom") => false, 
          Some("ObjectAllValuesFrom") => false, 
          Some("ObjectHasValue") => false, 
@@ -58,6 +90,7 @@ pub fn is_named_class(v : &Value) -> bool {
          Some("ObjectUnionOf") => false, 
          Some("ObjectOneOf") => false, 
          Some("ObjectComplementOf") => false, 
+
          Some("DataSomeValuesFrom") => false, 
          Some("DataAllValuesFrom") => false, 
          Some("DataHasValue") => false, 
