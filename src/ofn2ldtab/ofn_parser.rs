@@ -12,13 +12,15 @@ pub fn parse_ofn(t: &str) -> Value {
 
 pub fn translate_triple(v : &Value) -> Value {
 
-     match v[0].as_str() {
-         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v),
-         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
-         Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v),
-         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v),
-         Some(_) => panic!(),
-         None => panic!(),
-     }
+    let ldtab_triple = match v[0].as_str() {
+        Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v),
+        Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
+        Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v),
+        Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v),
+        Some(_) => panic!(),
+        None => panic!(),
+    };
 
+    //ensure that all triples for LDTab conform to the same order
+    util::sort_value(&ldtab_triple) 
 } 
