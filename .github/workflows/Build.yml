@@ -44,19 +44,19 @@ jobs:
           cargo install cross --git https://github.com/cross-rs/cross
           sudo systemctl start docker
           cross build --release --target ${{ matrix.target.arch }}
-          cp target/${{ matrix.target.arch }}/release/wiring wiring-${{ matrix.target.arch }}
+          cp target/${{ matrix.target.arch }}/release/wiring_rs wiring-${{ matrix.target.arch }}
 
       - name: Build binary using cargo (MacOS)
         if: ${{ matrix.target.runner == 'macos-11' }}
         run: |
           cargo build --release --target ${{ matrix.target.arch }}
-          cp target/${{ matrix.target.arch }}/release/wiring wiring-${{ matrix.target.arch }}
+          cp target/${{ matrix.target.arch }}/release/wiring_rs wiring-${{ matrix.target.arch }}
 
       - name: Build binary using cargo (Windows)
         if: ${{ matrix.target.runner == 'windows-2022' }}
         run: |
           cargo build --release --target ${{ matrix.target.arch }}
-          cp target\${{ matrix.target.arch }}\release\wiring.exe wiring-${{ matrix.target.arch }}
+          cp target\${{ matrix.target.arch }}\release\wiring_rs.exe wiring-${{ matrix.target.arch }}
           #cp target\${{ matrix.target.arch }}\release\wiring.exe wiring-${{ matrix.target.arch }}.exe
 
       - name: Upload binary artifacts
