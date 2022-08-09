@@ -52,12 +52,13 @@ pub fn translate_literal(s: &str) -> Value {
 
     let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
     let datatype = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
+    let plain = Regex::new("^\"(.+)\"$").unwrap();
 
     if language_tag.is_match(s) {
         match language_tag.captures(s){
             //Some(x) =>  json!(format!("@{}", &x[2])),
             Some(x) => { let lang = format!("@{}", &x[2]);
-                json!({"object" : s,
+                json!({"object" : &x[1],
                        "datatype" : lang}) 
             }, 
             None => json!("Error"), 
@@ -65,19 +66,27 @@ pub fn translate_literal(s: &str) -> Value {
     } else if datatype.is_match(s) {
         match datatype.captures(s){
             Some(x) => { let data = format!("{}", &x[2]); 
-                json!({"object" : s,
+                json!({"object" : &x[1],
                         "datatype" : data})},
             None => json!("Error"), 
         } 
+    } else if plain.is_match(s) {
+        match plain.captures(s){
+            Some(x) => { 
+                json!({"object" : &x[1],
+                        "datatype" : "_plain"})},
+            None => json!("Error"), 
+        } 
+    
     } else {
-        json!({"object" : s,
-            "datatype": "_plain"})
+        json!("error")
+        //json!({"object" : s, "datatype": "_plain"})
     }
 }
 
 pub fn translate_value(v : &Value) -> Value { 
 
-    let s = v.as_str().unwrap();
+    let s = v.as_str().unwrap(); 
 
     let literal = Regex::new("^\"(.+)\"(.*)$").unwrap(); 
     let uri = Regex::new("^<(.+)>$").unwrap(); 
@@ -140,10 +149,11 @@ pub fn translate_annotation_list(v : &Value) -> Value {
 }
 
 pub fn translate(v : &Value) -> Value {
+
     match v.clone() { 
         Value::Array(x) => { 
             match x[0].as_str(){
-                Some("Annotation") => translate(v),
+                Some("Annotation") => translate_annotation(v),
                 Some("AnnotationList") => translate_annotation_list(v), //NB: this is used for RDF support
                 Some(_) => panic!(),
                 None => panic!(), 
