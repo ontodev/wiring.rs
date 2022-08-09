@@ -1,14 +1,21 @@
 use serde_json::{Value};
 use serde_json::json; 
 use crate::ofn2ldtab::class_translation as class_translation; 
+use crate::ofn2ldtab::annotation_translation as annotation_translation; 
 use rand::Rng; 
 use crate::ofn2ldtab::util as util;
 
-pub fn translate_subclass_of_axiom(v : &Value) -> Value {
+
+
+pub fn translate_subclass_of_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
 
     //translate OWL classes
-    let subclass = class_translation::translate(&v[1]);
-    let superclass = class_translation::translate(&v[2]); 
+    let subclass = class_translation::translate(&owl[1]);
+    let superclass = class_translation::translate(&owl[2]); 
 
     let triple = json!({ 
                      "assertion":"1",
@@ -18,19 +25,22 @@ pub fn translate_subclass_of_axiom(v : &Value) -> Value {
                      "predicate":"rdfs:subClassOf", 
                      "object":superclass,
                      "datatype":util::translate_datatype(&json!(superclass)), 
-                     "annotation":"TODO" 
+                     "annotation":annotation 
                      }); 
     triple 
 }
 
 pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
 
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
     // TODO sort json strings + generate hashes as blank node IDs
     let mut rng = rand::thread_rng(); 
     let blank_id: u8 = rng.gen();
     let blank_node = format!("_:gen{}",blank_id);
 
-    let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[1..]); 
+    let operands : Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]); 
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -39,14 +49,17 @@ pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
                         "predicate":"owl:AllDisjointClasses",
                         "object": {"owl:members":operands}, //TODO remove datatype
                         "datatype": "_JSON", 
-                        "annotation":"TODO"}); 
+                        "annotation":annotation}); 
     triple
 }
 
 pub fn translate_disjoint_union_of_axiom(v : &Value) -> Value {
 
-    let lhs = class_translation::translate(&v[1]);
-    let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[2..]); 
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let lhs = class_translation::translate(&owl[1]);
+    let operands : Value = class_translation::translate_list(&(owl.as_array().unwrap())[2..]); 
 
     let triple = json!({
                         "assertion":"1",
@@ -56,7 +69,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value) -> Value {
                         "predicate":"owl:disjointUnionOf",
                         "object":operands,
                         "datatype": "_JSON", 
-                        "annotation":"TODO"});
+                        "annotation":annotation});
     triple
 }
 
@@ -64,10 +77,14 @@ pub fn translate_disjoint_union_of_axiom(v : &Value) -> Value {
 //TODO:: equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)
 pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
-    let number_of_operands =  (v.as_array().unwrap())[1..].len();
+
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let number_of_operands =  (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
-        let lhs = class_translation::translate(&v[1]);
-        let rhs = class_translation::translate(&v[2]);
+        let lhs = class_translation::translate(&owl[1]);
+        let rhs = class_translation::translate(&owl[2]);
 
         let triple = json!({
                         "assertion":"1",
@@ -77,7 +94,7 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
                         "predicate":"owl:equivalentClass",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
-                        "annotation":"TODO"});
+                        "annotation":annotation});
         triple 
     } else {
 
@@ -85,7 +102,7 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
         let blank_id: u8 = rng.gen();
         let blank_node = format!("_:gen{}",blank_id);
 
-        let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[1..]); 
+        let operands : Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]); 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
@@ -93,7 +110,7 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
                             "predicate":"owl:equivalentClass",
                             "object":operands,
                             "datatype":"_JSON",
-                            "annotation":"TODO"});
+                            "annotation":annotation});
         triple 
     }
 }
