@@ -61,7 +61,7 @@ pub fn sort_value(v : &Value) -> Value {
         Value::Number(_n) => v.clone(),
         Value::Array(a) => sort_array(a),
         Value::Object(o) => sort_object(o),  
-        _ => panic!(),
+        Value::Null => v.clone(),
     } 
 }
 
