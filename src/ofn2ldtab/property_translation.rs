@@ -29,3 +29,36 @@ pub fn translate_inverse_of(v : &Value) -> Value {
     json!({"owl:inverseOf" : vec![argument_o]}) 
 } 
 
+pub fn get_object(v : &Value) -> Value {
+    let o: Value = translate(&v);
+    let d: String = String::from(util::translate_datatype(&v).as_str().unwrap());
+
+    json!({"object" : o,
+           "datatype" : d}) 
+}
+
+pub fn translate_list(v : &[Value]) -> Value {
+
+    //TODO: refactor common parts
+    if v.len() == 1 {
+
+        let first_o : Value = get_object(&v[0]);
+        let rest_o : Value = get_object(&json!("rdf:nil"));
+
+
+        json!({"rdf:first" : vec![first_o],
+               "rdf:rest" : vec![rest_o]}) 
+    } else { 
+
+        //let first: Value = translate(&v[0]); 
+        let rest: Value = translate_list(&v[1..]);//datatype is necessarily _JSON?
+
+        let first_o : Value = get_object(&v[0]);
+        let rest_o : Value = json!({"object" : rest, "datatype" : String::from("_JSON")});
+        //let rest_o : Value = get_object(rest);
+        //
+        json!({"rdf:first" : vec![first_o],
+               "rdf:rest" : vec![rest_o]}) 
+    }
+}
+
