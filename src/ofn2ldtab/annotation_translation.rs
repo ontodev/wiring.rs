@@ -155,11 +155,12 @@ pub fn translate(v : &Value) -> Value {
             match x[0].as_str(){
                 Some("Annotation") => translate_annotation(v),
                 Some("AnnotationList") => translate_annotation_list(v), //NB: this is used for RDF support
-                Some(_) => panic!(),
-                None => panic!(), 
+                Some(_) => panic!("Not a valid annotation operator"),
+                None => panic!("No annotation operator given"), 
             }
         }
-        _ => panic!(),
+        Value::Null => v.clone(),
+        _ => panic!("No valid annotation"),
     }
 }
 
