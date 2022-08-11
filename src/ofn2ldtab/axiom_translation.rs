@@ -58,6 +58,227 @@ pub fn translate_class_declaration(v : &Value) -> Value {
     triple 
 }
 
+pub fn translate_class_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let class = class_translation::translate(&owl[1]);
+    let individual = class_translation::translate(&owl[2]);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":individual,
+                     "predicate":"rdf:type", 
+                     "object":class,
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+pub fn translate_object_property_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let property = property_translation::translate(&owl[1]);
+    let from = class_translation::translate(&owl[2]);
+    let to = class_translation::translate(&owl[3]);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":from,
+                     "predicate":property, 
+                     "object":to,
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+pub fn translate_data_property_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let property = property_translation::translate(&owl[1]);
+    let from = class_translation::translate(&owl[2]);
+    let to = class_translation::translate(&owl[3]);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":from,
+                     "predicate":property, 
+                     "object":to,
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+pub fn translate_negative_object_property_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let property = property_translation::translate(&owl[1]);
+    let from = class_translation::translate(&owl[2]);
+    let to = class_translation::translate(&owl[3]);
+
+    let mut rng = rand::thread_rng(); 
+    let blank_id: u8 = rng.gen();
+    let blank_node = format!("_:gen{}",blank_id);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":blank_node,
+                     "predicate":"owl:NegativePropertyAssertion", 
+                     "object":{
+                         "owl:sourceIndividual":[{"object":from}],
+                         "owl:assertionProperty":[{"object":property}],
+                         "owl:targetIndividual":[{"object":to}]
+                     },
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+pub fn translate_negative_data_property_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let property = property_translation::translate(&owl[1]);
+    let from = class_translation::translate(&owl[2]);
+    let to = class_translation::translate(&owl[3]);
+
+    let mut rng = rand::thread_rng(); 
+    let blank_id: u8 = rng.gen();
+    let blank_node = format!("_:gen{}",blank_id);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":blank_node,
+                     "predicate":"owl:NegativePropertyAssertion", 
+                     "object":{
+                         "owl:sourceIndividual":[{"object":from}],
+                         "owl:assertionProperty":[{"object":property}],
+                         "owl:targetIndividual":[{"object":to}]
+                     },
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+pub fn translate_same_individuals_axiom(v : &Value) -> Value {
+
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let number_of_operands =  (owl.as_array().unwrap())[1..].len();
+
+    if number_of_operands == 2 {
+
+    //TODO check that class_translation supports individuals
+    let lhs = class_translation::translate(&owl[1]);
+    let rhs = class_translation::translate(&owl[2]);
+    let annotation = annotation_translation::translate(&annotation);
+
+        let triple = json!({
+                        "assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":lhs,
+                        "predicate":"owl:sameAs",
+                        "object":rhs, 
+                        "datatype":util::translate_datatype(&json!(rhs)), 
+                        "annotation":annotation});
+        triple 
+    } else {
+
+        let mut rng = rand::thread_rng(); 
+        let blank_id: u8 = rng.gen();
+        let blank_node = format!("_:gen{}",blank_id);
+
+        let operands : Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]); 
+        let annotation = annotation_translation::translate(&annotation);
+        let triple = json!({"assertion":"1",
+                            "retraction":"0",
+                            "graph":"graph", //TODO
+                            "subject":blank_node,
+                            "predicate":"owl:AllSameAs",
+                            "object":operands,
+                            "datatype":"_JSON",
+                            "annotation":annotation});
+        triple 
+    } 
+}
+
+pub fn translate_different_individuals_axiom(v : &Value) -> Value {
+
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let number_of_operands =  (owl.as_array().unwrap())[1..].len();
+    if number_of_operands == 2 {
+
+    let lhs = class_translation::translate(&owl[1]);
+    let rhs = class_translation::translate(&owl[2]);
+    let annotation = annotation_translation::translate(&annotation);
+
+        let triple = json!({
+                        "assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":lhs,
+                        "predicate":"owl:differentFrom",
+                        "object":rhs, 
+                        "datatype":util::translate_datatype(&json!(rhs)), 
+                        "annotation":annotation});
+        triple 
+    } else {
+
+        let mut rng = rand::thread_rng(); 
+        let blank_id: u8 = rng.gen();
+        let blank_node = format!("_:gen{}",blank_id);
+
+        let operands : Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]); 
+        let annotation = annotation_translation::translate(&annotation);
+        let triple = json!({"assertion":"1",
+                            "retraction":"0",
+                            "graph":"graph", //TODO
+                            "subject":blank_node,
+                            "predicate":"owl:AllDifferent", 
+                            "object":{ "owl:members":operands},
+                            "datatype":"_JSON",
+                            "annotation":annotation});
+        triple 
+    }
+}
+
 pub fn translate_object_property_declaration(v : &Value) -> Value { 
 
     //split annotations from logical structure
@@ -124,6 +345,30 @@ pub fn translate_annotation_property_declaration(v : &Value) -> Value {
                      "subject":property,
                      "predicate":"rdf:type", 
                      "object":"owl:AnnotationProperty",
+                     "datatype":"_IRI",
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
+//TODO: test this
+pub fn translate_datatype_definition(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //TODO: check this (should just be a string)
+    let lhs = owl[1].clone();
+    let rhs = class_translation::translate(&owl[2].clone());//this is a datarange
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":lhs,
+                     "predicate":"owl:equivalentClass", 
+                     "object":rhs,
                      "datatype":"_IRI",
                      "annotation":annotation 
                      }); 
@@ -224,6 +469,27 @@ pub fn translate_sub_object_property(v : &Value) -> Value {
             "annotation":annotation 
         })
     }
+}
+
+pub fn translate_sub_data_property(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let sub = property_translation::translate(&owl[1]);
+    let sup = property_translation::translate(&owl[2]); 
+    let annotation = annotation_translation::translate(&annotation);
+
+    json!({ "assertion":"1",
+        "retraction":"0",
+        "graph":"graph", 
+        "subject":sub,
+        "predicate":"rdfs:subPropertyOf ", 
+        "object":sup,
+        "datatype":util::translate_datatype(&json!(sup)), 
+        "annotation":annotation 
+    }) 
 }
 
 
@@ -440,6 +706,151 @@ pub fn translate_data_property_domain_axiom(v : &Value) -> Value {
     triple 
 }
 
+pub fn translate_inverse_properties_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let lhs = property_translation::translate(&owl[1]);
+    let rhs = class_translation::translate(&owl[2]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":lhs,
+                        "predicate":"owl:inverseOf",
+                        "object":rhs,
+                        "datatype": util::translate_datatype(&json!(rhs)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_functional_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:FunctionalProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_inverse_functional_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:InverseFunctionalProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_reflexive_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:ReflexiveProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_irreflexive_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:IrreflexiveProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_symmetric_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:SymmetricProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_asymmetric_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:AsymmetricProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_transitive_object_property_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let argument = property_translation::translate(&owl[1]);
+    let annotation = annotation_translation::translate(&annotation); 
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":argument,
+                        "predicate":"rdf:type",
+                        "object":"owl:TransitiveProperty",
+                        "datatype": util::translate_datatype(&json!(argument)),
+                        "annotation":annotation});
+    triple 
+}
+
 pub fn translate_data_property_range_axiom(v : &Value) -> Value {
     let owl = annotation_translation::get_owl(v);
     let annotation = annotation_translation::get_annotation(v);
@@ -499,4 +910,55 @@ pub fn translate_disjoint_properties_axiom(v : &Value) -> Value {
                             "annotation":annotation});
         triple 
     }
+}
+
+pub fn translate_has_key_axiom(v : &Value) -> Value {
+
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let mut rng = rand::thread_rng(); 
+    let blank_id: u8 = rng.gen();
+    let blank_node = format!("_:gen{}",blank_id);
+
+    let operands : Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]); 
+    let annotation = annotation_translation::translate(&annotation);
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":blank_node,
+                        "predicate":"owl:hasKey",
+                        "object": {"owl:members":operands}, //TODO remove datatype
+                        "datatype": "_JSON", 
+                        "annotation":annotation}); 
+    triple
+}
+
+
+//TODO check annotation translation
+
+pub fn translate_annotation_assertion_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    //TODO check whether class_translation is sufficient for "from" and "to"
+    let from = class_translation::translate(&owl[2]);
+    let property = property_translation::translate(&owl[1]);
+    let to = class_translation::translate(&owl[3]);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":from,
+                     "predicate":property, 
+                     "object":to,
+                     "datatype":"_IRI",//TODO
+                     "annotation":annotation 
+                     }); 
+    triple 
 }
