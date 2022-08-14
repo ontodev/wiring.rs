@@ -517,6 +517,30 @@ pub fn translate_subclass_of_axiom(v : &Value) -> Value {
     triple 
 }
 
+pub fn translate_sub_annotation_property_of_axiom(v : &Value) -> Value { 
+
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    //translate OWL classes
+    let lhs = property_translation::translate(&owl[1]);
+    let rhs = property_translation::translate(&owl[2]); 
+    let annotation = annotation_translation::translate(&annotation);
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":lhs,
+                     "predicate":"rdfs:subPropertyOf", 
+                     "object":rhs,
+                     "datatype":util::translate_datatype(&json!(rhs)), 
+                     "annotation":annotation 
+                     }); 
+    triple 
+}
+
 pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
 
     let owl = annotation_translation::get_owl(v);
@@ -626,6 +650,44 @@ pub fn translate_object_property_domain_axiom(v : &Value) -> Value {
 }
 
 pub fn translate_object_property_range_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let property = property_translation::translate(&owl[1]);
+    let range = class_translation::translate(&owl[2]); 
+    let annotation = annotation_translation::translate(&annotation);
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":property,
+                        "predicate":"rdfs:range",
+                        "object":range,
+                        "datatype": util::translate_datatype(&json!(range)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_annotation_property_domain_axiom(v : &Value) -> Value {
+    let owl = annotation_translation::get_owl(v);
+    let annotation = annotation_translation::get_annotation(v);
+
+    let property = property_translation::translate(&owl[1]);
+    let domain = class_translation::translate(&owl[2]);//TODO IRI
+    let annotation = annotation_translation::translate(&annotation);
+
+    let triple = json!({"assertion":"1",
+                        "retraction":"0",
+                        "graph":"graph", //TODO
+                        "subject":property,
+                        "predicate":"rdfs:domain",
+                        "object":domain,
+                        "datatype": util::translate_datatype(&json!(domain)),
+                        "annotation":annotation});
+    triple 
+}
+
+pub fn translate_annotation_property_range_axiom(v : &Value) -> Value {
     let owl = annotation_translation::get_owl(v);
     let annotation = annotation_translation::get_annotation(v);
 
