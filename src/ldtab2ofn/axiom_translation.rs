@@ -121,17 +121,53 @@ pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
         let v = vec![Value::String(String::from("Declaration")),v];
         Value::Array(v)
 
+    } else if operator.to_string().eq("\"FunctionalProperty\"") ||
+            operator.to_string().eq("\"InverseObjectFunctionalProperty\"") ||
+            operator.to_string().eq("\"ReflexiveObjectProperty\"") ||
+            operator.to_string().eq("\"IrreflexiveObjectProperty\"") ||
+            operator.to_string().eq("\"SymmetricObjectProperty\"") ||
+            operator.to_string().eq("\"AsymmetricObjectProperty\"") ||
+            operator.to_string().eq("\"TransitiveObjectProperty\"")
+    {
+        let v = vec![operator, lhs];
+        Value::Array(v) 
+
     } else { 
         let v = vec![operator, lhs, rhs];
         Value::Array(v) 
     }
 }
 
-pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
+pub fn translate_domain(property: &owl::OWL, domain: &owl::OWL) -> Value {
 
-    let subject = Value::String(String::from(s));
-    let predicate = Value::String(String::from(p));
-    let object = Value::String(String::from(o));
+    let operator = Value::String(String::from("Domain"));
+
+    let property : Value = class_translation::translate(property);//TODO: refactor class/property translation
+    let domain: Value = class_translation::translate(domain); 
+
+    let v = vec![operator, property, domain];
+    Value::Array(v) 
+} 
+
+pub fn translate_range(property: &owl::OWL, domain: &owl::OWL) -> Value {
+
+    let operator = Value::String(String::from("Range"));
+
+    let property : Value = class_translation::translate(property);//TODO: refactor class/property translation
+    let domain: Value = class_translation::translate(domain); 
+
+    let v = vec![operator, property, domain];
+    Value::Array(v) 
+} 
+
+pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
+    //NB: AnnotationAssertions are ambiguous and are translated as ThickTriplesh
+    //T(Property Subject Object)  rather then T(Subject Property Object)
+    //
+
+    let subject: Value = serde_json::from_str(s).unwrap(); 
+    let predicate: Value = serde_json::from_str(p).unwrap(); 
+    let object: Value = serde_json::from_str(o).unwrap(); 
 
     let operator = Value::String(String::from("ThinTriple"));
     let v = vec![operator, subject, predicate, object];
