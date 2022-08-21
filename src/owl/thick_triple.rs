@@ -214,26 +214,13 @@ pub struct Object {
     //pub annotation: String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
-pub struct TerminalObject {
-    pub object: String,
-    pub datatype: String,
-    pub meta: Option<String>,
-    //pub annotation: String,
-}
-
-#[derive(Debug,Serialize, Deserialize)]
-pub enum Thing {
-    Atomic(String),
-    Compound(Vec<Thing>), 
-}
 
 //#[derive(Serialize, Deserialize)]
 #[derive(Debug,Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum OWL {
-    Named(String), //TODO: remove this (currently still required in ldtab2ofn)
-    TerminalObject(TerminalObject),
+    Named(String), 
+    //TerminalObject(TerminalObject),
     //Number(i64), //we could type numbers for cardinality restrictions - but I don't see the point
     SomeValuesFrom(SomeValuesFrom),
     AllValuesFrom(AllValuesFrom),
