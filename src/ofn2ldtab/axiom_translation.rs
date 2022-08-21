@@ -230,7 +230,7 @@ pub fn translate_same_individuals_axiom(v : &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllSameAs",
-                            "object":operands,
+                            "object":operands, //TODO check that this works
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
@@ -272,7 +272,7 @@ pub fn translate_different_individuals_axiom(v : &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllDifferent", 
-                            "object":{ "owl:members":operands},
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
@@ -558,7 +558,7 @@ pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
                         "graph":"graph", //TODO
                         "subject":blank_node,
                         "predicate":"owl:AllDisjointClasses",
-                        "object": {"owl:members":operands}, //TODO remove datatype
+                        "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
                         "datatype": "_JSON", 
                         "annotation":annotation}); 
     triple
@@ -623,7 +623,7 @@ pub fn translate_equivalent_classes_axiom(v : &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:equivalentClass",
-                            "object":operands,
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype 
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
