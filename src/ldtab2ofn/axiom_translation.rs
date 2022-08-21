@@ -28,7 +28,10 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
         },
         _ => {
 
-            let operator = Value::String(String::from("EquivalentClasses"));
+            //TODO: this is ambiguous because
+            //"owl:equivalentClass" is also used for DatatypeDefinition
+            //let operator = Value::String(String::from("EquivalentClasses"));
+            let operator = Value::String(String::from("Equivalent"));
             let v = vec![operator, lhs, rhs];
             Value::Array(v) 
         },
@@ -112,7 +115,7 @@ pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
        operator.to_string().eq("\"AnnotationProperty\"") ||
        operator.to_string().eq("\"NamedIndividual\"")
     {
-        let v = vec![operator, lhs, rhs];
+        let v = vec![operator, lhs];
         let v = Value::Array(v);
 
         let v = vec![Value::String(String::from("Declaration")),v];
