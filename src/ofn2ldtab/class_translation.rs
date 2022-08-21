@@ -207,7 +207,8 @@ pub fn translate_list(v : &[Value]) -> Value {
 
 
         json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o]}) 
+               "rdf:rest" : vec![rest_o],
+               "datatype" : "_JSON"}) 
     } else { 
 
         //let first: Value = translate(&v[0]); 
@@ -218,7 +219,8 @@ pub fn translate_list(v : &[Value]) -> Value {
         //let rest_o : Value = get_object(rest);
         //
         json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o]}) 
+               "rdf:rest" : vec![rest_o],
+               "datatype" : "_JSON"}) 
     }
 }
 
