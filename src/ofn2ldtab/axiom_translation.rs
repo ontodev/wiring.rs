@@ -229,8 +229,9 @@ pub fn translate_same_individuals_axiom(v : &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node,
-                            "predicate":"owl:AllSameAs",
-                            "object":operands, //TODO check that this works
+                            //"predicate":"owl:sameAs", 
+                            "predicate":"owl:AllSameAs", //this is LDtab specific
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
@@ -320,7 +321,7 @@ pub fn translate_data_property_declaration(v : &Value) -> Value {
                      "graph":"graph", 
                      "subject":property,
                      "predicate":"rdf:type", 
-                     "object":"owl:DataProperty",
+                     "object":"owl:DatatypeProperty",
                      "datatype":"_IRI",
                      "annotation":annotation 
                      }); 
@@ -742,7 +743,7 @@ pub fn translate_equivalent_properties_axiom(v : &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:equivalentProperty", //TODO AllEquivalentProperties?
-                            "object":operands,
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
@@ -967,7 +968,7 @@ pub fn translate_disjoint_properties_axiom(v : &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllDisjointProperties", 
-                            "object":{ "owl:members":operands},
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple 
