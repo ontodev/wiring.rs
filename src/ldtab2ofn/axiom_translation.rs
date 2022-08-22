@@ -2,6 +2,18 @@ use crate::ldtab2ofn::class_translation as class_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::{Value};
 
+pub fn is_blank_node(input: &Value) -> bool { 
+    match input {
+        Value::String(x) => {
+            match x.split(":").next(){
+                Some("_") => true,
+                _ => false, 
+            } 
+        } 
+        _ => false, 
+    } 
+}
+
 pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subclass);
@@ -18,6 +30,7 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
     let mut rhs: Value = class_translation::translate(object); 
 
     match object {
+        //TODO: this should be members
         owl::OWL::RDFList(_) => {
             let operator = Value::String(String::from("EquivalentClasses"));
             let mut equivalent = vec![operator];
@@ -36,6 +49,63 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
             Value::Array(v) 
         },
     }
+}
+
+pub fn translate_equivalent_properties(subject: &owl::OWL, object: &owl::OWL) -> Value {
+
+    let lhs : Value = class_translation::translate(subject);
+    let mut rhs: Value = class_translation::translate(object); 
+
+    match object {
+        owl::OWL::Members(_) => {
+            let operator = Value::String(String::from("EquivalentProperties"));
+            let mut equivalent = vec![operator];
+            let arguments = rhs.as_array_mut().unwrap();
+            //equivalent.push(lhs); //LHS is a (generated) blank node
+            equivalent.append(arguments);
+            Value::Array(equivalent.to_vec())
+        },
+        _ => { 
+            let operator = Value::String(String::from("EquivalentProperties"));
+            let v = vec![operator, lhs, rhs];
+            Value::Array(v) 
+        },
+    }
+}
+
+pub fn translate_property_disjoint_with(subject :&owl::OWL, object: &owl::OWL) -> Value {
+
+    let lhs : Value = class_translation::translate(subject);
+    let rhs: Value = class_translation::translate(object); 
+
+    let operator = Value::String(String::from("DisjointProperties"));
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+}
+
+pub fn translate_sub_property_of(subject :&owl::OWL, object: &owl::OWL) -> Value {
+
+    let lhs : Value = class_translation::translate(subject);
+    let rhs: Value = class_translation::translate(object); 
+
+    let operator = Value::String(String::from("SubPropertyOf"));
+
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+}
+
+pub fn translate_all_disjoint_properties(subject :&owl::OWL, object: &owl::OWL) -> Value {
+
+    //let lhs : Value = class_translation::translate(subject);
+    let mut rhs: Value = class_translation::translate(object); 
+
+    let operator = Value::String(String::from("DisjointProperties"));
+
+    let mut equivalent = vec![operator];
+    let arguments = rhs.as_array_mut().unwrap();
+    //equivalent.push(lhs); //LHS is a (generated) blank node
+    equivalent.append(arguments);
+    Value::Array(equivalent.to_vec()) 
 }
 
 pub fn translate_disjoint_classes(operands: &owl::OWL) -> Value {
@@ -92,16 +162,17 @@ pub fn get_ofn_operator(op : &str) -> Value {
         "owl:AsymmetricProperty" => Value::String(String::from("AsymmetricObjectProperty")),
         "owl:TransitiveProperty" => Value::String(String::from("TransitiveObjectProperty")),
 
+        "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")),
+
         _ => Value::String(String::from("ClassAssertion")), 
     } 
 } 
 
 pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
-
     let operator = match rhs {
         owl::OWL::Named(x) => get_ofn_operator(x),
-        _ => panic!(),//TODO: 
+        _ => Value::String(String::from("ClassAssertion")),
     };
 
     let lhs : Value = class_translation::translate(lhs);
@@ -132,7 +203,12 @@ pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
         let v = vec![operator, lhs];
         Value::Array(v) 
 
-    } else { 
+    }
+    //else if operator.to_string().eq("\"DifferentIndividuals\"") {
+    //    let v = vec![operator, lhs, rhs];
+    //    Value::Array(v) 
+    //}
+    else { 
         let v = vec![operator, lhs, rhs];
         Value::Array(v) 
     }
@@ -159,6 +235,62 @@ pub fn translate_range(property: &owl::OWL, domain: &owl::OWL) -> Value {
     let v = vec![operator, property, domain];
     Value::Array(v) 
 } 
+
+pub fn translate_inverse_object_properties(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    //TODO check whether lhs is a blank node
+
+    let lh : Value = class_translation::translate(lhs);//TODO: refactor class/property translation
+    let rh : Value = class_translation::translate(rhs);//TODO: refactor class/property translation
+
+    let operator = Value::String(String::from("InverseObjectProperties")); 
+    let v = vec![operator, lh, rh];
+    Value::Array(v) 
+} 
+
+pub fn translate_same_as(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    let lh : Value = class_translation::translate(lhs);
+    let rh : Value = class_translation::translate(rhs);
+
+    let operator = Value::String(String::from("SameIndividual")); 
+    let v = vec![operator, lh, rh];
+    Value::Array(v) 
+} 
+
+pub fn translate_all_same_as(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    let mut arguments: Value = class_translation::translate(rhs); 
+
+    let operator = Value::String(String::from("SameIndividuals"));
+    let mut res = vec![operator];
+    let arguments = arguments.as_array_mut().unwrap();
+    res.append(arguments);
+    Value::Array(res.to_vec()) 
+}
+
+pub fn translate_different_from(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    //TODO check whether lhs is a blank node
+
+    let lh : Value = class_translation::translate(lhs);
+    let rh : Value = class_translation::translate(rhs);
+
+    let operator = Value::String(String::from("DifferentIndividuals")); 
+    let v = vec![operator, lh, rh];
+    Value::Array(v) 
+} 
+
+pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    let mut arguments: Value = class_translation::translate(rhs); 
+
+    let operator = Value::String(String::from("DifferentIndividuals"));
+    let mut res = vec![operator];
+    let arguments = arguments.as_array_mut().unwrap();
+    res.append(arguments);
+    Value::Array(res.to_vec()) 
+}
 
 pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
     //NB: AnnotationAssertions are ambiguous and are translated as ThickTriplesh
