@@ -189,6 +189,30 @@ pub struct ComplementOf {
     pub owl_complement_of: Vec<Object>,
 }
 
+#[derive(Debug,Serialize, Deserialize)]
+pub struct NegativeObjectPropertyAssertion {
+    #[serde(rename = "rdf:type")]
+    pub rdf_type: Option<Vec<Object>>,
+    #[serde(rename = "owl:sourceIndividual")]
+    pub source_individual: Vec<Object>,
+    #[serde(rename = "owl:assertionProperty")]
+    pub assertion_property: Vec<Object>,
+    #[serde(rename = "owl:targetIndividual")]
+    pub target_individual: Vec<Object>, 
+}
+
+#[derive(Debug,Serialize, Deserialize)]
+pub struct NegativeDataPropertyAssertion {
+    #[serde(rename = "rdf:type")]
+    pub rdf_type: Option<Vec<Object>>,
+    #[serde(rename = "owl:sourceIndividual")]
+    pub source_individual: Vec<Object>,
+    #[serde(rename = "owl:assertionProperty")]
+    pub assertion_property: Vec<Object>,
+    #[serde(rename = "owl:targetValue")]
+    pub target_value: Vec<Object>, 
+}
+
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 //           OWL Object Properties
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -212,8 +236,7 @@ pub struct Object {
     pub datatype: String,
     pub meta: Option<String>,
     //pub annotation: String,
-}
-
+} 
 
 //#[derive(Serialize, Deserialize)]
 #[derive(Debug,Serialize, Deserialize)]
@@ -242,4 +265,8 @@ pub enum OWL {
     //NEW
     Members(Members),
     DistinctMembers(DistinctMembers),
+
+    NegativeObjectPropertyAssertion(NegativeObjectPropertyAssertion),
+    NegativeDataPropertyAssertion(NegativeDataPropertyAssertion),
+
 }
