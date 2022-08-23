@@ -33,6 +33,9 @@ pub fn translate(b: &owl::OWL) -> Value {
         //object properties
         owl::OWL::InverseOf(x) => property_translation::translate_inverse_of(x),
 
+        owl::OWL::NegativeObjectPropertyAssertion(x) => translate_negative_object_property_assertion(x),
+        owl::OWL::NegativeDataPropertyAssertion(x) => translate_negative_data_property_assertion(x)
+
         //owl::OWL::TerminalObject(_x) => json!("TODO"),
     }
 }
@@ -325,3 +328,24 @@ pub fn translate_complement_of(s: &owl::ComplementOf) -> Value {
         Value::Array(v)
     } 
 } 
+
+//NB: this encodes an axiom - not an expression
+pub fn translate_negative_object_property_assertion(s: &owl::NegativeObjectPropertyAssertion) -> Value { 
+    let source = translate(&s.source_individual[0].object);
+    let property =  translate(&s.assertion_property[0].object);
+    let target = translate(&s.target_individual[0].object);
+
+    let operator = Value::String(String::from("NegativeObjectPropertyAssertion"));
+    let v = vec![operator, source, property, target];
+    Value::Array(v) 
+}
+
+pub fn translate_negative_data_property_assertion(s: &owl::NegativeDataPropertyAssertion) -> Value { 
+    let source = translate(&s.source_individual[0].object);
+    let property =  translate(&s.assertion_property[0].object);
+    let target = translate(&s.target_value[0].object);
+
+    let operator = Value::String(String::from("NegativeDataPropertyAssertion"));
+    let v = vec![operator, source, property, target];
+    Value::Array(v) 
+}

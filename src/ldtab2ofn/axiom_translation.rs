@@ -30,8 +30,7 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
     let mut rhs: Value = class_translation::translate(object); 
 
     match object {
-        //TODO: this should be members
-        owl::OWL::RDFList(_) => {
+        owl::OWL::Members(_) => {
             let operator = Value::String(String::from("EquivalentClasses"));
             let mut equivalent = vec![operator];
             let arguments = rhs.as_array_mut().unwrap();
@@ -164,6 +163,8 @@ pub fn get_ofn_operator(op : &str) -> Value {
 
         "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")),
 
+        "owl:Ontology" => Value::String(String::from("ThinTriple")),
+
         _ => Value::String(String::from("ClassAssertion")), 
     } 
 } 
@@ -288,6 +289,40 @@ pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     let operator = Value::String(String::from("DifferentIndividuals"));
     let mut res = vec![operator];
     let arguments = arguments.as_array_mut().unwrap();
+    res.append(arguments);
+    Value::Array(res.to_vec()) 
+}
+
+pub fn translate_property_chain(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
+
+    let lhs : Value = class_translation::translate(lhs);
+    let mut rhs: Value = class_translation::translate(rhs); //this is a list
+
+    let operator = Value::String(String::from("ObjectPropertyChain"));
+    let mut res = vec![operator];
+    let arguments = rhs.as_array_mut().unwrap();
+    res.append(arguments);
+    let chain = Value::Array(res);
+
+    let operator = Value::String(String::from("SubObjectPropertyOf")); 
+    let v = vec![operator, chain, lhs];
+    Value::Array(v) 
+}
+
+pub fn translate_negative_property_assertion(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value { 
+    //NB: this returns an axiom rather than an expression 
+    let axiom : Value = class_translation::translate(rhs); 
+    axiom
+}
+
+pub fn translate_has_key(lhs: &owl::OWL, rhs: &owl::OWL) -> Value { 
+    let class : Value = class_translation::translate(lhs); 
+    let mut keys : Value = class_translation::translate(rhs); //this is a list
+
+    let operator = Value::String(String::from("HasKey"));
+    let mut res = vec![operator];
+    let arguments = keys.as_array_mut().unwrap();
+    res.push(class);
     res.append(arguments);
     Value::Array(res.to_vec()) 
 }
