@@ -8,7 +8,7 @@ pub fn is_annotation(v : &Value) -> bool {
         Value::Array(x) => { 
             match x[0].as_str(){
                 Some("Annotation") => true,
-                Some("AnnotationList") => true, //NB: this is used for RDF support
+                //Some("AnnotationList") => true, //NB: this shouldn't occur
                 Some(_) => false,
                 None => false, 
             }
@@ -24,26 +24,36 @@ pub fn has_annotation(v : &Value) -> bool {
     } 
 }
 
-pub fn strip_annotation(v : &Value) -> Value {
-    if has_annotation(&v) {
-        let mut c = v.clone();
-        let a = c.as_array_mut().unwrap();
-        a.remove(1);
-        json!(a) 
-    } else {
-        v.clone()
+pub fn strip_annotations(v : &Value) -> Value {
+
+    let mut res = Vec::new();
+    let original = &v.as_array().unwrap()[0..];
+    for element in original { 
+        if !is_annotation(element){
+            res.push(element.clone());
+        } 
     } 
+    Value::Array(res) 
 }
 
 pub fn get_owl(v : &Value) -> Value { 
-    strip_annotation(v)
+    strip_annotations(v)
 }
 
-pub fn get_annotation(v : &Value) -> Value {
+
+pub fn get_annotations(v : &Value) -> Vec<Value> {
     if has_annotation(&v) {
-        v.as_array().unwrap()[1].clone()
+
+        let mut res = Vec::new();
+        let candidates = &v.as_array().unwrap()[0..];
+        for candidate in candidates  {
+            if is_annotation(candidate){
+                res.push(candidate.clone());
+            } 
+        }
+        res
     } else {
-        Value::Null
+        Vec::new()//empty vector
     } 
 }
 
@@ -105,32 +115,10 @@ pub fn translate_value(v : &Value) -> Value {
     } 
 }
 
-pub fn translate_annotation(v : &Value) -> Value {
+pub fn translate_annotations(annotations : &Vec<Value>) -> Value {
 
-    let stripped = strip_annotation(v);
-    let stripped = stripped.as_array().unwrap();
-
-    let property = stripped[1].clone();
-    let property_str = property.as_str().unwrap();
-    let value = translate_value(&stripped[2].clone());
-
-    if has_annotation(v) { 
-        let annotation = translate(&get_annotation(v));
-        json!({property_str : vec![value],
-               "annotation" : annotation })  //TODO: homogenise format 
-    } else { 
-        json!({property_str : vec![value]})
-    } 
-}
-
-pub fn translate_annotation_list(v : &Value) -> Value {
-
-    let mut property_2_value = HashMap::new();
-    let mut clone = v.clone();
-    let list = clone.as_array_mut().unwrap();
-    list.remove(0);  //drop "AnnotationList" operator
-
-    for annotation in list {
+    let mut property_2_value = HashMap::new(); 
+    for annotation in annotations {
         let a = annotation.as_array().unwrap();
         let property = a[1].clone();
         let property_str = String::from(property.as_str().unwrap());
@@ -145,22 +133,6 @@ pub fn translate_annotation_list(v : &Value) -> Value {
             property_2_value.get_mut(&property_str).unwrap().push(value); 
         } 
     } 
-    json!(property_2_value)
-}
-
-pub fn translate(v : &Value) -> Value {
-
-    match v.clone() { 
-        Value::Array(x) => { 
-            match x[0].as_str(){
-                Some("Annotation") => translate_annotation(v),
-                Some("AnnotationList") => translate_annotation_list(v), //NB: this is used for RDF support
-                Some(_) => panic!("Not a valid annotation operator"),
-                None => panic!("No annotation operator given"), 
-            }
-        }
-        Value::Null => v.clone(),
-        _ => panic!("No valid annotation"),
-    }
+    json!(property_2_value) 
 }
 
