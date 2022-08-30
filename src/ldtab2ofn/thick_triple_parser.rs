@@ -2,6 +2,7 @@ use serde_json::{Value, Result as SResult};
 use serde_json::json;
 use crate::owl::thick_triple as tt;
 use crate::ldtab2ofn::axiom_translation as axiom_translation; 
+use crate::ldtab2ofn::annotation_translation as annotation_translation; 
 
 pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
     let triple_json: SResult<tt::OWL> = serde_json::from_str(object); 
@@ -29,12 +30,24 @@ pub fn parse_ldtab(input : &str) -> Value {
     let predicate = thick_triple["predicate"].to_string();
     let object = thick_triple["object"].to_string();
 
-    let annotation = thick_triple["annotation"].to_string(); 
-    //TODO: translate annotation
+    //let annotation = thick_triple["annotation"].to_string(); 
+    let annotations = annotation_translation::translate(&thick_triple["annotation"]);
 
-    //TODO merge logical OFN with annotation
+    let owl = parse_thick_triple(&subject, &predicate, &object);
 
-    parse_thick_triple(&subject, &predicate, &object) 
+    //merge logical OFN with annotation OFN
+    let rest = &owl.as_array().unwrap()[1..];
+
+    let mut res = vec![owl[0].clone()];
+    for annotation in annotations {
+        res.push(annotation.clone());
+    } 
+
+    for r in rest {
+        res.push(r.clone());
+    }
+
+    Value::Array(res)
 }
 
 //TODO: rename this to translate
@@ -43,8 +56,6 @@ pub fn parse_thick_triple(subject: &str, predicate: &str, object: &str) -> Value
     let subject_json = parse_thick_triple_object(subject); 
     let predicate_json = parse_string(predicate); //Assumption: this is a string
     let object_json = parse_thick_triple_object(object); 
-
-    //TODO: add support for annotations
 
     match predicate_json.as_str() {
         "rdfs:subClassOf"  => axiom_translation::translate_subclass_of_axiom(&subject_json, &object_json),
