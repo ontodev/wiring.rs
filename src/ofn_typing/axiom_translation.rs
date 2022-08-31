@@ -35,6 +35,15 @@ pub fn translate_disjoint_union_of_axiom(v : &Value, m : &HashMap<String,HashSet
     Value::Array(v) 
 }
 
+pub fn translate_declaration(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let operand : Value = class_translation::translate(&v[1], m);
+
+    let operator = Value::String(String::from("Declaration"));
+    let v = vec![operator, operand];
+    Value::Array(v) 
+}
+
 
 //TODO::   equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)

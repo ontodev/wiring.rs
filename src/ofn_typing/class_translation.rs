@@ -20,6 +20,15 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
          //Some("OneOf") => id(v,m), 
          //Some("ComplementOf") => id(v,m), 
 
+         //declarations
+         Some("Class") => id(v,m),
+         Some("Datatype") => id(v,m),
+         Some("ObjectProperty") => id(v,m),
+         Some("DataProperty") => id(v,m),
+         Some("AnnotationProperty") => id(v,m),
+         Some("NamedIndividual") => id(v,m), 
+
+
          Some("ObjectSomeValuesFrom") => id(v,m),
          Some("ObjectAllValuesFrom") => id(v,m),
          Some("ObjectHasValue") =>  id(v,m),
