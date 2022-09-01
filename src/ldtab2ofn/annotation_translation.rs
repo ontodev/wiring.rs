@@ -121,6 +121,7 @@ pub fn is_single_annotation(m : &Map<String, Value>) -> bool {
 pub fn translate(annotation : &Value) -> Vec<Value> { 
      match annotation {
         Value::Object(x) => translate_annotations(&x),
+        Value::Null => Vec::new(),
         //{
         //    if is_single_annotation(&x) {
         //        translate_annotation(&x)
