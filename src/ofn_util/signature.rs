@@ -1,4 +1,5 @@
 use serde_json::{Value};
+use serde_json::json;
 
 //extract language tags + datatypes
 //command line interface
@@ -16,6 +17,24 @@ pub fn get_prefixes(v : &Value) -> Vec<String> {
     prefixes.sort_unstable();
     prefixes.dedup();
     prefixes
+}
+
+//NB: this returns both IRIs as well as literals 
+pub fn extract_identifiers(v : &Value) -> Vec<Value> {
+
+    match v {
+        Value::String(x) => vec![v.clone()],
+        Value::Array(array) => {
+            let mut res = Vec::new(); 
+            for a in &array[1..]  {//slice drops operator
+                //recurse
+                let elements = extract_identifiers(a);
+                res.extend(elements); 
+            }
+            res
+        },
+        _ => panic!("Not a valid OFN S-expression") 
+    } 
 }
 
 //extract signature of an OFN S-expression
