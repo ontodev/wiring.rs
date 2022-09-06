@@ -32,16 +32,19 @@ pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bo
         Some(set) => set.contains("owl:DatatypeProperty"),//we are using JSON Strings here
         _ => false, 
     } 
+}
 
-    //if let Value::Array(_) = v { 
-    //    return false;
-    //} else { 
-    //    let s = v.to_string();    //named entity
-    //    match m.get(&s) {
-    //        Some(set) => set.contains("\"owl:DatatypeProperty\""),//we are using JSON Strings here
-    //        _ => false, 
-    //    }
-    //} 
+pub fn is_annotation_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
+
+    let key = match v.as_str() {
+        Some(s) => String::from(s),
+        None => v.to_string() 
+    };
+
+    match m.get(&key) {
+        Some(set) => set.contains("owl:AnnotationProperty"),
+        _ => false, 
+    } 
 }
 
 pub fn object_type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
