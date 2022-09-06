@@ -1,4 +1,5 @@
 use serde_json::{Value};
+use serde_json::json;
 use crate::ofn_typing::property_translation as property_translation;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -115,6 +116,31 @@ pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
         res.push(test);
     } 
     Value::Array(res)
+}
+
+pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = 
+    match v[3].as_str() {
+        Some("owl:Class") => Value::String(String::from("Class")),
+        Some("rdfs:Datatype") => Value::String(String::from("Datatype")), 
+        Some("owl:ObjectProperty") => Value::String(String::from("ObjectProperty")),
+        Some("owl:DatatypeProperty") => Value::String(String::from("DataProperty")), 
+        Some("owl:AnnotationProperty") => Value::String(String::from("AnnotationProperty")),
+        Some("owl:NamedIndividual") => Value::String(String::from("NamedIndividual")),
+        _ => panic!("Unknown type in declaration") 
+    };
+
+    let v = vec![operator, entity];
+    let v = Value::Array(v);
+
+    let declaration_operator = Value::String(String::from("Declaration"));
+
+    let declaration = vec![declaration_operator,v];
+
+    Value::Array(declaration)
 }
 
 pub fn translate_some_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
