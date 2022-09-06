@@ -18,6 +18,16 @@ pub fn translate_subclass_of_axiom(v : &Value, m : &HashMap<String,HashSet<Strin
     Value::Array(v) 
 }
 
+pub fn translate_class_assertion(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let class : Value = class_translation::translate(&v[1], m); 
+    let individual : Value = v[2].clone();
+
+    let operator = Value::String(String::from("ClassAssertion"));
+    let v = vec![operator, individual, class];
+    Value::Array(v) 
+}
+
 pub fn translate_disjoint_classes_axiom(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
     let mut operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[1..], m); 
 
@@ -55,7 +65,54 @@ pub fn translate_sub_object_property_of(v : &Value, m : &HashMap<String,HashSet<
     let operator = Value::String(String::from("SubObjectPropertyOf"));
     let v = vec![operator, lhs, rhs];
     Value::Array(v) 
+}
 
+pub fn translate_sub_data_property_of(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let lhs : Value = property_translation::translate(&v[1], m);
+    let rhs : Value = property_translation::translate(&v[2], m);
+
+    let operator = Value::String(String::from("SubDataPropertyOf"));
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+}
+
+pub fn translate_inverse_object_properties(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let lhs : Value = property_translation::translate(&v[1], m);
+    let rhs : Value = property_translation::translate(&v[2], m);
+
+    let operator = Value::String(String::from("InverseObjectProperties"));
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+
+}
+
+pub fn translate_object_property_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("ObjectPropertyRange"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
+}
+
+pub fn translate_data_property_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("DataPropertyRange"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
+}
+
+pub fn translate_annotation_property_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("AnnotationPropertyRange"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
 }
 
 pub fn translate_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
@@ -79,6 +136,53 @@ pub fn translate_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Valu
     } else {
         panic!("Unknown Range axiom")
     } 
+}
+
+pub fn translate_data_property_domain(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("DataPropertyDomain"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
+}
+
+pub fn translate_object_property_domain(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("ObjectPropertyDomain"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
+}
+
+pub fn translate_annotation_property_domain(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = Value::String(String::from("AnnotationPropertyDomain"));
+    let v = vec![operator, property, range];
+    Value::Array(v) 
+}
+
+pub fn translate_domain(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    let operator = 
+    if property_translation::is_object_property(&property, m) { 
+        Value::String(String::from("ObjectPropertyDomain")) 
+    } else if property_translation::is_data_property(&property, m) { 
+        Value::String(String::from("DataPropertyDomain"))
+    } else if property_translation::is_annotation_property(&property, m) { 
+        Value::String(String::from("AnnotationPropertyDomain"))
+    } else {
+        panic!("Unknown Domain axiom")
+    };
+
+    let v = vec![operator, property, range];
+    Value::Array(v)
 }
 
 pub fn translate_sub_property_of(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
@@ -132,6 +236,90 @@ pub fn translate_sub_property_of(v : &Value, m : &HashMap<String,HashSet<String>
     Value::Array(v) 
 }
 
+pub fn translate_equivalent_properties(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let mut operands = Vec::new();
+    let mut found_object_property = false;
+    let mut found_data_property = false;
+
+    for argument in &(v.as_array().unwrap())[1..] {
+        let a: Value = property_translation::translate(&argument,m); 
+        operands.push(a.clone());
+
+        if property_translation::is_data_property(&a,m) {
+            found_data_property = true;
+        }
+
+        if property_translation::is_object_property(&a,m) {
+            found_object_property = true;
+        } 
+    }
+
+    let operator = 
+    if found_data_property && !found_object_property {
+        Value::String(String::from("EquivalentDataProperties"))
+    } else if found_object_property && !found_data_property { 
+        Value::String(String::from("EquivalentObjectProperties"))
+    } else { 
+        panic!("Unknown Equivalent expression")
+    }; 
+
+    let mut axiom = vec![operator];
+    for o in operands {
+        axiom.push(o); 
+    } 
+    Value::Array(axiom) 
+}
+
+pub fn translate_functional_property(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+
+    let property = property_translation::translate(&v[1],m);
+
+    let operator = 
+    if property_translation::is_data_property(&property,m) {
+        Value::String(String::from("FunctionalDataProperty")) 
+    } else if property_translation::is_object_property(&property,m) {
+        Value::String(String::from("FunctionalObjectProperty"))
+    } else {
+        panic!("Unkown functional property")
+    };
+
+    let axiom = vec![operator, property];
+    Value::Array(axiom) 
+}
+
+pub fn translate_equivalent_axiom(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let mut operands = Vec::new();
+    let mut found_class_expression = false;
+    let mut found_data_range = false;
+
+    for argument in &(v.as_array().unwrap())[1..] {
+        let a: Value = class_translation::translate(&argument,m); 
+        operands.push(a.clone());
+
+        if class_translation::is_data_range(&a,m) {
+            found_data_range = true;
+        }
+
+        if class_translation::is_class_expression(&a,m) {
+            found_class_expression = true;
+        } 
+    }
+
+    let operator = 
+    if found_data_range && !found_class_expression {
+        Value::String(String::from("DatatypeDefinition"))
+    } else if found_class_expression && !found_data_range { 
+        Value::String(String::from("EquivalentClasses"))
+    } else { 
+        panic!("Unknown Equivalent expression")
+    }; 
+
+    let mut axiom = vec![operator];
+    for o in operands {
+        axiom.push(o); 
+    } 
+    Value::Array(axiom) 
+}
 
 //TODO::   equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)
@@ -149,6 +337,8 @@ pub fn translate_equivalent_classes_axiom(v : &Value, m : &HashMap<String,HashSe
 
         let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[1..],m); 
         let operator = Value::String(String::from("EquivalentClasses"));
+
+        //TODO: operands shoudn't be wrapped in an array?
         let v = vec![operator, operands];
         Value::Array(v) 
     }
