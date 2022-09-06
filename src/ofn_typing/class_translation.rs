@@ -29,6 +29,8 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
          Some("AnnotationProperty") => id(v,m),
          Some("NamedIndividual") => id(v,m), 
 
+         Some("Declaration") => id(v,m), 
+
 
          Some("ObjectSomeValuesFrom") => id(v,m),
          Some("ObjectAllValuesFrom") => id(v,m),
@@ -61,6 +63,21 @@ pub fn is_named_individual(v :&Value, m : &HashMap<String, HashSet<String>>) -> 
         _ => false,
     }
 
+}
+
+pub fn is_data_range(v : &Value, m: &HashMap<String, HashSet<String>>) -> bool {
+     match v[0].as_str() {
+         Some("DataRange") => true,
+         Some("DataComplementOf") => true,
+         Some("DataUnionOf") => true,
+         Some("DataOneOf") => true,
+         Some("DataIntersectionOf") => true,
+
+         //TODO: check this
+         Some("Datatype") => true,
+         Some("DatatypeRestriction") => true,
+         _ => false 
+     }
 }
 
 pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
