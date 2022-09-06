@@ -51,6 +51,18 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
      }
 } 
 
+pub fn is_named_individual(v :&Value, m : &HashMap<String, HashSet<String>>) -> bool {
+
+    //TODO: test this
+    let s = v.as_str().unwrap();
+
+    match m.get(s) {
+        Some(set) => set.contains("owl:NamedIndividual"),
+        _ => false,
+    }
+
+}
+
 pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) -> bool {
 
      match v[0].as_str() {
@@ -118,6 +130,133 @@ pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
     Value::Array(res)
 }
 
+pub fn translate_rdf_type(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
+
+    match v[3].as_str() {
+        //declarations
+        Some("owl:Class") => translate_declaration(v,m),
+        Some("rdfs:Datatype") => translate_declaration(v,m), 
+        Some("owl:ObjectProperty") => translate_declaration(v,m),
+        Some("owl:DatatypeProperty") => translate_declaration(v,m), 
+        Some("owl:AnnotationProperty") => translate_declaration(v,m),
+        Some("owl:NamedIndividual") => translate_declaration(v,m),
+
+        //property axioms
+        Some("owl:FunctionalProperty") => translate_functional_property(v,m),
+        Some("owl:InverseFunctionalProperty") => translate_inverse_functional_property(v,m),
+        Some("owl:ReflexiveProperty") => translate_reflexive_property(v,m),
+        Some("owl:IrreflexiveProperty") => translate_irreflexive_property(v,m),
+        Some("owl:SymmetricProperty") => translate_symmetric_property(v,m),
+        Some("owl:AsymmetricProperty") => translate_asymmetric_property(v,m),
+        Some("owl:TransitiveProperty") => translate_transitive_property(v,m),
+
+        _ => translate_class_assertion(v,m),
+
+        //_ => panic!("Unknown type in declaration") //Could be a class assertion
+    } 
+}
+
+pub fn translate_class_assertion(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
+
+    let i = v[1].as_str().unwrap();
+    let c = v[2].as_str().unwrap();
+    let individual = Value::String(String::from(i));
+    let class = Value::String(String::from(c));
+
+    if is_named_individual(&v[1], m) || is_class_expression(&v[2],m) { 
+        let operator = Value::String(String::from("ClassAssertion"));
+        let v = vec![operator, class, individual];
+        Value::Array(v)
+    } else {
+        panic!("Not a class assertion")
+    } 
+}
+
+pub fn translate_transitive_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "transitive"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("TransitiveObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom) 
+}
+
+pub fn translate_asymmetric_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "asymmetric"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("AsymmetricObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom) 
+}
+
+pub fn translate_symmetric_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "symmetric"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("SymmetricObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom) 
+}
+
+pub fn translate_irreflexive_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "irreflexive"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("IrreflexiveObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom) 
+}
+
+pub fn translate_reflexive_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "reflexive"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("ReflexiveObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom) 
+}
+
+pub fn translate_functional_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+
+    let operator =
+    if property_translation::is_object_property(&v[1],m) { 
+        Value::String(String::from("FunctionalObjectProperty"))
+    } else if property_translation::is_data_property(&v[1],m) {
+        Value::String(String::from("FunctionalDataProperty"))
+    } else { 
+        panic!("Unknown functional property axiom")
+        //Value::String(String::from("UnknwonFunctionalProperty"))
+    };
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom)
+}
+
+pub fn translate_inverse_functional_property(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    //only object properties can be "inverse functional"
+
+    let s = v[1].as_str().unwrap();
+    let entity = Value::String(String::from(s));
+    let operator = Value::String(String::from("InverseFunctionalObjectProperty")); 
+
+    let axiom = vec![operator,entity];
+    Value::Array(axiom)
+}
+
 pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
 
     let s = v[1].as_str().unwrap();
@@ -130,7 +269,7 @@ pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>)
         Some("owl:DatatypeProperty") => Value::String(String::from("DataProperty")), 
         Some("owl:AnnotationProperty") => Value::String(String::from("AnnotationProperty")),
         Some("owl:NamedIndividual") => Value::String(String::from("NamedIndividual")),
-        _ => panic!("Unknown type in declaration") 
+        _ => panic!("Unknown type in declaration")
     };
 
     let v = vec![operator, entity];
@@ -141,6 +280,21 @@ pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>)
     let declaration = vec![declaration_operator,v];
 
     Value::Array(declaration)
+}
+
+pub fn translate_annotation_assertion(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+    let s = v[1].as_str().unwrap();
+    let p = v[2].as_str().unwrap();
+    let o = v[3].as_str().unwrap();
+
+    let subject = Value::String(String::from(s));
+    let predicate = Value::String(String::from(p));
+    let object = Value::String(String::from(o));
+
+    let operator = Value::String(String::from("AnnotationAssertion"));
+    let v = vec![operator, predicate, subject, object];
+    Value::Array(v) 
+
 }
 
 pub fn translate_some_values_from(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
