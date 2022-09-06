@@ -4,16 +4,91 @@ use crate::ofn_typing::class_translation as class_translation;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+//TODO: factor this out
+pub fn is_annotation(v : &Value) -> bool { 
+    match v.clone() { 
+        Value::Array(x) => { 
+            match x[0].as_str(){
+                Some("Annotation") => true,
+                //Some("AnnotationList") => true, //NB: this shouldn't occur
+                Some(_) => false,
+                None => false, 
+            }
+        }
+        _ => false,
+    } 
+}
+
+pub fn strip_annotations(v : &Value) -> Value {
+
+    let mut res = Vec::new();
+    let original = &v.as_array().unwrap()[0..];
+    for element in original { 
+        if !is_annotation(element){
+            res.push(element.clone());
+        } 
+    } 
+    Value::Array(res) 
+}
+
+pub fn get_owl(v : &Value) -> Value { 
+    strip_annotations(v)
+}
+
 //TODO: handle annotations properly
+//1. spit them
+//2. translate logical bit as usual
+//3. merge them back in?
 pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
+
+    let v = &get_owl(v);
+
     match v[0].as_str() {
         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v,m),
         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v,m),
         Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v,m),
         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v,m),
+        Some("ClassAssertion") => axiom_translation::translate_class_assertion(v,m),
+        Some("DataPropertyDomain") => axiom_translation::translate_data_property_domain(v,m),
+        Some("ObjectPropertyDomain") => axiom_translation::translate_object_property_domain(v,m),
+        Some("AnnotationPropertyDomain") => axiom_translation::translate_annotation_property_domain(v,m),
+        Some("DataPropertyRange") => axiom_translation::translate_data_property_range(v,m),
+        Some("ObjectPropertyRange") => axiom_translation::translate_object_property_range(v,m),
+        Some("AnnotationPropertyRange") => axiom_translation::translate_annotation_property_range(v,m),
+        Some("InverseObjectProperties") => axiom_translation::translate_inverse_object_properties(v,m), 
+        Some("SubDataPropertyOf") => axiom_translation::translate_sub_data_property_of(v,m), 
+
+        //no typing necessary?
+        Some("AnnotationAssertion") => v.clone(), 
+        Some("DifferentIndividuals") => v.clone(), 
+        Some("ObjectPropertyAssertion") => v.clone(), 
+        Some("SubAnnotationPropertyOf") => v.clone(), 
+
+        //TODO: these could take ObjectInverses as arguemtns? Even if, inverses are already typed 
+        Some("TransitiveObjectProperty") => v.clone(), 
+        Some("SymmetricObjectProperty") => v.clone(), 
+        Some("AsymmetricObjectProperty") => v.clone(), 
+        Some("IrreflexiveObjectProperty") => v.clone(), 
+        Some("ReflexiveObjectProperty") => v.clone(), 
+        Some("InverseFunctionalObjectProperty") => v.clone(), 
+        Some("FunctionalObjectProperty") => v.clone(), 
+        Some("FunctionalDataProperty") => v.clone(), 
+        Some("EquivalentObjectProperties") => v.clone(), 
+
         //TODO: ThinTriples need to be typed as well
-        Some("ThinTriple") => axiom_translation::translate_thin_triple(v),
+        Some("ThinTriple") => axiom_translation::translate_thin_triple(v,m),
+        Some("Equivalent") => axiom_translation::translate_equivalent_axiom(v,m),
+        Some("EquivalentProperties") => axiom_translation::translate_equivalent_properties(v,m),
+        Some("FunctionalProperty") => axiom_translation::translate_functional_property(v,m),
         Some("Declaration") => axiom_translation::translate_declaration(v,m),
+
+        Some("SubPropertyOf") => axiom_translation::translate_sub_property_of(v,m),
+        Some("Range") => axiom_translation::translate_range(v,m),
+        Some("Domain") => axiom_translation::translate_domain(v,m),
+
+        //no typing necessary, i.e., this axiom cannot contain ambiguous OFN S-expressions 
+        //introduce id?
+        Some("SubObjectPropertyOf") => axiom_translation::translate_sub_object_property_of(v,m),
 
         Some("SomeValuesFrom") => class_translation::translate_some_values_from(v,m), 
         Some("AllValuesFrom") =>  class_translation::translate_all_values_from(v,m), 
@@ -23,7 +98,6 @@ pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
         Some("ExactCardinality") => class_translation::translate_exact_cardinality(v,m), 
 
         //TODO: axioms 
-        //Some("SubObjectPropertyOf") => translate_sub_object_property_of(v),
         //Some("EquivalentObjectProperties") => translate_equivalent_object_properties(v),
         //Some("DisjointObjectProperties") => translate_disjoint_object_properties(v),
         //Some("InverseObjectProperties") => translate_inverse_object_properties(v),
@@ -51,7 +125,6 @@ pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
         //Some("DataPropertyAssertion") => translate_data_property_assertion(v),
         //Some("NegativeDataPropertyAssertion") => translate_negative_data_property_assertion(v),
 
-        //Some("AnnotationAssertion") => translate_annotation_assertion(v),
         //Some("SubAnnotationPropertyOf") => translate_sub_annotation_assertion(v),
         //Some("AnnotationPropertyDomain") => translate_annotation_property_domain(v),
         //Some("AnnotationPropertyRange") => translate_annotation_property_domain(v),
