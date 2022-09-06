@@ -31,6 +31,19 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
          Some("Declaration") => id(v,m), 
 
+         Some("DataSomeValuesFrom") => id(v,m),
+         Some("DataAllValuesFrom") => id(v,m),
+         Some("DataHasValue") =>  id(v,m),
+         Some("DataMinCardinality") =>  id(v,m),
+         Some("DataMinQualifiedCardinality") => id(v,m), 
+         Some("DataMaxCardinality") =>  id(v,m),
+         Some("DataMaxQualifiedCardinality") => id(v,m), 
+         Some("DataExactCardinality") =>  id(v,m),
+         Some("DataExactQualifiedCardinality") => id(v,m), 
+         Some("DataIntersectionOf") => id(v,m), 
+         Some("DataUnionOf") => id(v,m), 
+         Some("DataOneOf") => id(v,m), 
+         Some("DataComplementOf") => id(v,m), 
 
          Some("ObjectSomeValuesFrom") => id(v,m),
          Some("ObjectAllValuesFrom") => id(v,m),
@@ -451,13 +464,33 @@ pub fn translate_list(v : &[Value], m : &HashMap<String, HashSet<String>>) -> Va
 pub fn translate_intersection_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
     let mut res = Vec::new();
-    let operator = Value::String(String::from("ObjectIntersectionOf"));
     let mut operands : Value = translate_list(&(v.as_array().unwrap())[1..],m);
-    let r = operands.as_array_mut().unwrap();
+
+    let mut is_data_intersection = false;
+    let mut is_class_intersection = false;
+
+    for op in operands.as_array_mut().unwrap() {
+        if is_class_expression(op,m) {
+            is_class_intersection = true;
+        }
+        if is_data_range(op,m) {
+            is_data_intersection = true;
+        } 
+    }
+
+    let operator = 
+    if is_class_intersection && !is_data_intersection { 
+        Value::String(String::from("ObjectIntersectionOf"))
+    } else if is_data_intersection && !is_class_intersection { 
+        Value::String(String::from("DataIntersectionOf"))
+    } else {
+        panic!("Unknown Intersection expression")
+    };
+
     res.push(operator);
+    let r = operands.as_array_mut().unwrap();
     res.append(r); 
     Value::Array(res) 
-
 } 
 
 pub fn translate_union_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
