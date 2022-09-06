@@ -1,5 +1,8 @@
 use serde_json::{Value};
+use serde_json::json;
 use crate::ofn_typing::class_translation as class_translation; //TODO: class translation
+use crate::ofn_typing::property_translation as property_translation;
+use crate::ofn_util::signature as signature;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -44,6 +47,91 @@ pub fn translate_declaration(v : &Value, m : &HashMap<String,HashSet<String>>) -
     Value::Array(v) 
 }
 
+pub fn translate_sub_object_property_of(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let lhs : Value = property_translation::translate(&v[1], m);
+    let rhs : Value = property_translation::translate(&v[2], m);
+
+    let operator = Value::String(String::from("SubObjectPropertyOf"));
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+
+}
+
+pub fn translate_range(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    let property: Value = property_translation::translate(&v[1],m); 
+    let range: Value = class_translation::translate(&v[2],m); 
+
+    if property_translation::is_object_property(&property, m) || class_translation::is_class_expression(&range,m) { 
+        let operator = Value::String(String::from("ObjectPropertyRange"));
+        let v = vec![operator, property, range];
+        Value::Array(v)
+
+    } else if property_translation::is_data_property(&property, m) || class_translation::is_data_range(&range,m) { 
+        let operator = Value::String(String::from("DataPropertyRange"));
+        let v = vec![operator, property, range];
+        Value::Array(v) 
+    } else if property_translation::is_annotation_property(&property, m) { 
+        let operator = Value::String(String::from("AnnotationPropertyRange"));
+        let v = vec![operator, property, range];
+        Value::Array(v) 
+    } else {
+        panic!("Unknown Range axiom")
+    } 
+}
+
+pub fn translate_sub_property_of(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
+
+    //get signature
+    let identifiers = signature::extract_identifiers(&v);
+
+    //check whether signature has object properties of data properties
+    let mut is_object_property = false;
+    let mut is_data_property = false;
+    let mut is_annotation_property = false;
+
+    for id in identifiers {
+        match id {
+            Value::String(x) => {
+                if m.contains_key(&x) {
+                    let types = m.get(&x).unwrap();
+                    if types.contains("owl:ObjectProperty") {
+                        is_object_property = true;
+                    }
+                    if types.contains("owl:DatatypeProperty")  { 
+                        is_data_property = true;
+                    }
+                    if types.contains("owl:AnnotationProperty") {
+                        is_annotation_property = true; 
+                    }
+                } 
+            },
+            _ => panic!("Not an entity"), 
+        }
+    }
+
+
+    let operator  =
+    if is_object_property && !is_data_property && !is_annotation_property  {
+        Value::String(String::from("SubObjectPropertyOf"))
+    } else if is_data_property && !is_object_property && !is_annotation_property {
+        Value::String(String::from("SubDataPropertyOf"))
+    } else if is_annotation_property && !is_data_property && !is_object_property {
+        Value::String(String::from("SubAnnotationPropertyOf"))
+    } else if is_object_property || is_data_property || is_annotation_property {
+        panic!("Incorrect type information")
+    } else { 
+        panic!("Missing type information")
+    };
+
+    let lhs : Value = property_translation::translate(&v[1], m);
+    let rhs : Value = property_translation::translate(&v[2], m);
+
+    let v = vec![operator, lhs, rhs];
+    Value::Array(v) 
+}
+
 
 //TODO::   equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)
@@ -67,7 +155,6 @@ pub fn translate_equivalent_classes_axiom(v : &Value, m : &HashMap<String,HashSe
 }
 
 //TODO: need to distinguish:
-//-types
 //-Object Property Assertions
 //-Data Property Assertions
 //-Annotation assertions
@@ -76,18 +163,13 @@ pub fn translate_equivalent_classes_axiom(v : &Value, m : &HashMap<String,HashSe
 //
 //the type cannot always be determined by looking at the predicate alone
 //so, we need to use the type look-up table here as well
-pub fn translate_thin_triple(v : &Value) -> Value {
-    //this just creates a copy of an OFN-S thin triple
-    let s = v[1].as_str().unwrap();
-    let p = v[2].as_str().unwrap();
-    let o = v[3].as_str().unwrap();
+pub fn translate_thin_triple(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value {
 
-    let subject = Value::String(String::from(s));
-    let predicate = Value::String(String::from(p));
-    let object = Value::String(String::from(o));
+    match v[2].as_str() {
 
-    let operator = Value::String(String::from("ThinTriple"));
-    let v = vec![operator, subject, predicate, object];
-    Value::Array(v) 
+        Some("rdf:type") => class_translation::translate_rdf_type(v,m),
+        //TODO: translate annotation (and then check what kind of annotation)
+        _ => class_translation::translate_annotation_assertion(v,m),
+    } 
 
 }
