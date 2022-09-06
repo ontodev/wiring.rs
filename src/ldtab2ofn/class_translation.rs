@@ -255,78 +255,103 @@ pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool {
     return res;
 }
 
+pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool { 
+    let mut res : bool = false;
+     match v {
+        Some(types) => {//check if there is type information
+                            for t in types.iter() {//check all types
+                                match &t.object {
+                                    owl::OWL::Named(s) => if s == "rdfs:Datatype" { res = true },
+                                    _ => (),
+
+                                }
+                            }
+                        },
+        None => (),
+    }
+    return res;
+}
+
 //TODO: introduce case for data types
 pub fn translate_intersection_of(s: &owl::IntersectionOf) -> Value { 
     let mut intersection_of = translate(&s.owl_intersection_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
+    let is_data_range = check_data_range_type(&s.rdf_type);
+
+    let operator =
     if is_class { 
-        let operator = Value::String(String::from("ObjectIntersectionOf"));
-        let mut intersection = vec![operator];
-        let arguments = intersection_of.as_array_mut().unwrap();
-        intersection.append(arguments);
-        Value::Array(intersection.to_vec()) 
+        Value::String(String::from("ObjectIntersectionOf"))
+    } else if is_data_range {
+        Value::String(String::from("DataIntersectionOf"))
     } else { 
-        let operator = Value::String(String::from("IntersectionOf"));
-        let mut intersection = vec![operator];
-        let arguments = intersection_of.as_array_mut().unwrap();
-        intersection.append(arguments);
-        Value::Array(intersection.to_vec()) 
-    }
+        Value::String(String::from("IntersectionOf"))
+    };
+
+    let mut intersection = vec![operator];
+    let arguments = intersection_of.as_array_mut().unwrap();
+    intersection.append(arguments);
+    Value::Array(intersection.to_vec()) 
 }
 
-//TODO: test type information here?
 pub fn translate_union_of(s: &owl::UnionOf) -> Value { 
     let mut union_of = translate(&s.owl_union_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
+    let is_data_range = check_data_range_type(&s.rdf_type);
+
+    let operator =
     if is_class { 
-        let operator = Value::String(String::from("ObjectUnionOf"));
-        let mut union = vec![operator];
-        let arguments = union_of.as_array_mut().unwrap();
-        union.append(arguments);
-        Value::Array(union.to_vec())
-    } else {
-        let operator = Value::String(String::from("UnionOf"));
-        let mut union = vec![operator];
-        let arguments = union_of.as_array_mut().unwrap();
-        union.append(arguments);
-        Value::Array(union.to_vec())
-    } 
+        Value::String(String::from("ObjectUnionOf"))
+    } else if is_data_range {
+        Value::String(String::from("DataUnionOf"))
+    }  else  {
+        Value::String(String::from("UnionOf"))
+    }; 
+
+    let mut union = vec![operator];
+    let arguments = union_of.as_array_mut().unwrap();
+    union.append(arguments);
+    Value::Array(union.to_vec())
 }
 
 pub fn translate_one_of(s: &owl::OneOf) -> Value { 
     let mut one_of = translate(&s.owl_one_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
+    let is_data_range = check_data_range_type(&s.rdf_type);
+
+    let operator =
     if is_class { 
-        let operator = Value::String(String::from("ObjectOneOf"));
-        let mut one = vec![operator];
-        let arguments = one_of.as_array_mut().unwrap();
-        one.append(arguments);
-        Value::Array(one.to_vec()) 
+        Value::String(String::from("ObjectOneOf"))
+    } else if is_data_range {
+        Value::String(String::from("DataOneOf"))
     } else {
-        let operator = Value::String(String::from("OneOf"));
-        let mut one = vec![operator];
-        let arguments = one_of.as_array_mut().unwrap();
-        one.append(arguments);
-        Value::Array(one.to_vec()) 
-    } 
+        Value::String(String::from("OneOf"))
+    };
+
+    let mut one = vec![operator];
+    let arguments = one_of.as_array_mut().unwrap();
+    one.append(arguments);
+    Value::Array(one.to_vec()) 
 }
 
 pub fn translate_complement_of(s: &owl::ComplementOf) -> Value { 
     let complement_of = translate(&s.owl_complement_of[0].object);
-    let is_class = check_class_type(&s.rdf_type);
-    if is_class { 
-        let operator = Value::String(String::from("ObjectComplementOf"));
-        let v = vec![operator, complement_of];
-        Value::Array(v)
 
-    } else {
-        let operator = Value::String(String::from("ComplementOf"));
-        let v = vec![operator, complement_of];
-        Value::Array(v)
-    } 
+    let is_class = check_class_type(&s.rdf_type);
+    let is_data_range = check_data_range_type(&s.rdf_type);
+
+    let operator = 
+    if is_class { 
+        Value::String(String::from("ObjectComplementOf"))
+    } else if is_data_range {
+        Value::String(String::from("DataComplementOf"))
+    } else { 
+        Value::String(String::from("ComplementOf"))
+    };
+    let v = vec![operator, complement_of];
+    Value::Array(v)
 } 
 
 //NB: this encodes an axiom - not an expression
