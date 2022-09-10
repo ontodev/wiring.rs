@@ -24,7 +24,7 @@ pub fn translate_class_assertion(v : &Value, m : &HashMap<String,HashSet<String>
     let individual : Value = v[2].clone();
 
     let operator = Value::String(String::from("ClassAssertion"));
-    let v = vec![operator, individual, class];
+    let v = vec![operator, class, individual];
     Value::Array(v) 
 }
 

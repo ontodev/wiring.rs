@@ -204,6 +204,11 @@ pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
         let v = vec![operator, lhs];
         Value::Array(v) 
 
+    } else if operator.to_string().eq("\"ClassAssertion\"") {
+
+        let v = vec![operator, rhs, lhs];
+        Value::Array(v) 
+
     }
     //else if operator.to_string().eq("\"DifferentIndividuals\"") {
     //    let v = vec![operator, lhs, rhs];
