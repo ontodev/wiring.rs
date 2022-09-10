@@ -359,7 +359,7 @@ pub fn translate_thin_triple(v : &Value, m : &HashMap<String,HashSet<String>>) -
 
         Some("rdf:type") => class_translation::translate_rdf_type(v,m),
         //TODO: translate annotation (and then check what kind of annotation)
-        _ => class_translation::translate_annotation_assertion(v,m),
+        _ => class_translation::translate_assertion(v,m),
     } 
 
 }

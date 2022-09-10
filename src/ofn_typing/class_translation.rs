@@ -312,7 +312,8 @@ pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>)
     Value::Array(declaration)
 }
 
-pub fn translate_annotation_assertion(v : &Value, _m : &HashMap<String, HashSet<String>>) -> Value {
+pub fn translate_assertion(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
+
     let s = v[1].as_str().unwrap();
     let p = v[2].as_str().unwrap();
     let o = v[3].as_str().unwrap();
@@ -321,7 +322,13 @@ pub fn translate_annotation_assertion(v : &Value, _m : &HashMap<String, HashSet<
     let predicate = Value::String(String::from(p));
     let object = Value::String(String::from(o));
 
-    let operator = Value::String(String::from("AnnotationAssertion"));
+    let operator =
+    if property_translation::is_object_property(&v[2], m) { 
+        Value::String(String::from("ObjectPropertyAssertion"))
+    } else { 
+        Value::String(String::from("AnnotationAssertion"))
+    };
+
     let v = vec![operator, predicate, subject, object];
     Value::Array(v) 
 
