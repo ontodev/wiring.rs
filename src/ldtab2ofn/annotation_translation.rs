@@ -13,8 +13,8 @@ pub fn translate_annotations(m : &Map<String, Value>) -> Vec<Value> {
             //traverse list of objects
             Value::Array(array) =>  {
                 for object in array { 
-                    //unpack object
-                    let value = object["object"].clone(); 
+
+                    let value = encode_value(&object); 
                     //TODO:
                     //(horned OWL currently doesn't support recrusive annotations)
                     //1. check whether object has an annotation
@@ -29,6 +29,28 @@ pub fn translate_annotations(m : &Map<String, Value>) -> Vec<Value> {
         }; 
     }
     annotations 
+}
+
+pub fn encode_value(object : &Value) -> Value {
+
+    let value = object["object"].clone(); 
+    let datatype = object["datatype"].clone();
+    let datatype = datatype.as_str().unwrap();
+
+    let value_str = value.as_str().unwrap(); 
+
+    let value_res = 
+    if datatype.eq("_IRI") { 
+        format!("{}", value_str) 
+    } else if datatype.eq("_plain") {
+        format!("\"{}\"", value_str)
+    } else if datatype[..1].eq("@") {
+        format!("\"{}{}\"", value_str, datatype)
+    } else {
+        format!("\"{}^^{}\"", value_str, datatype)
+    };
+
+    Value::String(value_res) 
 }
 
 pub fn translate_annotation(m : &Map<String, Value>) -> Value {
@@ -46,8 +68,8 @@ pub fn translate_annotation(m : &Map<String, Value>) -> Value {
             Value::Array(array) =>  {
                 for object in array {
 
-                    //unpack object
-                    let value = object["object"].clone(); 
+                    let value = encode_value(&object);
+
                     //TODO:
                     //(horned OWL currently doesn't support recrusive annotations)
                     //1. check whether object has an annotation
