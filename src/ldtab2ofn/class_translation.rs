@@ -128,7 +128,7 @@ pub fn translate_min_cardinality(s: &owl::MinCardinality) -> Value {
     let cardinality =  translate(&s.owl_min_cardinality[0].object);
 
     let operator = Value::String(String::from("MinCardinality"));
-    let v = vec![operator, property, cardinality];
+    let v = vec![operator, cardinality, property];
     Value::Array(v)
 }
 
@@ -137,8 +137,8 @@ pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> 
     let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("ObjectMinQualifiedCardinality"));
-    let v = vec![operator, property, cardinality, filler];
+    let operator = Value::String(String::from("MinCardinality"));
+    let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
@@ -148,8 +148,8 @@ pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> Value {
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_cardinality[0].object);
 
-    let operator = Value::String(String::from("ObjectMaxCardinality"));
-    let v = vec![operator, property, cardinality];
+    let operator = Value::String(String::from("MaxCardinality"));
+    let v = vec![operator, cardinality, property];
     Value::Array(v)
 
 }
@@ -159,8 +159,8 @@ pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> 
     let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("ObjectMaxQualifiedCardinality"));
-    let v = vec![operator, property, cardinality, filler];
+    let operator = Value::String(String::from("MaxCardinality"));
+    let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
@@ -171,7 +171,7 @@ pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> Value {
     let cardinality =  translate(&s.owl_cardinality[0].object);
 
     let operator = Value::String(String::from("ExactCardinality"));
-    let v = vec![operator, property, cardinality];
+    let v = vec![operator, cardinality, property];
     Value::Array(v)
 }
 
@@ -180,8 +180,8 @@ pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality)
     let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
 
-    let operator = Value::String(String::from("ObjectExactQualifiedCardinality"));
-    let v = vec![operator, property, cardinality, filler];
+    let operator = Value::String(String::from("ExactCardinality"));
+    let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 } 
 
