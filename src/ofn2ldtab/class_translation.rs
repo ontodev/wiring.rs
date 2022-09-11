@@ -9,12 +9,28 @@ pub fn translate(v : &Value) -> Value {
         Some("ObjectSomeValuesFrom") => translate_some_values_from(v), 
         Some("ObjectAllValuesFrom") => translate_all_values_from(v), 
         Some("ObjectHasValue") => translate_has_value(v), 
-        Some("ObjectMinCardinality") => translate_min_cardinality(v), 
+
+        Some("ObjectMinCardinality") => translate_object_min_cardinality(v), 
+        Some("ObjectMaxCardinality") => translate_object_max_cardinality(v), 
+        Some("ObjectExactCardinality") => translate_object_exact_cardinality(v), 
+
+        Some("DataMinCardinality") => translate_data_min_cardinality(v), 
+        Some("DataMaxCardinality") => translate_data_max_cardinality(v), 
+        Some("DataExactCardinality") => translate_data_exact_cardinality(v), 
+
+        Some("MinCardinality") => translate_min_cardinality(v), 
+        Some("MaxCardinality") => translate_max_cardinality(v), 
+        Some("ExactCardinality") => translate_exact_cardinality(v), 
+
+        //TODO: deprecate these
         Some("ObjectMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
-        Some("ObjectMaxCardinality") => translate_max_cardinality(v), 
         Some("ObjectMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
-        Some("ObjectExactCardinality") => translate_exact_cardinality(v), 
         Some("ObjectExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+        Some("DataMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
+        Some("DataMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
+        Some("DataExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+
+
         Some("ObjectHasSelf") => translate_has_self(v), 
         Some("ObjectIntersectionOf") => translate_intersection_of(v), 
         Some("ObjectUnionOf") => translate_union_of(v), 
@@ -25,28 +41,24 @@ pub fn translate(v : &Value) -> Value {
         Some("DataSomeValuesFrom") => translate_some_values_from(v), 
         Some("DataAllValuesFrom") => translate_all_values_from(v), 
         Some("DataHasValue") => translate_has_value(v), 
-        Some("DataMinCardinality") => translate_min_cardinality(v), 
-        Some("DataMinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
-        Some("DataMaxCardinality") => translate_max_cardinality(v), 
-        Some("DataMaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
-        Some("DataExactCardinality") => translate_exact_cardinality(v), 
-        Some("DataExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+
         Some("DataHasSelf") => translate_has_self(v), 
         Some("DataIntersectionOf") => translate_intersection_of(v), 
         Some("DataUnionOf") => translate_union_of(v), 
         Some("DataOneOf") => translate_one_of(v), 
         Some("DataComplementOf") => translate_complement_of(v), 
 
-
+        //type ambiguity 
         Some("SomeValuesFrom") => translate_some_values_from(v), 
         Some("AllValuesFrom") => translate_all_values_from(v), 
         Some("HasValue") => translate_has_value(v), 
-        Some("MinCardinality") => translate_min_cardinality(v), 
+
+
+        //TODO: this cannot be translated without type information
         Some("MinQualifiedCardinality") => translate_min_qualified_cardinality(v), 
-        Some("MaxCardinality") => translate_max_cardinality(v), 
         Some("MaxQualifiedCardinality") => translate_max_qualified_cardinality(v), 
-        Some("ExactCardinality") => translate_exact_cardinality(v), 
         Some("ExactQualifiedCardinality") => translate_exact_qualified_cardinality(v), 
+
         Some("HasSelf") => translate_has_self(v), 
         Some("IntersectionOf") => translate_intersection_of(v), 
         Some("UnionOf") => translate_union_of(v), 
@@ -125,15 +137,64 @@ pub fn translate_has_self(v : &Value) -> Value {
 } 
 
 
+pub fn translate_object_min_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:minQualifiedCardinality" : vec![cardinality_o],
+            "owl:onClass" : vec![filler_o]}) 
+    } else { 
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:minCardinality" : vec![cardinality_o]})
+    }
+} 
+
 pub fn translate_min_cardinality(v : &Value) -> Value {
+    //TODO: check that this is not a *qualified* cardinality restriction
 
     let property_o : Value = get_object(&v[1]);
     let cardinality_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:minCardinality" : vec![cardinality_o]})
+        "owl:onProperty" : vec![property_o],
+        "owl:minCardinality" : vec![cardinality_o]})
+} 
+
+pub fn translate_data_min_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:minQualifiedCardinality" : vec![cardinality_o],
+            "owl:onDataRange" : vec![filler_o]}) 
+    } else { 
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:minCardinality" : vec![cardinality_o]})
+    }
 } 
 
 pub fn translate_min_qualified_cardinality(v : &Value) -> Value {
@@ -160,6 +221,58 @@ pub fn translate_max_cardinality(v : &Value) -> Value {
            "owl:maxCardinality" : vec![cardinality_o]}) 
 } 
 
+pub fn translate_object_max_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:maxQualifiedCardinality" : vec![cardinality_o],
+            "owl:onClass" : vec![filler_o]}) 
+
+    } else {
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:maxCardinality" : vec![cardinality_o]}) 
+    }
+} 
+
+pub fn translate_data_max_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:maxQualifiedCardinality" : vec![cardinality_o],
+            "owl:onDataRange" : vec![filler_o]}) 
+
+    } else {
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:maxCardinality" : vec![cardinality_o]}) 
+    }
+} 
+
 pub fn translate_max_qualified_cardinality(v : &Value) -> Value {
 
     let property_o : Value = get_object(&v[1]);
@@ -182,6 +295,58 @@ pub fn translate_exact_cardinality(v : &Value) -> Value {
     json!({"rdf:type" : vec![type_o],
            "owl:onProperty" : vec![property_o],
            "owl:cardinality" : vec![cardinality_o]})
+} 
+
+pub fn translate_object_exact_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:qualifiedCardinality" : vec![cardinality_o],
+            "owl:onClass" : vec![filler_o]}) 
+
+    } else {
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:cardinality" : vec![cardinality_o]})
+    }
+} 
+
+pub fn translate_data_exact_cardinality(v : &Value) -> Value {
+
+    let property_o : Value = get_object(&v[1]);
+    let cardinality_o : Value = get_object(&v[2]);
+    let type_o : Value = get_object(&json!("owl:Restriction"));
+
+    let ofn = v.as_array().unwrap();
+    let is_qualified = ofn.len() == 4;
+
+    if is_qualified {
+
+        let filler_o : Value = get_object(&v[3]);
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:qualifiedCardinality" : vec![cardinality_o],
+            "owl:onDataRange" : vec![filler_o]}) 
+
+    } else {
+
+        json!({"rdf:type" : vec![type_o],
+            "owl:onProperty" : vec![property_o],
+            "owl:cardinality" : vec![cardinality_o]})
+    }
 } 
 
 pub fn translate_exact_qualified_cardinality(v : &Value) -> Value {
