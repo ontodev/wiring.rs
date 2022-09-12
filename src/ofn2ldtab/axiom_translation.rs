@@ -498,7 +498,7 @@ pub fn translate_sub_data_property(v : &Value) -> Value {
         "retraction":"0",
         "graph":"graph", 
         "subject":sub,
-        "predicate":"rdfs:subPropertyOf ", 
+        "predicate":"rdfs:subPropertyOf", 
         "object":sup,
         "datatype":util::translate_datatype(&json!(sup)), 
         "annotation":annotation 
