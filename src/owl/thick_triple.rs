@@ -88,7 +88,7 @@ pub struct MinCardinality {
 }
 
 #[derive(Debug,Serialize, Deserialize)]
-pub struct MinQualifiedCardinality {
+pub struct MinObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
@@ -97,6 +97,18 @@ pub struct MinQualifiedCardinality {
     pub owl_min_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
+}
+
+#[derive(Debug,Serialize, Deserialize)]
+pub struct MinDataQualifiedCardinality {
+    #[serde(rename = "rdf:type")]
+    pub rdf_type: Option<Vec<Object>>,
+    #[serde(rename = "owl:onProperty")]
+    pub owl_on_property: Vec<Object>,
+    #[serde(rename = "owl:minQualifiedCardinality")]
+    pub owl_min_qualified_cardinality: Vec<Object>, 
+    #[serde(rename = "owl:onDataRange")]
+    pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize)]
@@ -110,7 +122,7 @@ pub struct MaxCardinality {
 }
 
 #[derive(Debug,Serialize, Deserialize)]
-pub struct MaxQualifiedCardinality {
+pub struct MaxObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
@@ -119,6 +131,18 @@ pub struct MaxQualifiedCardinality {
     pub owl_max_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
+}
+
+#[derive(Debug,Serialize, Deserialize)]
+pub struct MaxDataQualifiedCardinality {
+    #[serde(rename = "rdf:type")]
+    pub rdf_type: Option<Vec<Object>>,
+    #[serde(rename = "owl:onProperty")]
+    pub owl_on_property: Vec<Object>,
+    #[serde(rename = "owl:maxQualifiedCardinality")]
+    pub owl_max_qualified_cardinality: Vec<Object>, 
+    #[serde(rename = "owl:onDataRange")]
+    pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize)]
@@ -132,7 +156,7 @@ pub struct ExactCardinality {
 }
 
 #[derive(Debug,Serialize, Deserialize)]
-pub struct ExactQualifiedCardinality {
+pub struct ExactObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:onProperty")]
@@ -141,6 +165,18 @@ pub struct ExactQualifiedCardinality {
     pub owl_qualified_cardinality: Vec<Object>, 
     #[serde(rename = "owl:onClass")]
     pub owl_on_class: Vec<Object>, 
+}
+
+#[derive(Debug,Serialize, Deserialize)]
+pub struct ExactDataQualifiedCardinality {
+    #[serde(rename = "rdf:type")]
+    pub rdf_type: Option<Vec<Object>>,
+    #[serde(rename = "owl:onProperty")]
+    pub owl_on_property: Vec<Object>,
+    #[serde(rename = "owl:qualifiedCardinality")]
+    pub owl_qualified_cardinality: Vec<Object>, 
+    #[serde(rename = "owl:onDataRange")]
+    pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize)]
@@ -243,18 +279,24 @@ pub struct Object {
 #[serde(untagged)]
 pub enum OWL {
     Named(String), 
-    //TerminalObject(TerminalObject),
-    //Number(i64), //we could type numbers for cardinality restrictions - but I don't see the point
+    //Number(i64), //TODO type numbers for cardinality restrictions ?
     SomeValuesFrom(SomeValuesFrom),
     AllValuesFrom(AllValuesFrom),
     HasValue(HasValue),
     HasSelf(HasSelf),
+
     MinCardinality(MinCardinality),
-    MinQualifiedCardinality(MinQualifiedCardinality),
     MaxCardinality(MaxCardinality),
-    MaxQualifiedCardinality(MaxQualifiedCardinality),
     ExactCardinality(ExactCardinality),
-    ExactQualifiedCardinality(ExactQualifiedCardinality),
+
+    MinObjectQualifiedCardinality(MinObjectQualifiedCardinality),
+    MaxObjectQualifiedCardinality(MaxObjectQualifiedCardinality),
+    ExactObjectQualifiedCardinality(ExactObjectQualifiedCardinality),
+
+    MinDataQualifiedCardinality(MinDataQualifiedCardinality),
+    MaxDataQualifiedCardinality(MaxDataQualifiedCardinality),
+    ExactDataQualifiedCardinality(ExactDataQualifiedCardinality),
+
     IntersectionOf(IntersectionOf),
     UnionOf(UnionOf),
     OneOf(OneOf),

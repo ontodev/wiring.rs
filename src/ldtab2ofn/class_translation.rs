@@ -13,11 +13,16 @@ pub fn translate(b: &owl::OWL) -> Value {
         owl::OWL::HasValue(x) => translate_has_value(x),
         owl::OWL::HasSelf(x) => translate_has_self(x),
         owl::OWL::MinCardinality(x) => translate_min_cardinality(x),
-        owl::OWL::MinQualifiedCardinality(x) => translate_min_qualified_cardinality(x),
-        owl::OWL::MaxCardinality(x) => translate_max_cardinality(x),
-        owl::OWL::MaxQualifiedCardinality(x) => translate_max_qualified_cardinality(x),
         owl::OWL::ExactCardinality(x) => translate_exact_cardinality(x),
-        owl::OWL::ExactQualifiedCardinality(x) => translate_exact_qualified_cardinality(x),
+        owl::OWL::MaxCardinality(x) => translate_max_cardinality(x),
+
+        owl::OWL::MinObjectQualifiedCardinality(x) => translate_object_min_qualified_cardinality(x),
+        owl::OWL::MaxObjectQualifiedCardinality(x) => translate_object_max_qualified_cardinality(x),
+        owl::OWL::ExactObjectQualifiedCardinality(x) => translate_object_exact_qualified_cardinality(x),
+
+        owl::OWL::MinDataQualifiedCardinality(x) => translate_data_min_qualified_cardinality(x),
+        owl::OWL::MaxDataQualifiedCardinality(x) => translate_data_max_qualified_cardinality(x),
+        owl::OWL::ExactDataQualifiedCardinality(x) => translate_data_exact_qualified_cardinality(x),
 
         //propositional connectives
         owl::OWL::IntersectionOf(x) => translate_intersection_of(x),
@@ -132,12 +137,22 @@ pub fn translate_min_cardinality(s: &owl::MinCardinality) -> Value {
     Value::Array(v)
 }
 
-pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> Value { 
+pub fn translate_object_min_qualified_cardinality(s: &owl::MinObjectQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("MinCardinality"));
+    let operator = Value::String(String::from("ObjectMinCardinality"));
+    let v = vec![operator, cardinality, property, filler];
+    Value::Array(v)
+}
+
+pub fn translate_data_min_qualified_cardinality(s: &owl::MinDataQualifiedCardinality) -> Value { 
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
+
+    let operator = Value::String(String::from("DataMinCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
@@ -154,12 +169,22 @@ pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> Value {
 
 }
 
-pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> Value { 
+pub fn translate_object_max_qualified_cardinality(s: &owl::MaxObjectQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("MaxCardinality"));
+    let operator = Value::String(String::from("ObjectMaxCardinality"));
+    let v = vec![operator, cardinality, property, filler];
+    Value::Array(v)
+}
+
+pub fn translate_data_max_qualified_cardinality(s: &owl::MaxDataQualifiedCardinality) -> Value { 
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
+
+    let operator = Value::String(String::from("DataMaxCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
@@ -175,12 +200,22 @@ pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> Value {
     Value::Array(v)
 }
 
-pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality) -> Value { 
+pub fn translate_object_exact_qualified_cardinality(s: &owl::ExactObjectQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
 
-    let operator = Value::String(String::from("ExactCardinality"));
+    let operator = Value::String(String::from("ObjectExactCardinality"));
+    let v = vec![operator, cardinality, property, filler];
+    Value::Array(v)
+} 
+
+pub fn translate_data_exact_qualified_cardinality(s: &owl::ExactDataQualifiedCardinality) -> Value { 
+    let property = translate(&s.owl_on_property[0].object);
+    let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
+    let filler =  translate(&s.owl_on_datarange[0].object);
+
+    let operator = Value::String(String::from("DataExactCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 } 
