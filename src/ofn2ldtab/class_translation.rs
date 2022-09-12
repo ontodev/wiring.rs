@@ -139,8 +139,8 @@ pub fn translate_has_self(v : &Value) -> Value {
 
 pub fn translate_object_min_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
@@ -175,8 +175,8 @@ pub fn translate_min_cardinality(v : &Value) -> Value {
 
 pub fn translate_data_min_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
@@ -223,8 +223,8 @@ pub fn translate_max_cardinality(v : &Value) -> Value {
 
 pub fn translate_object_max_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
@@ -249,8 +249,8 @@ pub fn translate_object_max_cardinality(v : &Value) -> Value {
 
 pub fn translate_data_max_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
@@ -299,8 +299,8 @@ pub fn translate_exact_cardinality(v : &Value) -> Value {
 
 pub fn translate_object_exact_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
@@ -325,8 +325,8 @@ pub fn translate_object_exact_cardinality(v : &Value) -> Value {
 
 pub fn translate_data_exact_cardinality(v : &Value) -> Value {
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     let ofn = v.as_array().unwrap();
