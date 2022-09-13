@@ -96,6 +96,8 @@ pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
         Some("FunctionalObjectProperty") => v.clone(), 
         Some("FunctionalDataProperty") => v.clone(), 
         Some("EquivalentObjectProperties") => v.clone(), 
+        Some("Import") => v.clone(), 
+        Some("OntologyAnnotation") => v.clone(),
 
         //TODO: ThinTriples need to be typed as well
         Some("ThinTriple") => axiom_translation::translate_thin_triple(v,m),
