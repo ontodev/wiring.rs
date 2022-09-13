@@ -61,8 +61,13 @@ pub fn translate_class_declaration(v : &Value) -> Value {
 
 pub fn translate_ontology_import(v : &Value) -> Value {
 
-    let subject = class_translation::translate(&v[1]);
-    let object = class_translation::translate(&v[2]);
+    //split annotations from logical structure
+    let owl = annotation_translation::get_owl(v);
+    let ofn_annotations = annotation_translation::get_annotations(v);
+    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+
+    let subject = class_translation::translate(&owl[1]);
+    let object = class_translation::translate(&owl[2]);
 
        json!({"assertion":"1",
            "retraction":"0",
@@ -71,7 +76,7 @@ pub fn translate_ontology_import(v : &Value) -> Value {
            "predicate":"owl:imports",
            "object": object,
            "datatype":"_IRI",
-           "annotation":"Null"
+           "annotation":annotation
        }) 
 }
 
