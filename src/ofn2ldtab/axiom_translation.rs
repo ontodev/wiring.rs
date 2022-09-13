@@ -59,6 +59,39 @@ pub fn translate_class_declaration(v : &Value) -> Value {
     triple 
 }
 
+pub fn translate_ontology_import(v : &Value) -> Value {
+
+    let subject = class_translation::translate(&v[1]);
+    let object = class_translation::translate(&v[2]);
+
+       json!({"assertion":"1",
+           "retraction":"0",
+           "graph":"graph",
+           "subject": subject,
+           "predicate":"owl:imports",
+           "object": object,
+           "datatype":"_IRI",
+           "annotation":"Null"
+       }) 
+}
+
+//TODO
+//pub fn translate_ontology_annotation(v : &Value) -> Value {
+//
+//    let subject = class_translation::translate(&v[1]);
+//    let predicate = property_translation::translate(&v[1]);
+//
+//       json!({"assertion":"1",
+//           "retraction":"0",
+//           "graph":"graph",
+//           "subject": subject,
+//           "predicate":predicate,
+//           "object":value_ldtab,
+//           "datatype":value_datatype,
+//           "annotation":"Null"
+//       }) 
+//}
+
 pub fn translate_class_assertion_axiom(v : &Value) -> Value { 
 
     //split annotations from logical structure
@@ -571,7 +604,7 @@ pub fn translate_disjoint_classes_axiom(v : &Value) -> Value {
                         "graph":"graph", //TODO
                         "subject":blank_node,
                         "predicate":"owl:AllDisjointClasses",
-                        "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
+                        "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]},
                         "datatype": "_JSON", 
                         "annotation":annotation}); 
     triple
