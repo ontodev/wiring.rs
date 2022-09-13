@@ -78,6 +78,7 @@ pub fn parse_thick_triple(subject: &str, predicate: &str, object: &str) -> Value
         "owl:propertyChainAxiom" => axiom_translation::translate_property_chain(&subject_json, &object_json),
         "owl:NegativePropertyAssertion" => axiom_translation::translate_negative_property_assertion(&subject_json, &object_json),
         "owl:hasKey" => axiom_translation::translate_has_key(&subject_json, &object_json),
+        "owl:imports" => axiom_translation::translate_import(&subject_json, &object_json),
 
         _ => axiom_translation::translate_thin_triple(subject, predicate, object),
     }

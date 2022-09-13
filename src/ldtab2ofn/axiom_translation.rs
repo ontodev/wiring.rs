@@ -332,6 +332,20 @@ pub fn translate_has_key(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(res.to_vec()) 
 }
 
+pub fn translate_import(lhs :&owl::OWL, rhs : &owl::OWL) -> Value {
+
+    let ontology : Value = class_translation::translate(lhs); 
+    let import : Value = class_translation::translate(rhs); 
+
+    let operator = Value::String(String::from("Import"));
+    let mut res = vec![operator];
+    res.push(ontology);
+    res.push(import);
+
+    Value::Array(res)
+
+}
+
 pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
     //NB: AnnotationAssertions are ambiguous and are translated as ThickTriplesh
     //T(Property Subject Object)  rather then T(Subject Property Object)
