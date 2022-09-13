@@ -50,7 +50,12 @@ pub fn translate_triple(v : &Value) -> Value {
         Some("AnnotationAssertion") => axiom_translation::translate_annotation_assertion_axiom(v),
         Some("SubAnnotationPropertyOf") => axiom_translation::translate_sub_annotation_property_of_axiom(v),
         Some("AnnotationPropertyDomain") => axiom_translation::translate_annotation_property_domain_axiom(v),
-        Some("AnnotationPropertyRange") => axiom_translation::translate_annotation_property_range_axiom(v),
+        Some("AnnotationPropertyRange") => axiom_translation::translate_annotation_property_range_axiom(v), 
+        Some("Import") => axiom_translation::translate_ontology_import(v),
+
+        //TODO: ontology annotations
+        //Some("OntologyAnnotation") => axiom_translation::translate_ontology_annotation(v), 
+        //Some("Ontology") => axiom_translation::translate_annotation_property_range_axiom(v),
 
         Some(_) => panic!(),
         None => panic!(),
