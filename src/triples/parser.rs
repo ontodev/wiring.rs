@@ -5,6 +5,23 @@ use serde_json::{Value};
 ///Returns a vector of class expression axioms (serialised as JSON serde values)
 ///for a given ontology serialised as thick triples
 ///(would have preferred to use a set instead of a vector, but Value doesn't implement the trait Hash)
+
+pub fn get_thick_triples(path : &str) -> Vec<Value> {
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+
+    let mut triples = Vec::new();
+
+    for line in reader.lines() {
+        let content : String = line.unwrap(); 
+        let thick_triple: Value = serde_json::from_str(content.as_str()).unwrap();
+
+        triples.push(thick_triple);
+
+    }
+    triples
+}
+
 pub fn extract_class_expression_axioms(path : &str) -> Vec<Value> {
 
     let file = File::open(path).unwrap();
