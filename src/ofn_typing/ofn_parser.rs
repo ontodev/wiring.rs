@@ -1,4 +1,5 @@
 use serde_json::{Value};
+use serde_json::json;
 use crate::ofn_typing::axiom_translation as axiom_translation; 
 use crate::ofn_typing::class_translation as class_translation; 
 use std::collections::HashMap;
@@ -31,18 +32,39 @@ pub fn strip_annotations(v : &Value) -> Value {
     Value::Array(res) 
 }
 
+pub fn has_annotation(v : &Value) -> bool { 
+    match v.clone() {
+        Value::Array(x) => is_annotation(&x[1]), //look into second argument
+        _ => false,
+    } 
+}
+
+pub fn get_annotations(v : &Value) -> Vec<Value> {
+    if has_annotation(&v) {
+
+        let mut res = Vec::new();
+        let candidates = &v.as_array().unwrap()[0..];
+        for candidate in candidates  {
+            if is_annotation(candidate){
+                res.push(candidate.clone());
+            } 
+        }
+        res
+    } else {
+        Vec::new()//empty vector
+    } 
+}
+
 pub fn get_owl(v : &Value) -> Value { 
     strip_annotations(v)
 }
 
-//TODO: handle annotations properly
-//1. spit them
-//2. translate logical bit as usual
-//3. merge them back in?
 pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
 
-    let v = &get_owl(v);
+    let annotations = get_annotations(v);
+    let v = &get_owl(v);//TODO: rename v to owl
 
+    let ofn = 
     match v[0].as_str() {
         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v,m),
         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v,m),
@@ -160,5 +182,22 @@ pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
         Some(_) => panic!(),
         None => Value::String(String::from(v.as_str().unwrap())),
+    };
+
+
+    //merge logical OFN with annotation OFN
+    let rest = &ofn.as_array().unwrap()[1..];
+
+    let mut res = vec![ofn[0].clone()];
+
+    for annotation in annotations {
+        res.push(annotation.clone());
     } 
+
+    for r in rest {
+        res.push(r.clone());
+    }
+
+    Value::Array(res)
+
 } 
