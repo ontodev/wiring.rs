@@ -236,6 +236,40 @@ pub fn translate_sub_property_of(v : &Value, m : &HashMap<String,HashSet<String>
     Value::Array(v) 
 }
 
+pub fn translate_disjoint_properties(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
+    let mut operands = Vec::new();
+    let mut found_object_property = false;
+    let mut found_data_property = false;
+
+    for argument in &(v.as_array().unwrap())[1..] {
+        let a: Value = property_translation::translate(&argument,m); 
+        operands.push(a.clone());
+
+        if property_translation::is_data_property(&a,m) {
+            found_data_property = true;
+        }
+
+        if property_translation::is_object_property(&a,m) {
+            found_object_property = true;
+        } 
+    }
+
+    let operator = 
+    if found_data_property && !found_object_property {
+        Value::String(String::from("DisjointDataProperties"))
+    } else if found_object_property && !found_data_property { 
+        Value::String(String::from("DisjointObjectProperties"))
+    } else { 
+        panic!("Unknown disjoint expression")
+    }; 
+
+    let mut axiom = vec![operator];
+    for o in operands {
+        axiom.push(o); 
+    } 
+    Value::Array(axiom) 
+}
+
 pub fn translate_equivalent_properties(v : &Value, m : &HashMap<String,HashSet<String>>) -> Value { 
     let mut operands = Vec::new();
     let mut found_object_property = false;
