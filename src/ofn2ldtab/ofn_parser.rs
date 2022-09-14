@@ -39,7 +39,7 @@ pub fn translate_triple(v : &Value) -> Value {
 
         Some("DataPropertyDomain") => axiom_translation::translate_data_property_domain_axiom(v),
         Some("DataPropertyRange") => axiom_translation::translate_data_property_range_axiom(v),
-        Some("SameIndividuals") => axiom_translation::translate_same_individuals_axiom(v),
+        Some("SameIndividual") => axiom_translation::translate_same_individuals_axiom(v),
         Some("DifferentIndividuals") => axiom_translation::translate_different_individuals_axiom(v),
         Some("HasKey") => axiom_translation::translate_has_key_axiom(v),
         Some("ClassAssertion") => axiom_translation::translate_class_assertion_axiom(v),
