@@ -1,5 +1,4 @@
 use serde_json::{Value, Result as SResult};
-use serde_json::json;
 use crate::owl::thick_triple as tt;
 use crate::ldtab2ofn::axiom_translation as axiom_translation; 
 use crate::ldtab2ofn::annotation_translation as annotation_translation; 

@@ -1,5 +1,4 @@
-use serde_json::{Value, Result as SResult, Map};
-use serde_json::json;
+use serde_json::{Value, Map};
 
 pub fn translate_annotations(m : &Map<String, Value>) -> Vec<Value> {
 

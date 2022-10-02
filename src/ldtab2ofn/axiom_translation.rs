@@ -93,7 +93,7 @@ pub fn translate_sub_property_of(subject :&owl::OWL, object: &owl::OWL) -> Value
     Value::Array(v) 
 }
 
-pub fn translate_all_disjoint_properties(subject :&owl::OWL, object: &owl::OWL) -> Value {
+pub fn translate_all_disjoint_properties(_subject :&owl::OWL, object: &owl::OWL) -> Value {
 
     //let lhs : Value = class_translation::translate(subject);
     let mut rhs: Value = class_translation::translate(object); 

@@ -1,5 +1,4 @@
 use serde_json::{Value};
-use serde_json::json;
 use crate::ofn_typing::class_translation as class_translation; //TODO: class translation
 use crate::ofn_typing::property_translation as property_translation;
 use crate::ofn_util::signature as signature;

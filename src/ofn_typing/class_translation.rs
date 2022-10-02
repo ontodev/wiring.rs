@@ -1,5 +1,4 @@
 use serde_json::{Value};
-use serde_json::json;
 use crate::ofn_typing::property_translation as property_translation;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -78,7 +77,7 @@ pub fn is_named_individual(v :&Value, m : &HashMap<String, HashSet<String>>) -> 
 
 }
 
-pub fn is_data_range(v : &Value, m: &HashMap<String, HashSet<String>>) -> bool {
+pub fn is_data_range(v : &Value, _m: &HashMap<String, HashSet<String>>) -> bool {
      match v[0].as_str() {
          Some("DataRange") => true,
          Some("DataComplementOf") => true,

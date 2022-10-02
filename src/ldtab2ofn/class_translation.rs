@@ -1,7 +1,6 @@
 use crate::owl::thick_triple as owl;
 use crate::ldtab2ofn::property_translation as property_translation;
 use serde_json::{Value};
-use serde_json::json;
 
 pub fn translate(b: &owl::OWL) -> Value {
      match &*b {//TODO: don't quite understand why &* is necessary here

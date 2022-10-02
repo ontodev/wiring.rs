@@ -1,5 +1,4 @@
 use serde_json::{Value};
-use serde_json::json;
 
 //extract language tags + datatypes
 //command line interface
@@ -23,7 +22,7 @@ pub fn get_prefixes(v : &Value) -> Vec<String> {
 pub fn extract_identifiers(v : &Value) -> Vec<Value> {
 
     match v {
-        Value::String(x) => vec![v.clone()],
+        Value::String(_x) => vec![v.clone()],
         Value::Array(array) => {
             let mut res = Vec::new(); 
             for a in &array[1..]  {//slice drops operator
