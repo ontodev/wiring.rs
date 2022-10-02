@@ -6,6 +6,7 @@ pub fn translate(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value {
 
      match v[0].as_str() {
          Some("ObjectInverseOf") => translate_inverse_of(v,m), 
+         Some("ObjectPropertyChain") => id(v,m),
          Some(_) => panic!(),
          None => Value::String(String::from(v.as_str().unwrap())),
      }
@@ -52,6 +53,20 @@ pub fn object_type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> 
         Some(set) => set.contains("owl:ObjectProperty"),
         _ => false,
     }
+}
+
+pub fn id(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
+
+    let mut res = Vec::new();
+    let operator = Value::String(String::from(v[0].as_str().unwrap()));
+    res.push(operator);
+
+    let arguments  = &(v.as_array().unwrap())[1..]; 
+    for argument in arguments  {
+        let test : Value = translate(argument, m);
+        res.push(test);
+    } 
+    Value::Array(res)
 }
 
 pub fn translate_inverse_of(v : &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
