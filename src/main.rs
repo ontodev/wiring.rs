@@ -98,7 +98,7 @@ fn _playground() {
          println!("OFN Sorted: {}", ofn_sorted );//transformation to OFN S-expression 
 
 
-         let tt = ofn_2_ldtab::ofn_parser::translate_triple(&ofn);
+         let tt = ofn_2_ldtab::translation::ofn_2_thick_triple(&ofn);
          println!("ThickTriple: {}", tt );//transformation to OFN S-expression 
 
          //let t = ofn2RDFa::ofn_parser::translate(&ofn);
