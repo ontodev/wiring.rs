@@ -1,13 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-//TODO: think about introducing getter methods
-//for fields in structs
-
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 //                      RDF
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 //
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct RDFList {
     //#[serde(rename = "rdf:type")]
     //pub rdf_type: Option<Vec<Object>>,
@@ -17,24 +14,15 @@ pub struct RDFList {
     pub rdf_rest: Vec<Object>, 
 }
 
-//TODO: Test getter for structs
-impl RDFList {
-
-    pub fn rdf_first(&self) -> &Vec<Object> {
-        &self.rdf_first
-    } 
-}
-
-//TODO: NEW!!!
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct Members {
-    #[serde(rename = "rdf:type")]//I think the type is NOT optional for 'owl:members'
+    #[serde(rename = "rdf:type")]//TODO: the type is *not* optional for 'owl:members'?
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:members")]
     pub members: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct DistinctMembers {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -46,7 +34,7 @@ pub struct DistinctMembers {
 //                      Restrictions
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct SomeValuesFrom {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -56,7 +44,7 @@ pub struct SomeValuesFrom {
     pub owl_some_values_from: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct AllValuesFrom {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -66,7 +54,7 @@ pub struct AllValuesFrom {
     pub owl_all_values_from: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct HasValue {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -74,10 +62,9 @@ pub struct HasValue {
     pub owl_on_property: Vec<Object>,
     #[serde(rename = "owl:hasValue")]
     pub owl_has_value: Vec<Object>, 
-}
+} 
 
-
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MinCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -87,7 +74,7 @@ pub struct MinCardinality {
     pub owl_min_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MinObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -99,7 +86,7 @@ pub struct MinObjectQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MinDataQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -111,7 +98,7 @@ pub struct MinDataQualifiedCardinality {
     pub owl_on_datarange: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MaxCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -121,7 +108,7 @@ pub struct MaxCardinality {
     pub owl_max_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MaxObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -133,7 +120,7 @@ pub struct MaxObjectQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct MaxDataQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -145,7 +132,7 @@ pub struct MaxDataQualifiedCardinality {
     pub owl_on_datarange: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct ExactCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -155,7 +142,7 @@ pub struct ExactCardinality {
     pub owl_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct ExactObjectQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -167,7 +154,7 @@ pub struct ExactObjectQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct ExactDataQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -179,7 +166,7 @@ pub struct ExactDataQualifiedCardinality {
     pub owl_on_datarange: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct HasSelf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -193,7 +180,7 @@ pub struct HasSelf {
 //           OWL propositional connectives
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct IntersectionOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -201,7 +188,7 @@ pub struct IntersectionOf {
     pub owl_intersection_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct UnionOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -209,7 +196,7 @@ pub struct UnionOf {
     pub owl_union_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct OneOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -217,7 +204,7 @@ pub struct OneOf {
     pub owl_one_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct ComplementOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -225,7 +212,7 @@ pub struct ComplementOf {
     pub owl_complement_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct NegativeObjectPropertyAssertion {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -237,7 +224,7 @@ pub struct NegativeObjectPropertyAssertion {
     pub target_individual: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct NegativeDataPropertyAssertion {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -253,20 +240,13 @@ pub struct NegativeDataPropertyAssertion {
 //           OWL Object Properties
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-//TODO: think about refactoring this into a separate module
-//Pro: separation of concerns (class translation vs. property translation)
-//Con: will make the code harder to read/understand 
-//I am leaning towards keeping everything in here - that will blow this file up though
-//Alternatively: we keep all typing in here and facotr the translation methods out
-//so, we would have a 'central' translation method for everything
-
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct InverseOf {
     #[serde(rename = "owl:inverseOf")]
     pub owl_inverse_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 pub struct Object {
     pub object: OWL,
     pub datatype: String,
@@ -274,8 +254,7 @@ pub struct Object {
     //pub annotation: String,
 } 
 
-//#[derive(Serialize, Deserialize)]
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug,Serialize, Deserialize,Clone)]
 #[serde(untagged)]
 pub enum OWL {
     Named(String), 
@@ -301,14 +280,11 @@ pub enum OWL {
     UnionOf(UnionOf),
     OneOf(OneOf),
     ComplementOf(ComplementOf),
-    //InverseOf(property_translation::InverseOf),
     InverseOf(InverseOf),
     RDFList(RDFList),
-    //NEW
     Members(Members),
     DistinctMembers(DistinctMembers),
 
     NegativeObjectPropertyAssertion(NegativeObjectPropertyAssertion),
-    NegativeDataPropertyAssertion(NegativeDataPropertyAssertion),
-
+    NegativeDataPropertyAssertion(NegativeDataPropertyAssertion), 
 }
