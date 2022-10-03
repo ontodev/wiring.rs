@@ -25,7 +25,7 @@ fn main(){
     for triple in triples.iter() { 
          println!("Triple: {}", triple );//thick triples are given
 
-         let ofn = ldtab_2_ofn::thick_triple_parser::parse_ldtab(triple.to_string().as_str());
+         let ofn = ldtab_2_ofn::translation::thick_triple_2_ofn(triple.to_string().as_str());
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
          let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
