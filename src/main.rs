@@ -68,7 +68,7 @@ fn _playground() {
 
     //for triple in thin_triples.iter(){
     //     println!("Triple: {}", triple );//thick triples are given
-    //     let ofn = thick_2_ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
+    //     let ofn = thick_2_ofn::parser::parse_triple(triple.to_string().as_str());
     //     println!("OFN S: {}", ofn );//transformation to OFN S-expression
     //     let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
     //     println!("Typed: {}", ofn_typed);//OFN S-expression after typing
@@ -138,7 +138,7 @@ fn _playground() {
          //println!("Object: {}", triple["object"]);
          //let object = triple["object"].to_string();
          //println!("Object: {}", object.as_str());//TODO this stuff doesn't have datatypes
-         //let typed_object =  ldtab_2_ofn::thick_triple_parser::parse_thick_triple_object(object.as_str());
+         //let typed_object =  ldtab_2_ofn::parser::parse_thick_triple_object(object.as_str());
          //let object_ofn =  ldtab_2_ofn::class_translation::translate(&typed_object);
          //println!("Object OFN: {}", object_ofn);
          println!("");

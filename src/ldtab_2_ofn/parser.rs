@@ -16,7 +16,7 @@ use crate::owl::thick_triple as tt;
 ///                                      "datatype":"_iri",
 ///                                      "meta":null}]}"#;
 ///
-/// let owl = ldtab_2_ofn::thick_triple_parser::parse_thick_triple_object(&object); 
+/// let owl = ldtab_2_ofn::parser::parse_thick_triple_object(&object); 
 /// println!("{:?}", owl);
 pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
     let triple_json: SResult<tt::OWL> = serde_json::from_str(object); 
@@ -31,7 +31,7 @@ pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
 ///
 /// # Examples
 /// let string = "\"test\""; //String encoding a JSON string
-/// let json_string = ldtab_2_ofn::thick_triple_parser::parse_string(&s);
+/// let json_string = ldtab_2_ofn::parser::parse_string(&s);
 ///
 /// println!("{}", json_string);
 /// 
