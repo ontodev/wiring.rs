@@ -113,10 +113,10 @@ fn _playground() {
          println!("Labelled: {}", ofn_labelled);//OFN S-expression after labelling
          println!("Untyped Labelled: {}", ofn_labelled_untyped);//OFN S-expression after labelling
 
-         let man_str = ofn_2_man::parser::translate_triple(&ofn_typed);
-         let man_str_labelled = ofn_2_man::parser::translate_triple(&ofn_labelled);
+         let man_str = ofn_2_man::translation::ofn_2_man(&ofn_typed);
+         let man_str_labelled = ofn_2_man::translation::ofn_2_man(&ofn_labelled);
 
-         let man_str_untyped = ofn_2_man::parser::translate_triple(&ofn);
+         let man_str_untyped = ofn_2_man::translation::ofn_2_man(&ofn);
 
          println!("Manchester (untyped): {}", man_str_untyped); 
          println!("Manchester: {}", man_str); 
