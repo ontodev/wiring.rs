@@ -133,7 +133,7 @@ fn _playground() {
          let curie = ofn_util::iri_2_curie::translate(&iri,&iri_2_prefix);
          println!("Test IRI2Curie: {}", curie); 
          //let iri = ofn_util::structural_identity::translate(&ofn_typed,&prefix_2_expansion);
-         let ofn_rdfa = ofn_2_rdfa::ofn_parser::translate(&ofn_typed, &entity_2_label);
+         let ofn_rdfa = ofn_2_rdfa::translation::ofn_2_rdfa(&ofn_typed, &entity_2_label);
          println!("Test RDFa: {}", ofn_rdfa); 
          //println!("Object: {}", triple["object"]);
          //let object = triple["object"].to_string();
