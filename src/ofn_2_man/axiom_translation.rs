@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn2man::class_translation as class_translation; 
+use crate::ofn_2_man::class_translation as class_translation; 
 
 pub fn translate_thin_triple(v : &Value) -> String {
 

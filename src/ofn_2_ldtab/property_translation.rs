@@ -1,6 +1,6 @@
 use serde_json::{Value};
 use serde_json::json;
-use crate::ofn2ldtab::util as util;
+use crate::ofn_2_ldtab::util as util;
 
 pub fn translate(v : &Value) -> Value {
 

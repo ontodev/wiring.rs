@@ -1,5 +1,5 @@
-use crate::owl::thick_triple as owl;
-use crate::ldtab2ofn::property_translation as property_translation;
+use crate::owl::typing as owl;
+use crate::thick_2_ofn::property_translation as property_translation;
 use serde_json::{Value};
 
 pub fn translate(b: &owl::OWL) -> Value {
@@ -12,35 +12,21 @@ pub fn translate(b: &owl::OWL) -> Value {
         owl::OWL::HasValue(x) => translate_has_value(x),
         owl::OWL::HasSelf(x) => translate_has_self(x),
         owl::OWL::MinCardinality(x) => translate_min_cardinality(x),
-        owl::OWL::ExactCardinality(x) => translate_exact_cardinality(x),
+        owl::OWL::MinQualifiedCardinality(x) => translate_min_qualified_cardinality(x),
         owl::OWL::MaxCardinality(x) => translate_max_cardinality(x),
-
-        owl::OWL::MinObjectQualifiedCardinality(x) => translate_object_min_qualified_cardinality(x),
-        owl::OWL::MaxObjectQualifiedCardinality(x) => translate_object_max_qualified_cardinality(x),
-        owl::OWL::ExactObjectQualifiedCardinality(x) => translate_object_exact_qualified_cardinality(x),
-
-        owl::OWL::MinDataQualifiedCardinality(x) => translate_data_min_qualified_cardinality(x),
-        owl::OWL::MaxDataQualifiedCardinality(x) => translate_data_max_qualified_cardinality(x),
-        owl::OWL::ExactDataQualifiedCardinality(x) => translate_data_exact_qualified_cardinality(x),
+        owl::OWL::MaxQualifiedCardinality(x) => translate_max_qualified_cardinality(x),
+        owl::OWL::ExactCardinality(x) => translate_exact_cardinality(x),
+        owl::OWL::ExactQualifiedCardinality(x) => translate_exact_qualified_cardinality(x),
 
         //propositional connectives
         owl::OWL::IntersectionOf(x) => translate_intersection_of(x),
         owl::OWL::UnionOf(x) => translate_union_of(x),
         owl::OWL::OneOf(x) => translate_one_of(x),
         owl::OWL::ComplementOf(x) => translate_complement_of(x),
-
-        //RDF
         owl::OWL::RDFList(x) => translate_list(x),
-        owl::OWL::Members(x) => translate_members(x),
-        owl::OWL::DistinctMembers(x) => translate_distinct_members(x),
 
         //object properties
         owl::OWL::InverseOf(x) => property_translation::translate_inverse_of(x),
-
-        owl::OWL::NegativeObjectPropertyAssertion(x) => translate_negative_object_property_assertion(x),
-        owl::OWL::NegativeDataPropertyAssertion(x) => translate_negative_data_property_assertion(x)
-
-        //owl::OWL::TerminalObject(_x) => json!("TODO"),
     }
 }
 
@@ -132,27 +118,17 @@ pub fn translate_min_cardinality(s: &owl::MinCardinality) -> Value {
     let cardinality =  translate(&s.owl_min_cardinality[0].object);
 
     let operator = Value::String(String::from("MinCardinality"));
-    let v = vec![operator, cardinality, property];
+    let v = vec![operator, property, cardinality];
     Value::Array(v)
 }
 
-pub fn translate_object_min_qualified_cardinality(s: &owl::MinObjectQualifiedCardinality) -> Value { 
+pub fn translate_min_qualified_cardinality(s: &owl::MinQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("ObjectMinCardinality"));
-    let v = vec![operator, cardinality, property, filler];
-    Value::Array(v)
-}
-
-pub fn translate_data_min_qualified_cardinality(s: &owl::MinDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
-
-    let operator = Value::String(String::from("DataMinCardinality"));
-    let v = vec![operator, cardinality, property, filler];
+    let operator = Value::String(String::from("ObjectMinQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
     Value::Array(v)
 }
 
@@ -162,29 +138,19 @@ pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> Value {
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_cardinality[0].object);
 
-    let operator = Value::String(String::from("MaxCardinality"));
-    let v = vec![operator, cardinality, property];
+    let operator = Value::String(String::from("ObjectMaxCardinality"));
+    let v = vec![operator, property, cardinality];
     Value::Array(v)
 
 }
 
-pub fn translate_object_max_qualified_cardinality(s: &owl::MaxObjectQualifiedCardinality) -> Value { 
+pub fn translate_max_qualified_cardinality(s: &owl::MaxQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
 
-    let operator = Value::String(String::from("ObjectMaxCardinality"));
-    let v = vec![operator, cardinality, property, filler];
-    Value::Array(v)
-}
-
-pub fn translate_data_max_qualified_cardinality(s: &owl::MaxDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
-
-    let operator = Value::String(String::from("DataMaxCardinality"));
-    let v = vec![operator, cardinality, property, filler];
+    let operator = Value::String(String::from("ObjectMaxQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
     Value::Array(v)
 }
 
@@ -195,60 +161,19 @@ pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> Value {
     let cardinality =  translate(&s.owl_cardinality[0].object);
 
     let operator = Value::String(String::from("ExactCardinality"));
-    let v = vec![operator, cardinality, property];
+    let v = vec![operator, property, cardinality];
     Value::Array(v)
 }
 
-pub fn translate_object_exact_qualified_cardinality(s: &owl::ExactObjectQualifiedCardinality) -> Value { 
+pub fn translate_exact_qualified_cardinality(s: &owl::ExactQualifiedCardinality) -> Value { 
     let property = translate(&s.owl_on_property[0].object);
     let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
     let filler =  translate(&s.owl_on_class[0].object);
 
-    let operator = Value::String(String::from("ObjectExactCardinality"));
-    let v = vec![operator, cardinality, property, filler];
+    let operator = Value::String(String::from("ObjectExactQualifiedCardinality"));
+    let v = vec![operator, property, cardinality, filler];
     Value::Array(v)
 } 
-
-pub fn translate_data_exact_qualified_cardinality(s: &owl::ExactDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);
-
-    let operator = Value::String(String::from("DataExactCardinality"));
-    let v = vec![operator, cardinality, property, filler];
-    Value::Array(v)
-} 
-
-pub fn translate_members(s: &owl::Members) -> Value { 
-
-    translate(&s.members[0].object)
-
-}
-
-//TODO: this translation is for an AXIOM (and needs to be refactored)
-pub fn translate_distinct_members(s: &owl::DistinctMembers) -> Value { 
-    //extract opertor
-    let rdf_type = match &s.rdf_type {
-        Some(x) => match &x[0].object {
-            owl::OWL::Named(t) => String::from(t),  //match on type
-            _ => String::from("Error"), 
-        }
-        None => String::from("Error"),
-    }; 
-
-    let operator =  match rdf_type.as_str() {
-        "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")),
-        _ => Value::String(String::from("Error")),
-    };
-
-    let mut members = translate(&s.distinct_members[0].object);
-
-    let mut expression = vec![operator];
-    let arguments = members.as_array_mut().unwrap();
-    expression.append(arguments);
-    Value::Array(expression.to_vec()) 
-
-}
 
 pub fn translate_list(s: &owl::RDFList) -> Value { 
     //translate RDF list recursively
@@ -289,122 +214,76 @@ pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool {
     return res;
 }
 
-pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool { 
-    let mut res : bool = false;
-     match v {
-        Some(types) => {//check if there is type information
-                            for t in types.iter() {//check all types
-                                match &t.object {
-                                    owl::OWL::Named(s) => if s == "rdfs:Datatype" { res = true },
-                                    _ => (),
-
-                                }
-                            }
-                        },
-        None => (),
-    }
-    return res;
-}
-
 //TODO: introduce case for data types
 pub fn translate_intersection_of(s: &owl::IntersectionOf) -> Value { 
     let mut intersection_of = translate(&s.owl_intersection_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
-
-    let operator =
     if is_class { 
-        Value::String(String::from("ObjectIntersectionOf"))
-    } else if is_data_range {
-        Value::String(String::from("DataIntersectionOf"))
+        let operator = Value::String(String::from("ObjectIntersectionOf"));
+        let mut intersection = vec![operator];
+        let arguments = intersection_of.as_array_mut().unwrap();
+        intersection.append(arguments);
+        Value::Array(intersection.to_vec()) 
     } else { 
-        Value::String(String::from("IntersectionOf"))
-    };
-
-    let mut intersection = vec![operator];
-    let arguments = intersection_of.as_array_mut().unwrap();
-    intersection.append(arguments);
-    Value::Array(intersection.to_vec()) 
+        let operator = Value::String(String::from("IntersectionOf"));
+        let mut intersection = vec![operator];
+        let arguments = intersection_of.as_array_mut().unwrap();
+        intersection.append(arguments);
+        Value::Array(intersection.to_vec()) 
+    }
 }
 
+//TODO: test type information here?
 pub fn translate_union_of(s: &owl::UnionOf) -> Value { 
     let mut union_of = translate(&s.owl_union_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
-
-    let operator =
     if is_class { 
-        Value::String(String::from("ObjectUnionOf"))
-    } else if is_data_range {
-        Value::String(String::from("DataUnionOf"))
-    }  else  {
-        Value::String(String::from("UnionOf"))
-    }; 
-
-    let mut union = vec![operator];
-    let arguments = union_of.as_array_mut().unwrap();
-    union.append(arguments);
-    Value::Array(union.to_vec())
+        let operator = Value::String(String::from("ObjectUnionOf"));
+        let mut union = vec![operator];
+        let arguments = union_of.as_array_mut().unwrap();
+        union.append(arguments);
+        Value::Array(union.to_vec())
+    } else {
+        let operator = Value::String(String::from("UnionOf"));
+        let mut union = vec![operator];
+        let arguments = union_of.as_array_mut().unwrap();
+        union.append(arguments);
+        Value::Array(union.to_vec())
+    } 
 }
 
 pub fn translate_one_of(s: &owl::OneOf) -> Value { 
     let mut one_of = translate(&s.owl_one_of[0].object);
 
     let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
-
-    let operator =
     if is_class { 
-        Value::String(String::from("ObjectOneOf"))
-    } else if is_data_range {
-        Value::String(String::from("DataOneOf"))
+        let operator = Value::String(String::from("ObjectOneOf"));
+        let mut one = vec![operator];
+        let arguments = one_of.as_array_mut().unwrap();
+        one.append(arguments);
+        Value::Array(one.to_vec()) 
     } else {
-        Value::String(String::from("OneOf"))
-    };
-
-    let mut one = vec![operator];
-    let arguments = one_of.as_array_mut().unwrap();
-    one.append(arguments);
-    Value::Array(one.to_vec()) 
+        let operator = Value::String(String::from("OneOf"));
+        let mut one = vec![operator];
+        let arguments = one_of.as_array_mut().unwrap();
+        one.append(arguments);
+        Value::Array(one.to_vec()) 
+    } 
 }
 
 pub fn translate_complement_of(s: &owl::ComplementOf) -> Value { 
     let complement_of = translate(&s.owl_complement_of[0].object);
-
     let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
-
-    let operator = 
     if is_class { 
-        Value::String(String::from("ObjectComplementOf"))
-    } else if is_data_range {
-        Value::String(String::from("DataComplementOf"))
-    } else { 
-        Value::String(String::from("ComplementOf"))
-    };
-    let v = vec![operator, complement_of];
-    Value::Array(v)
+        let operator = Value::String(String::from("ObjectComplementOf"));
+        let v = vec![operator, complement_of];
+        Value::Array(v)
+
+    } else {
+        let operator = Value::String(String::from("ComplementOf"));
+        let v = vec![operator, complement_of];
+        Value::Array(v)
+    } 
 } 
-
-//NB: this encodes an axiom - not an expression
-pub fn translate_negative_object_property_assertion(s: &owl::NegativeObjectPropertyAssertion) -> Value { 
-    let source = translate(&s.source_individual[0].object);
-    let property =  translate(&s.assertion_property[0].object);
-    let target = translate(&s.target_individual[0].object);
-
-    let operator = Value::String(String::from("NegativeObjectPropertyAssertion"));
-    let v = vec![operator, source, property, target];
-    Value::Array(v) 
-}
-
-pub fn translate_negative_data_property_assertion(s: &owl::NegativeDataPropertyAssertion) -> Value { 
-    let source = translate(&s.source_individual[0].object);
-    let property =  translate(&s.assertion_property[0].object);
-    let target = translate(&s.target_value[0].object);
-
-    let operator = Value::String(String::from("NegativeDataPropertyAssertion"));
-    let v = vec![operator, source, property, target];
-    Value::Array(v) 
-}

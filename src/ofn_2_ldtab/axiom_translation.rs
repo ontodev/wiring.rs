@@ -1,10 +1,10 @@
 use serde_json::{Value};
 use serde_json::json; 
-use crate::ofn2ldtab::class_translation as class_translation; 
-use crate::ofn2ldtab::annotation_translation as annotation_translation; 
-use crate::ofn2ldtab::property_translation as property_translation; 
+use crate::ofn_2_ldtab::class_translation as class_translation; 
+use crate::ofn_2_ldtab::annotation_translation as annotation_translation; 
+use crate::ofn_2_ldtab::property_translation as property_translation; 
 use rand::Rng; 
-use crate::ofn2ldtab::util as util;
+use crate::ofn_2_ldtab::util as util;
 
 
 //TODO

@@ -1,6 +1,6 @@
 use serde_json::{Value};
 
-use crate::thick2ofn::axiom_translation as axiom_translation; 
+use crate::thick_2_ofn::axiom_translation as axiom_translation; 
 
 //Note that (some) thick triples are ambiguous due to missing type information.
 //In case of ambiguity, a thick triple is parsed into an *abstract* OFN-S expression.

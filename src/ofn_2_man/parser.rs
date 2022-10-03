@@ -1,7 +1,7 @@
 use serde_json::{Value};
-use crate::ofn2man::axiom_translation as axiom_translation; 
-use crate::ofn2man::class_translation as class_translation; 
-use crate::ofn2man::property_translation as property_translation;
+use crate::ofn_2_man::axiom_translation as axiom_translation; 
+use crate::ofn_2_man::class_translation as class_translation; 
+use crate::ofn_2_man::property_translation as property_translation;
 
 pub fn parse_ofn(t: &str) -> String {
     //deserialise JSON as a (serde) Value

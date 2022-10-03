@@ -1,16 +1,16 @@
 #![warn(clippy::all, clippy::pedantic)]
 
-pub mod thick2ofn;
-pub mod ofn2thick;
-pub mod ofn2man;
+pub mod thick_2_ofn;
+pub mod ofn_2_thick;
+pub mod ofn_2_man;
 pub mod owl;
 pub mod ofn_labeling;
 pub mod ofn_typing;
 pub mod triples;
 pub mod ofn_util;
 pub mod ofn_2_rdfa;
-pub mod ldtab2ofn;
-pub mod ofn2ldtab;
+pub mod ldtab_2_ofn;
+pub mod ofn_2_ldtab;
 use std::collections::HashMap;
 use serde_json::json; 
 
@@ -25,7 +25,7 @@ fn main(){
     for triple in triples.iter() { 
          println!("Triple: {}", triple );//thick triples are given
 
-         let ofn = ldtab2ofn::thick_triple_parser::parse_ldtab(triple.to_string().as_str());
+         let ofn = ldtab_2_ofn::thick_triple_parser::parse_ldtab(triple.to_string().as_str());
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
          let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
@@ -36,7 +36,7 @@ fn main(){
 
 }
 
-fn playground() {
+fn _playground() {
 
     //example file with thick triples
     let path = String::from("resources/thickOBI.txt"); 
@@ -68,7 +68,7 @@ fn playground() {
 
     //for triple in thin_triples.iter(){
     //     println!("Triple: {}", triple );//thick triples are given
-    //     let ofn = thick2ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
+    //     let ofn = thick_2_ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
     //     println!("OFN S: {}", ofn );//transformation to OFN S-expression
     //     let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
     //     println!("Typed: {}", ofn_typed);//OFN S-expression after typing
@@ -77,28 +77,28 @@ fn playground() {
     //     println!(""); 
     //}
 
-    let ex = ofn2ldtab::util::translate_datatype(&json!("\"asd\""));
+    let ex = ofn_2_ldtab::util::translate_datatype(&json!("\"asd\""));
     println!("AA {}", ex.as_str().unwrap());
 
 
     for triple in axioms.iter() { 
          println!("Triple: {}", triple );//thick triples are given
 
-         let triple_sorted = ofn2ldtab::util::sort_value(&triple); 
+         let triple_sorted = ofn_2_ldtab::util::sort_value(&triple); 
          println!("Triple Sorted: {}", triple_sorted);//transformation to OFN S-expression 
 
-         let ofn = thick2ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
+         let ofn = thick_2_ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
          let sig = ofn_util::signature::extract_identifiers(&ofn);
          println!("Signature: {:?}", sig );//transformation to OFN S-expression 
 
 
-         let ofn_sorted = ofn2ldtab::util::sort_value(&ofn); 
+         let ofn_sorted = ofn_2_ldtab::util::sort_value(&ofn); 
          println!("OFN Sorted: {}", ofn_sorted );//transformation to OFN S-expression 
 
 
-         let tt = ofn2ldtab::ofn_parser::translate_triple(&ofn);
+         let tt = ofn_2_ldtab::ofn_parser::translate_triple(&ofn);
          println!("ThickTriple: {}", tt );//transformation to OFN S-expression 
 
          //let t = ofn2RDFa::ofn_parser::translate(&ofn);
@@ -113,16 +113,16 @@ fn playground() {
          println!("Labelled: {}", ofn_labelled);//OFN S-expression after labelling
          println!("Untyped Labelled: {}", ofn_labelled_untyped);//OFN S-expression after labelling
 
-         let man_str = ofn2man::parser::translate_triple(&ofn_typed);
-         let man_str_labelled = ofn2man::parser::translate_triple(&ofn_labelled);
+         let man_str = ofn_2_man::parser::translate_triple(&ofn_typed);
+         let man_str_labelled = ofn_2_man::parser::translate_triple(&ofn_labelled);
 
-         let man_str_untyped = ofn2man::parser::translate_triple(&ofn);
+         let man_str_untyped = ofn_2_man::parser::translate_triple(&ofn);
 
          println!("Manchester (untyped): {}", man_str_untyped); 
          println!("Manchester: {}", man_str); 
          println!("Lanchester: {}", man_str_labelled); 
 
-         let thick_triple = ofn2thick::ofn_parser::translate_triple(&ofn_typed);
+         let thick_triple = ofn_2_thick::ofn_parser::translate_triple(&ofn_typed);
          println!("Thick: {}", thick_triple); 
          let signature = ofn_util::signature::extract(&ofn_typed);
          println!("Signature: {:?}", signature); 
@@ -138,8 +138,8 @@ fn playground() {
          //println!("Object: {}", triple["object"]);
          //let object = triple["object"].to_string();
          //println!("Object: {}", object.as_str());//TODO this stuff doesn't have datatypes
-         //let typed_object =  ldtab2ofn::thick_triple_parser::parse_thick_triple_object(object.as_str());
-         //let object_ofn =  ldtab2ofn::class_translation::translate(&typed_object);
+         //let typed_object =  ldtab_2_ofn::thick_triple_parser::parse_thick_triple_object(object.as_str());
+         //let object_ofn =  ldtab_2_ofn::class_translation::translate(&typed_object);
          //println!("Object OFN: {}", object_ofn);
          println!("");
     }

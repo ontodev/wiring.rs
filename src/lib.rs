@@ -1,10 +1,10 @@
-pub mod thick2ofn;
+pub mod thick_2_ofn;
 pub mod ofn_util;
 pub mod ofn_typing;
 pub mod ofn_labeling;
-pub mod ldtab2ofn;
-pub mod ofn2man;
-pub mod ofn2ldtab;
+pub mod ldtab_2_ofn;
+pub mod ofn_2_man;
+pub mod ofn_2_ldtab;
 pub mod ofn_2_rdfa;
-pub mod ofn2thick;
+pub mod ofn_2_thick;
 pub mod owl;

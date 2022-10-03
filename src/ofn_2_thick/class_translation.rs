@@ -1,6 +1,6 @@
 use serde_json::{Value};
 use crate::owl::typing as owl;
-use crate::ofn2thick::property_translation as property_translation;
+use crate::ofn_2_thick::property_translation as property_translation;
 
 //Note that (thick) triples are not OWL
 pub fn translate(v : &Value) -> owl::OWL {

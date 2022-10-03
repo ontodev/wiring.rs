@@ -1,4 +1,4 @@
-use crate::ldtab2ofn::class_translation as class_translation; 
+use crate::ldtab_2_ofn::class_translation as class_translation; 
 use crate::owl::thick_triple as owl;
 use serde_json::{Value};
 

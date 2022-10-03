@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn2man::property_translation as property_translation;
+use crate::ofn_2_man::property_translation as property_translation;
 
 pub fn translate(v : &Value) -> String { 
      match v[0].as_str() {

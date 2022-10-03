@@ -1,7 +1,7 @@
 use serde_json::{Value};
 use serde_json::json; 
 use crate::owl::typing as owl;
-use crate::ofn2thick::class_translation as class_translation; 
+use crate::ofn_2_thick::class_translation as class_translation; 
 use rand::Rng; 
 
 pub fn translate_subclass_of_axiom(v : &Value) -> Value {

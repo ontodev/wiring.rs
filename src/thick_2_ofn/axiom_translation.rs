@@ -1,4 +1,4 @@
-use crate::thick2ofn::class_translation as class_translation; 
+use crate::thick_2_ofn::class_translation as class_translation; 
 use crate::owl::typing as owl;
 use serde_json::{Value};
 
