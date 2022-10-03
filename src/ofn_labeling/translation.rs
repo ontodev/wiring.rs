@@ -4,10 +4,7 @@ use crate::ofn_labeling::class_translation as class_translation;
 use crate::ofn_labeling::property_translation as property_translation;
 use std::collections::HashMap;
 
-//TODO: there is no 'real' parsing going on
-//TODO: could refactor the whole labelling translation into a single file
-//since OFN-S expressions are handled in a uniform manner 
-pub fn parse_ofn(v: &Value, m : &HashMap<String,String>) -> Value { 
+pub fn label_ofn(v: &Value, m : &HashMap<String,String>) -> Value { 
 
     match v[0].as_str() {
         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v,m),

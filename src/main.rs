@@ -107,8 +107,8 @@ fn _playground() {
          println!("Typed: {}", ofn_typed);//OFN S-expression after typing
 
 
-         let ofn_labelled = ofn_labeling::ofn_parser::parse_ofn(&ofn_typed, &entity_2_label);
-         let ofn_labelled_untyped = ofn_labeling::ofn_parser::parse_ofn(&ofn, &entity_2_label);
+         let ofn_labelled = ofn_labeling::translation::label_ofn(&ofn_typed, &entity_2_label);
+         let ofn_labelled_untyped = ofn_labeling::translation::label_ofn(&ofn, &entity_2_label);
 
          println!("Labelled: {}", ofn_labelled);//OFN S-expression after labelling
          println!("Untyped Labelled: {}", ofn_labelled_untyped);//OFN S-expression after labelling
