@@ -3,7 +3,6 @@ use crate::ldtab_2_ofn::axiom_translation as axiom_translation;
 use crate::ldtab_2_ofn::annotation_translation as annotation_translation; 
 use crate::ldtab_2_ofn::thick_triple_parser as parser;
 
-//TODO: this is a translation .. not a parsing operation
 /// Given an LDTab ThickTriple (encoded as a string),
 /// return its corresponding OFN S-expression encoded as a serde_json::value::Value
 /// 
@@ -36,7 +35,7 @@ pub fn thick_triple_2_ofn(input : &str) -> Value {
     let subject = thick_triple["subject"].to_string();
     let predicate = thick_triple["predicate"].to_string();
     let object = thick_triple["object"].to_string(); 
-    let owl = translate_thick_triple(&subject, &predicate, &object);
+    let owl = translate_triple(&subject, &predicate, &object);
 
     //translate annotation
     let annotations = annotation_translation::translate(&thick_triple["annotation"]);
@@ -56,7 +55,7 @@ pub fn thick_triple_2_ofn(input : &str) -> Value {
     Value::Array(res)
 }
 
-pub fn translate_thick_triple(subject: &str, predicate: &str, object: &str) -> Value {
+fn translate_triple(subject: &str, predicate: &str, object: &str) -> Value {
 
     let subject_json = parser::parse_thick_triple_object(subject); 
     let predicate_json = parser::parse_string(predicate); //Assumption: this is a string
