@@ -28,7 +28,7 @@ fn main(){
          let ofn = ldtab_2_ofn::translation::thick_triple_2_ofn(triple.to_string().as_str());
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
-         let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
+         let ofn_typed  = ofn_typing::translation::type_ofn(&ofn, &entity_2_type);
          println!("Typed: {}", ofn_typed);//OFN S-expression after typing
 
          println!("");
@@ -103,7 +103,7 @@ fn _playground() {
 
          //let t = ofn2RDFa::ofn_parser::translate(&ofn);
          //println!("Type: {}", t);//transformation to OFN S-expression
-         let ofn_typed  = ofn_typing::ofn_parser::parse_ofn(&ofn, &entity_2_type);
+         let ofn_typed  = ofn_typing::translation::type_ofn(&ofn, &entity_2_type);
          println!("Typed: {}", ofn_typed);//OFN S-expression after typing
 
 

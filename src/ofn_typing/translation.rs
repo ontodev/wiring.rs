@@ -58,7 +58,7 @@ pub fn get_owl(v : &Value) -> Value {
     strip_annotations(v)
 }
 
-pub fn parse_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
+pub fn type_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
 
     let annotations = get_annotations(v);
     let v = &get_owl(v);//TODO: rename v to owl
