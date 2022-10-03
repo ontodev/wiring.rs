@@ -3,6 +3,23 @@ use crate::owl::thick_triple as tt;
 use crate::ldtab_2_ofn::axiom_translation as axiom_translation; 
 use crate::ldtab_2_ofn::annotation_translation as annotation_translation; 
 
+/// Given the object of an LDTab ThickTriple (encoded as a string),
+/// return a thick_triple::OWL struct 
+/// 
+/// #Examples
+/// 
+/// let object = r#"{"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
+///                                          "datatype":"_iri",
+///                                          "meta":null}],
+///                  "rdf:type": [{"object": "owl:Restriction",
+///                                "datatype":"_iri",
+///                                "meta":null}],
+///                  "owl:onProperty": [{"object": "obo:BFO_0000050",
+///                                      "datatype":"_iri",
+///                                      "meta":null}]}"#;
+///
+/// let owl = ldtab_2_ofn::thick_triple_parser::parse_thick_triple_object(&object); 
+/// println!("{:?}", owl);
 pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
     let triple_json: SResult<tt::OWL> = serde_json::from_str(object); 
 
@@ -12,6 +29,17 @@ pub fn parse_thick_triple_object(object : &str) -> tt::OWL {
     } 
 }
 
+/// Given a string, return a JSON string
+///
+/// # Examples
+/// let string = "\"test\""; //String encoding a JSON string
+/// let json_string = ldtab_2_ofn::thick_triple_parser::parse_string(&s);
+///
+/// println!("{}", json_string);
+/// 
+/// # Panics
+/// 
+/// Panics if the input string is not a JSON string
 pub fn parse_string(input : &str) -> String {
 
     let input: Value = serde_json::from_str(input).unwrap(); 
@@ -22,19 +50,45 @@ pub fn parse_string(input : &str) -> String {
     }
 }
 
-pub fn parse_ldtab(input : &str) -> Value {
+//TODO: this is a translation .. not a parsing operation
+/// Given an LDTab ThickTriple (encoded as a string),
+/// return its corresponding OFN S-expression encoded as a serde_json::value::Value
+/// 
+/// #Examples
+///
+/// let thick_triple = r#"{"subject": "obo:IAO_0000120",
+///                        "predicate": "rdfs:subClassOf",
+///                        "object": {"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
+///                                                           "datatype":"_iri",
+///                                                           "meta":null}],
+///                                   "rdf:type": [{"object": "owl:Restriction",
+///                                                 "datatype":"_iri",
+///                                                 "meta":null}],
+///                                   "owl:onProperty": [{"object": "obo:BFO_0000050",
+///                                                       "datatype":"_iri",
+///                                                       "meta":null}]},
+///                        "annotation": null,
+///                        "assertion":"1",
+///                        "graph":"graph",
+///                        "retraction":"0",
+///                        "datatype":"_iri"}"#; 
+///
+/// let ofn = ldtab_2_ofn::thick_triple_parser::thick_triple_2_ofn(&s);
+/// println!("{}", ofn); 
+pub fn thick_triple_2_ofn(input : &str) -> Value {
+    //convert to serde_json::value::Value
     let thick_triple: Value = serde_json::from_str(input).unwrap(); 
 
+    //translate subject, predicate, object into OFN S-expression
     let subject = thick_triple["subject"].to_string();
     let predicate = thick_triple["predicate"].to_string();
-    let object = thick_triple["object"].to_string();
-
-    //let annotation = thick_triple["annotation"].to_string(); 
-    let annotations = annotation_translation::translate(&thick_triple["annotation"]);
-
+    let object = thick_triple["object"].to_string(); 
     let owl = parse_thick_triple(&subject, &predicate, &object);
 
-    //merge logical OFN with annotation OFN
+    //translate annotation
+    let annotations = annotation_translation::translate(&thick_triple["annotation"]);
+
+    //merge OFN S-expression with annotations
     let rest = &owl.as_array().unwrap()[1..];
 
     let mut res = vec![owl[0].clone()];
