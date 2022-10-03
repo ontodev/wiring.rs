@@ -122,7 +122,7 @@ fn _playground() {
          println!("Manchester: {}", man_str); 
          println!("Lanchester: {}", man_str_labelled); 
 
-         let thick_triple = ofn_2_thick::ofn_parser::translate_triple(&ofn_typed);
+         let thick_triple = ofn_2_thick::translation::ofn_2_thick(&ofn_typed);
          println!("Thick: {}", thick_triple); 
          let signature = ofn_util::signature::extract(&ofn_typed);
          println!("Signature: {:?}", signature); 
