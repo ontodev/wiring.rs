@@ -87,7 +87,6 @@ fn _playground() {
          let triple_sorted = ofn_2_ldtab::util::sort_value(&triple); 
          println!("Triple Sorted: {}", triple_sorted);//transformation to OFN S-expression 
 
-         //let ofn = thick_2_ofn::thick_triple_parser::parse_triple(triple.to_string().as_str());
          let ofn = thick_2_ofn::translation::thick_2_ofn(&triple_sorted);
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
