@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 //                      RDF
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 //
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct RDFList {
     //#[serde(rename = "rdf:type")]
     //pub rdf_type: Option<Vec<Object>>,
@@ -23,7 +23,7 @@ pub struct RDFList {
 //                      Restrictions
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct SomeValuesFrom {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -33,7 +33,7 @@ pub struct SomeValuesFrom {
     pub owl_some_values_from: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct AllValuesFrom {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -43,7 +43,7 @@ pub struct AllValuesFrom {
     pub owl_all_values_from: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct HasValue {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -54,7 +54,7 @@ pub struct HasValue {
 }
 
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MinCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -64,7 +64,7 @@ pub struct MinCardinality {
     pub owl_min_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MinQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -76,7 +76,7 @@ pub struct MinQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MaxCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -86,7 +86,7 @@ pub struct MaxCardinality {
     pub owl_max_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MaxQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -98,7 +98,7 @@ pub struct MaxQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ExactCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -108,7 +108,7 @@ pub struct ExactCardinality {
     pub owl_cardinality: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ExactQualifiedCardinality {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -120,7 +120,7 @@ pub struct ExactQualifiedCardinality {
     pub owl_on_class: Vec<Object>, 
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct HasSelf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -134,7 +134,7 @@ pub struct HasSelf {
 //           OWL propositional connectives
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct IntersectionOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -142,7 +142,7 @@ pub struct IntersectionOf {
     pub owl_intersection_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct UnionOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -150,7 +150,7 @@ pub struct UnionOf {
     pub owl_union_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct OneOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -158,7 +158,7 @@ pub struct OneOf {
     pub owl_one_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ComplementOf {
     #[serde(rename = "rdf:type")]
     pub rdf_type: Option<Vec<Object>>,
@@ -171,18 +171,18 @@ pub struct ComplementOf {
 //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct InverseOf {
     #[serde(rename = "owl:inverseOf")]
     pub owl_inverse_of: Vec<Object>,
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct Object {
     pub object: OWL
 }
 
-#[derive(Debug,Serialize, Deserialize,Clone)]
+#[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 #[serde(untagged)]
 pub enum OWL {
     Named(String),
