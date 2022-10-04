@@ -1,5 +1,5 @@
 pub mod thick_2_ofn;
-pub mod ofn_util;
+pub mod util;
 pub mod ofn_typing;
 pub mod ofn_labeling;
 pub mod ldtab_2_ofn;

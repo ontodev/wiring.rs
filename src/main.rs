@@ -7,7 +7,7 @@ pub mod owl;
 pub mod ofn_labeling;
 pub mod ofn_typing;
 pub mod triples;
-pub mod ofn_util;
+pub mod util;
 pub mod ofn_2_rdfa;
 pub mod ldtab_2_ofn;
 pub mod ofn_2_ldtab;
@@ -90,7 +90,7 @@ fn _playground() {
          let ofn = thick_2_ofn::translation::thick_2_ofn(&triple_sorted);
          println!("OFN S: {}", ofn );//transformation to OFN S-expression 
 
-         let sig = ofn_util::signature::extract_identifiers(&ofn);
+         let sig = util::signature::extract_identifiers(&ofn);
          println!("Signature: {:?}", sig );//transformation to OFN S-expression 
 
 
@@ -124,15 +124,15 @@ fn _playground() {
 
          let thick_triple = ofn_2_thick::translation::ofn_2_thick(&ofn_typed);
          println!("Thick: {}", thick_triple); 
-         let signature = ofn_util::signature::extract(&ofn_typed);
+         let signature = util::signature::extract(&ofn_typed);
          println!("Signature: {:?}", signature); 
-         let prefixes = ofn_util::signature::get_prefixes(&ofn_typed);
+         let prefixes = util::signature::get_prefixes(&ofn_typed);
          println!("Prefixes: {:?}", prefixes); 
-         let iri = ofn_util::curie_to_iri::translate(&ofn_typed,&prefix_2_expansion);
+         let iri = util::curie_to_iri::translate(&ofn_typed,&prefix_2_expansion);
          println!("Test Curie2IRI: {}", iri); 
-         let curie = ofn_util::iri_2_curie::translate(&iri,&iri_2_prefix);
+         let curie = util::iri_2_curie::translate(&iri,&iri_2_prefix);
          println!("Test IRI2Curie: {}", curie); 
-         //let iri = ofn_util::structural_identity::translate(&ofn_typed,&prefix_2_expansion);
+         //let iri = util::structural_identity::translate(&ofn_typed,&prefix_2_expansion);
          let ofn_rdfa = ofn_2_rdfa::translation::ofn_2_rdfa(&ofn_typed, &entity_2_label);
          println!("Test RDFa: {}", ofn_rdfa); 
          //println!("Object: {}", triple["object"]);

@@ -1,5 +1,5 @@
 use serde_json::{Value};
-use crate::ofn_util::structural_identity as structural_identity;
+use crate::util::structural_identity as structural_identity;
 use std::collections::HashMap;
 
 pub fn translate(v : &Value, m : &HashMap<String, String>) -> Value {

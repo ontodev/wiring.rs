@@ -1,7 +1,7 @@
 use serde_json::{Value};
 use crate::ofn_typing::class_translation as class_translation; //TODO: class translation
 use crate::ofn_typing::property_translation as property_translation;
-use crate::ofn_util::signature as signature;
+use crate::util::signature as signature;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
