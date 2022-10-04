@@ -4,6 +4,21 @@ use crate::ofn_labeling::class_translation as class_translation;
 use crate::ofn_labeling::property_translation as property_translation;
 use std::collections::HashMap;
 
+/// Given an OFN S-expression (encoded in JSON),
+/// return an OFN S-expression that uses labels instead of IRIs when possible 
+///
+/// Examples
+///
+/// let mut entity_2_label = HashMap::new();
+/// let label = String::from("ExampleLabel");
+/// let entity = String::from("obo:IAO_0000120");
+/// entity_2_label.insert(entity, label); 
+///
+/// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
+/// let ofn = ofn_2_man::parser::parse(&ofn_string);//TODO: refactor parser
+///
+/// let labelled_ofn = ofn_labeling::translation::label_ofn(&ofn, &entity_2_label);
+/// println!("{}", labelled_ofn); 
 pub fn label_ofn(v: &Value, m : &HashMap<String,String>) -> Value { 
 
     match v[0].as_str() {

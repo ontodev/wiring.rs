@@ -2,6 +2,17 @@ use serde_json::{Value};
 use crate::ofn_2_ldtab::axiom_translation as axiom_translation; 
 use crate::ofn_2_ldtab::util as util;
 
+
+/// Given an OFN S-expression (encoded in JSON),
+/// return its corresponding LDTab ThickTripe
+///
+/// Examples
+///
+/// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
+/// let ofn = ofn_2_ldtab::parser::parse(&ofn_string);
+/// let thick_triple = ofn_2_ldtab::translation::ofn_2_thick_triple(&ofn);
+/// println!("{}", thick_triple); 
+/// 
 pub fn ofn_2_thick_triple(v : &Value) -> Value {
 
     let ldtab_triple = match v[0].as_str() {
@@ -55,4 +66,4 @@ pub fn ofn_2_thick_triple(v : &Value) -> Value {
 
     //ensure that all triples for LDTab conform to the same order
     util::sort_value(&ldtab_triple) 
-} 
+}

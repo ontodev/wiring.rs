@@ -58,6 +58,23 @@ pub fn get_owl(v : &Value) -> Value {
     strip_annotations(v)
 }
 
+/// Given an OFN S-expression (encoded in JSON),
+/// return a correctly typed OFN S-expression.
+///
+/// Examples
+///
+/// let mut entity_2_type = HashMap::new();
+/// let entity = String::from("obo:OBI_0500000");
+/// let entity_type = String::from("owl:Class");
+/// let mut types = HashSet::new();
+/// types.insert(entity_type);
+/// entity_2_type.insert(entity, types); 
+///
+/// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["SomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
+/// let ofn = ofn_2_man::parser::parse(&ofn_string);//TODO: refactor parser
+///
+/// let typed_ofn = ofn_typing::translation::type_ofn(&ofn, &entity_2_type);
+/// println!("{}", typed_ofn); 
 pub fn type_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value { 
 
     let annotations = get_annotations(v);

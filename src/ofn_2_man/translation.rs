@@ -3,6 +3,16 @@ use crate::ofn_2_man::axiom_translation as axiom_translation;
 use crate::ofn_2_man::class_translation as class_translation; 
 use crate::ofn_2_man::property_translation as property_translation;
 
+
+/// Given an OFN S-expression (encoded in JSON),
+/// return its corresponding representation in Manchester Syntax
+///
+/// Examples
+///
+/// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
+/// let ofn = ofn_2_man::parser::parse(&ofn_string);
+/// let man = ofn_2_man::translation::ofn_2_man(&ofn);
+/// println!("{}", man); 
 pub fn ofn_2_man(v : &Value) -> String { 
 
     match v[0].as_str() {
