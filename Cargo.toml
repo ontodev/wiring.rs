@@ -2,6 +2,11 @@
 name = "wiring_rs"
 version = "0.1.1"
 authors = ["chris <chris.kind.man@gmail.com>"]
+description = "Library for translating between data formats used in semantic technologies"
+license = "BSD-3-Clause"
+keywords = ["ontology", "OWL", "LDTab"]
+categories = ["command-line-utilities",  "semantic-technologies", "science"]
+repository = "https://github.com/ontodev/wiring.rs"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
