@@ -10,7 +10,7 @@ use crate::ofn_2_man::property_translation as property_translation;
 /// Examples
 ///
 /// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
-/// let ofn = ofn_2_man::parser::parse(&ofn_string);
+/// let ofn = util::parser::parse(&ofn_string);
 /// let man = ofn_2_man::translation::ofn_2_man(&ofn);
 /// println!("{}", man); 
 pub fn ofn_2_man(v : &Value) -> String { 

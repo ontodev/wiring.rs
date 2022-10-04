@@ -138,7 +138,7 @@ fn _playground() {
          //println!("Object: {}", triple["object"]);
          //let object = triple["object"].to_string();
          //println!("Object: {}", object.as_str());//TODO this stuff doesn't have datatypes
-         //let typed_object =  ldtab_2_ofn::parser::parse_thick_triple_object(object.as_str());
+         //let typed_object =  util::parser::parse_thick_triple_object(object.as_str());
          //let object_ofn =  ldtab_2_ofn::class_translation::translate(&typed_object);
          //println!("Object OFN: {}", object_ofn);
          println!("");

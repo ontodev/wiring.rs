@@ -47,3 +47,8 @@ pub fn parse_string(input : &str) -> String {
         _ => panic!("Not a string"),
     }
 } 
+
+pub fn parse_json(t: &str) -> Value {
+    let thick_triple: Value = serde_json::from_str(t).unwrap(); 
+    thick_triple 
+}

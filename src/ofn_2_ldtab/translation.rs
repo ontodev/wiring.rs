@@ -9,7 +9,7 @@ use crate::ofn_2_ldtab::util as util;
 /// Examples
 ///
 /// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
-/// let ofn = ofn_2_ldtab::parser::parse(&ofn_string);
+/// let ofn = util::parser::parse(&ofn_string);
 /// let thick_triple = ofn_2_ldtab::translation::ofn_2_thick_triple(&ofn);
 /// println!("{}", thick_triple); 
 /// 

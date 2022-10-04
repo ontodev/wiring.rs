@@ -10,7 +10,7 @@ use crate::ofn_2_rdfa::axiom_translation as axiom_translation;
 /// Examples
 ///
 /// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
-/// let ofn = ofn_2_man::parser::parse(&ofn_string); //TODO: refactor parser
+/// let ofn = util::parser::parse(&ofn_string); 
 /// let rdfa = ofn_2_rdfa::translation::ofn_2_rdfa(&ofn);
 /// println!("{}", rdfa); 
 pub fn ofn_2_rdfa(v : &Value, subject_2_label: &HashMap<String,String>) -> Value {

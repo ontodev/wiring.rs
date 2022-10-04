@@ -15,7 +15,7 @@ use std::collections::HashMap;
 /// entity_2_label.insert(entity, label); 
 ///
 /// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["ObjectSomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
-/// let ofn = ofn_2_man::parser::parse(&ofn_string);//TODO: refactor parser
+/// let ofn = util::parser::parse(&ofn_string);
 ///
 /// let labelled_ofn = ofn_labeling::translation::label_ofn(&ofn, &entity_2_label);
 /// println!("{}", labelled_ofn); 

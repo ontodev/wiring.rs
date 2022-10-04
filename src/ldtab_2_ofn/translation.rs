@@ -1,7 +1,7 @@
 use serde_json::{Value};
 use crate::ldtab_2_ofn::axiom_translation as axiom_translation; 
 use crate::ldtab_2_ofn::annotation_translation as annotation_translation; 
-use crate::ldtab_2_ofn::parser as parser;
+use crate::util::parser as parser;
 
 /// Given an LDTab ThickTriple (encoded as a string),
 /// return its corresponding OFN S-expression encoded as a serde_json::value::Value
@@ -25,7 +25,7 @@ use crate::ldtab_2_ofn::parser as parser;
 ///                        "retraction":"0",
 ///                        "datatype":"_iri"}"#; 
 ///
-/// let ofn = ldtab_2_ofn::parser::thick_triple_2_ofn(&s);
+/// let ofn = util::parser::thick_triple_2_ofn(&s);
 /// println!("{}", ofn); 
 pub fn thick_triple_2_ofn(input : &str) -> Value {
     //convert to serde_json::value::Value

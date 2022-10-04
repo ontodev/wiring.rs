@@ -71,7 +71,7 @@ pub fn get_owl(v : &Value) -> Value {
 /// entity_2_type.insert(entity, types); 
 ///
 /// let ofn_string = r#"["SubClassOf","obo:IAO_0000120",["SomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#; 
-/// let ofn = ofn_2_man::parser::parse(&ofn_string);//TODO: refactor parser
+/// let ofn = util::parser::parse(&ofn_string);
 ///
 /// let typed_ofn = ofn_typing::translation::type_ofn(&ofn, &entity_2_type);
 /// println!("{}", typed_ofn); 

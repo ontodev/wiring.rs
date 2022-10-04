@@ -1,4 +1,3 @@
-pub mod parser;
 pub mod util;
 pub mod axiom_translation;
 pub mod class_translation;
