@@ -16,7 +16,7 @@ use serde_json::json;
 
 
 fn main(){
-    let path = String::from("resources/thickTest.txt"); 
+    let path = String::from("resources/toy_example.txt"); 
 
     //let entity_2_label = ofn_labeling::labeling::extract_labeling(&path);
     let entity_2_type = ofn_typing::typing::extract_typing(&path); 
@@ -39,8 +39,7 @@ fn main(){
 fn _playground() {
 
     //example file with thick triples
-    let path = String::from("resources/thickOBI.txt"); 
-    //let path = String::from("resources/testOBI.txt"); 
+    let path = String::from("resources/sample_obi.txt"); 
 
     //get thick triples that encode class expression axioms
     let axioms = triples::parser::extract_class_expression_axioms(&path);

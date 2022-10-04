@@ -1,0 +1,16 @@
+{"subject": "obo:OBI_0001636", "predicate": "rdfs:subClassOf", "object": {"owl:someValuesFrom": [{"object": "obo:OBI_0500000"}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:BFO_0000050"}]}}
+{"subject": "obo:OBI_0001636", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:OBI_0500000", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:BFO_0000050", "predicate": "rdf:type", "object": "owl:ObjectProperty"}
+{"subject": "obo:OBI_0000965", "predicate": "owl:disjointWith", "object": "obo:OBI_0000971"}
+{"subject": "obo:OBI_0000965", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:OBI_0000971", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:IAO_0000406", "predicate": "rdf:type", "object": "owl:ObjectProperty"}
+{"subject": "obo:GO_0006955", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:OBI_0001636", "predicate": "rdfs:subClassOf", "object": {"owl:someValuesFrom": [{"object":{"owl:someValuesFrom": [{"object": "obo:OBI_0500000"}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:BFO_0000050"}]}}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:BFO_0000050"}]}}
+{"subject": "obo:OBI_0000237", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Restriction"}], "owl:allValuesFrom": [{"object": "obo:GO_0006955"}], "owl:onProperty": [{"object": "obo:BFO_0000054"}]}}
+{"subject": "obo:IAO_0000402", "predicate": "rdfs:subClassOf", "object": {"owl:minCardinality": [{"object": "1^^xsd:nonNegativeInteger"}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:IAO_0000406"}]}}
+{"subject": "obo:IAO_0000402", "predicate": "rdfs:subClassOf", "object": {"owl:minQualifiedCardinality": [{"object": "1^^xsd:nonNegativeInteger"}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:IAO_0000406"}], "owl:onClass": [{"object":"obo:GO_0006955"}]}} 
+{"subject": "obo:OBI_0002638", "predicate": "rdf:type", "object": "owl:Class"}
+{"subject": "obo:OBI_0002642", "predicate": "rdfs:subClassOf", "object": {"owl:intersectionOf": [{"object": {"rdf:first": [{"object": "obo:OBI_0002638"}], "rdf:rest": [{"object": {"rdf:first": [{"object": {"owl:someValuesFrom": [{"object": "obo:OBI_0001189"}], "rdf:type": [{"object": "owl:Restriction"}], "owl:onProperty": [{"object": "obo:BFO_0000051"}]}}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}], "rdf:type": [{"object": "owl:Class"}]}}
+{"subject": "obo:OBI_0001189", "predicate": "rdf:type", "object": "owl:Class"}
