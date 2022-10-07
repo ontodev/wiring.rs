@@ -8,28 +8,28 @@ use crate::util::parser as parser;
 /// 
 /// #Examples
 ///
-/// let thick_triple = r#"{"subject": "obo:IAO_0000120",
-///                        "predicate": "rdfs:subClassOf",
-///                        "object": {"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
-///                                                           "datatype":"_iri",
-///                                                           "meta":null}],
-///                                   "rdf:type": [{"object": "owl:Restriction",
-///                                                 "datatype":"_iri",
-///                                                 "meta":null}],
-///                                   "owl:onProperty": [{"object": "obo:BFO_0000050",
-///                                                       "datatype":"_iri",
-///                                                       "meta":null}]},
-///                        "annotation": null,
-///                        "assertion":"1",
-///                        "graph":"graph",
-///                        "retraction":"0",
-///                        "datatype":"_iri"}"#; 
+/// let thick_triple_string = r#"{"subject": "obo:IAO_0000120",
+///                               "predicate": "rdfs:subClassOf",
+///                               "object": {"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
+///                                                                  "datatype":"_iri",
+///                                                                  "meta":null}],
+///                                          "rdf:type": [{"object": "owl:Restriction",
+///                                                        "datatype":"_iri",
+///                                                        "meta":null}],
+///                                          "owl:onProperty": [{"object": "obo:BFO_0000050",
+///                                                              "datatype":"_iri",
+///                                                              "meta":null}]},
+///                               "annotation": null,
+///                               "assertion":"1",
+///                               "graph":"graph",
+///                               "retraction":"0",
+///                               "datatype":"_iri"}"#; 
+///
+/// let thick_triple = serde_json::from_str(thick_triple_string).unwrap();
 ///
 /// let ofn = util::parser::thick_triple_2_ofn(&s);
 /// println!("{}", ofn); 
-pub fn thick_triple_2_ofn(input : &str) -> Value {
-    //convert to serde_json::value::Value
-    let thick_triple: Value = serde_json::from_str(input).unwrap(); 
+pub fn thick_triple_2_ofn(thick_triple : &Value) -> Value {
 
     //translate subject, predicate, object into OFN S-expression
     let subject = thick_triple["subject"].to_string();
