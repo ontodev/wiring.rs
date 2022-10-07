@@ -6,7 +6,7 @@ pub mod ofn_2_man;
 pub mod owl;
 pub mod ofn_labeling;
 pub mod ofn_typing;
-pub mod triples;
+//pub mod triples;
 pub mod util;
 pub mod ofn_2_rdfa;
 pub mod ldtab_2_ofn;
@@ -20,7 +20,7 @@ fn main(){
 
     //let entity_2_label = ofn_labeling::labeling::extract_labeling(&path);
     let entity_2_type = ofn_typing::typing::extract_typing(&path); 
-    let triples = triples::parser::get_thick_triples(&path);
+    let triples = util::parser::load_thick_triples(&path);
 
     for triple in triples.iter() { 
          println!("Triple: {}", triple );//thick triples are given
@@ -42,8 +42,8 @@ fn _playground() {
     let path = String::from("resources/sample_obi.txt"); 
 
     //get thick triples that encode class expression axioms
-    let axioms = triples::parser::extract_class_expression_axioms(&path);
-    //let thin_triples = triples::parser::extract_thin_triples(&path);
+    let axioms = util::parser::load_class_expression_axioms(&path);
+    //let thin_triples = util::parser::load_thin_triples(&path);
 
     //get OWL type information and entity labels
     let entity_2_label = ofn_labeling::labeling::extract_labeling(&path);
