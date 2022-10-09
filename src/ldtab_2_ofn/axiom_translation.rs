@@ -2,18 +2,6 @@ use crate::ldtab_2_ofn::class_translation as class_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::{Value};
 
-pub fn is_blank_node(input: &Value) -> bool { 
-    match input {
-        Value::String(x) => {
-            match x.split(":").next(){
-                Some("_") => true,
-                _ => false, 
-            } 
-        } 
-        _ => false, 
-    } 
-}
-
 pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subclass);
