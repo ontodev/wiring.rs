@@ -2,6 +2,10 @@ use crate::ldtab_2_ofn::class_translation as class_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::{Value};
 
+/// Given two OWL expressions subclass and superclass
+/// return the OFN S-expression ["SubClassOf",T(subclass),T(superclass)],
+/// where T(subclass) and T(superclass) are OFN S-expressions
+/// of both subclass and superclass respectively.
 pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subclass);
@@ -12,6 +16,12 @@ pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -
     Value::Array(v) 
 }
 
+/// Given two OWL expressions subject and object
+/// return the OFN S-expression ["EquivalentClasses",T(subject),T(object)],
+/// where T(subject) and T(object) are OFN S-expressions for class expressions
+/// of both subject and object respectively.
+/// If the types of subject and object are unknown,
+/// then return ["Equivalent",T(subject),T(object)].
 pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subject);
@@ -28,9 +38,8 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
         },
         _ => {
 
-            //TODO: this is ambiguous because
+            //type ambiguity:
             //"owl:equivalentClass" is also used for DatatypeDefinition
-            //let operator = Value::String(String::from("EquivalentClasses"));
             let operator = Value::String(String::from("Equivalent"));
             let v = vec![operator, lhs, rhs];
             Value::Array(v) 
@@ -38,6 +47,10 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
     }
 }
 
+/// Given two OWL expressions subject and object
+/// return the OFN S-expression ["EquivalentProperties",T(subject),T(object)],
+/// where T(subject) and T(object) are OFN S-expressions
+/// of both subject and object respectively.
 pub fn translate_equivalent_properties(subject: &owl::OWL, object: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subject);
@@ -60,6 +73,10 @@ pub fn translate_equivalent_properties(subject: &owl::OWL, object: &owl::OWL) ->
     }
 }
 
+/// Given two OWL expressions subject and object
+/// return the OFN S-expression ["DisjointProperties",T(subject),T(object)],
+/// where T(subject) and T(object) are OFN S-expressions
+/// of both subject and object respectively.
 pub fn translate_property_disjoint_with(subject :&owl::OWL, object: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subject);
@@ -70,6 +87,10 @@ pub fn translate_property_disjoint_with(subject :&owl::OWL, object: &owl::OWL) -
     Value::Array(v) 
 }
 
+/// Given two OWL expressions subject and object
+/// return the OFN S-expression ["SubPropertyOf",T(subject),T(object)],
+/// where T(subject) and T(object) are OFN S-expressions
+/// of both subject and object respectively.
 pub fn translate_sub_property_of(subject :&owl::OWL, object: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(subject);
@@ -81,6 +102,11 @@ pub fn translate_sub_property_of(subject :&owl::OWL, object: &owl::OWL) -> Value
     Value::Array(v) 
 }
 
+/// Given two OWL expressions subject and object
+/// return the OFN S-expression ["DisjointProperties",T(object)],
+/// where T(object) is a list of either object or data properties.
+/// The argument subject corresponds to a skolemised blanknode
+/// that can be ignored.
 pub fn translate_all_disjoint_properties(_subject :&owl::OWL, object: &owl::OWL) -> Value {
 
     //let lhs : Value = class_translation::translate(subject);
@@ -95,6 +121,9 @@ pub fn translate_all_disjoint_properties(_subject :&owl::OWL, object: &owl::OWL)
     Value::Array(equivalent.to_vec()) 
 }
 
+/// Given an OWL expressions operands,
+/// return the OFN S-expression ["DisjointClasses",T(object)],
+/// where T(object) is a list of class expressions.
 pub fn translate_disjoint_classes(operands: &owl::OWL) -> Value {
 
     let mut arguments: Value = class_translation::translate(operands); 
@@ -106,16 +135,22 @@ pub fn translate_disjoint_classes(operands: &owl::OWL) -> Value {
     Value::Array(disjoint.to_vec())
 }
 
-pub fn translate_disjoint_with(l: &owl::OWL, r: &owl::OWL) -> Value {
+/// Given the OWL expressions subject and object,
+/// return the OFN S-expression ["DisjointClasses",T(subject),T(object)],
+/// where T(subject) and T(object) are OFN S-expressions for classes.
+pub fn translate_disjoint_with(subject: &owl::OWL, object: &owl::OWL) -> Value {
 
-    let lhs : Value = class_translation::translate(l);
-    let rhs: Value = class_translation::translate(r); 
+    let lhs : Value = class_translation::translate(subject);
+    let rhs: Value = class_translation::translate(object); 
 
     let operator = Value::String(String::from("DisjointClasses"));
     let v = vec![operator, lhs, rhs];
     Value::Array(v) 
 }
 
+/// Given the OWL expressions union and operands,
+/// return the OFN S-expression ["DisjointUnion",T(union),T(operands)],
+/// where T(union) and T(operands) are OFN S-expressions for classes.
 pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(union);
@@ -129,6 +164,8 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
     Value::Array(union.to_vec())
 }
 
+/// Given an OWL operator represented as a string in RDF,
+/// return its associated operator for OFN S-expressions. 
 pub fn get_ofn_operator(op : &str) -> Value {
 
     match op {
@@ -139,7 +176,6 @@ pub fn get_ofn_operator(op : &str) -> Value {
         "owl:AnnotationProperty" => Value::String(String::from("AnnotationProperty")),
         "owl:NamedIndividual" => Value::String(String::from("NamedIndividual")),
 
-        //TODO ambiguous
         "owl:FunctionalProperty" => Value::String(String::from("FunctionalProperty")),
 
         "owl:InverseFunctionalProperty" => Value::String(String::from("InverseObjectFunctionalProperty")),
@@ -157,6 +193,8 @@ pub fn get_ofn_operator(op : &str) -> Value {
     } 
 } 
 
+/// Given the OWL expressions lhs and rhs of an RDF triple with property "rdf:type",
+/// return the corresponding OFN S-expression. 
 pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
     let operator = match rhs {
@@ -208,6 +246,9 @@ pub fn translate_rdf_type(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     }
 }
 
+/// Given two OWL expressions property and domain
+/// return the OFN S-expression ["Domain",T(property),T(domain)],
+/// where T(property) and T(domain) are OFN S-expressions.
 pub fn translate_domain(property: &owl::OWL, domain: &owl::OWL) -> Value {
 
     let operator = Value::String(String::from("Domain"));
@@ -219,6 +260,9 @@ pub fn translate_domain(property: &owl::OWL, domain: &owl::OWL) -> Value {
     Value::Array(v) 
 } 
 
+/// Given two OWL expressions property and domain
+/// return the OFN S-expression ["Range",T(property),T(domain)],
+/// where T(property) and T(domain) are OFN S-expressions.
 pub fn translate_range(property: &owl::OWL, domain: &owl::OWL) -> Value {
 
     let operator = Value::String(String::from("Range"));
@@ -230,9 +274,10 @@ pub fn translate_range(property: &owl::OWL, domain: &owl::OWL) -> Value {
     Value::Array(v) 
 } 
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["InverseObjectProperties",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_inverse_object_properties(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-
-    //TODO check whether lhs is a blank node
 
     let lh : Value = class_translation::translate(lhs);//TODO: refactor class/property translation
     let rh : Value = class_translation::translate(rhs);//TODO: refactor class/property translation
@@ -242,6 +287,9 @@ pub fn translate_inverse_object_properties(lhs: &owl::OWL, rhs: &owl::OWL) -> Va
     Value::Array(v) 
 } 
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["SameIndividual",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_same_as(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
     let lh : Value = class_translation::translate(lhs);
@@ -252,6 +300,9 @@ pub fn translate_same_as(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(v) 
 } 
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["SameIndividual",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_all_same_as(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
     let mut arguments: Value = class_translation::translate(rhs); 
@@ -263,9 +314,10 @@ pub fn translate_all_same_as(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(res.to_vec()) 
 }
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["DifferentIndividuals",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_different_from(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-
-    //TODO check whether lhs is a blank node
 
     let lh : Value = class_translation::translate(lhs);
     let rh : Value = class_translation::translate(rhs);
@@ -275,6 +327,9 @@ pub fn translate_different_from(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(v) 
 } 
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["DifferentIndividuals",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
     let mut arguments: Value = class_translation::translate(rhs); 
@@ -286,6 +341,9 @@ pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(res.to_vec()) 
 }
 
+/// Given two OWL expressions lhs and rhs
+/// return the OFN S-expression ["ObjectPropertyChain",T(lhs),T(rhs)],
+/// where T(lhs) and T(rhs) are OFN S-expressions.
 pub fn translate_property_chain(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 
     let lhs : Value = class_translation::translate(lhs);
@@ -302,12 +360,17 @@ pub fn translate_property_chain(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(v) 
 }
 
+/// Given the OWL expression rhs encoding a NegativePropertyAssertion
+/// return the corresponding OFN S-expression.
 pub fn translate_negative_property_assertion(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value { 
     //NB: this returns an axiom rather than an expression 
     let axiom : Value = class_translation::translate(rhs); 
     axiom
 }
 
+/// Given the OWL expressions lhs and rhs, 
+/// return the OFN S-expression ["HasKey", T(lhs), T(rhs)]
+/// where T(lhs) and T(rhs) are lists of OFN S-expressions.
 pub fn translate_has_key(lhs: &owl::OWL, rhs: &owl::OWL) -> Value { 
     let class : Value = class_translation::translate(lhs); 
     let mut keys : Value = class_translation::translate(rhs); //this is a list
@@ -320,6 +383,9 @@ pub fn translate_has_key(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
     Value::Array(res.to_vec()) 
 }
 
+/// Given the OWL expressions lhs and rhs, 
+/// return the OFN S-expression ["Import", T(lhs), T(rhs)]
+/// where T(lhs) and T(rhs) are lists of OFN S-expressions.
 pub fn translate_import(lhs :&owl::OWL, rhs : &owl::OWL) -> Value {
 
     let ontology : Value = class_translation::translate(lhs); 
@@ -334,10 +400,12 @@ pub fn translate_import(lhs :&owl::OWL, rhs : &owl::OWL) -> Value {
 
 }
 
+/// Given a subject s, a property p, and an object o,
+/// return the OFN S-expression ["ThinTriple", T(s), T(p), T(o)]
+/// where T(s), T(p), T(o) are OFN S-expressions.
 pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
-    //NB: AnnotationAssertions are ambiguous and are translated as ThickTriplesh
+    //NB: AnnotationAssertions are ambiguous and are translated as ThickTriples
     //T(Property Subject Object)  rather then T(Subject Property Object)
-    //
 
     let subject: Value = serde_json::from_str(s).unwrap(); 
     let predicate: Value = serde_json::from_str(p).unwrap(); 

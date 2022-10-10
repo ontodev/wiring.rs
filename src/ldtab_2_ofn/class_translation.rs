@@ -2,8 +2,10 @@ use crate::owl::thick_triple as owl;
 use crate::ldtab_2_ofn::property_translation as property_translation;
 use serde_json::{Value};
 
-pub fn translate(b: &owl::OWL) -> Value {
-     match &*b {//TODO: don't quite understand why &* is necessary here
+/// Given an OWL expressions owl
+/// return its corresponding OFN S-expression.
+pub fn translate(owl: &owl::OWL) -> Value {
+     match &*owl {
          owl::OWL::Named(x) => translate_named(x.to_string()),
 
         //restrictions
@@ -38,12 +40,12 @@ pub fn translate(b: &owl::OWL) -> Value {
         owl::OWL::InverseOf(x) => property_translation::translate_inverse_of(x),
 
         owl::OWL::NegativeObjectPropertyAssertion(x) => translate_negative_object_property_assertion(x),
-        owl::OWL::NegativeDataPropertyAssertion(x) => translate_negative_data_property_assertion(x)
-
-        //owl::OWL::TerminalObject(_x) => json!("TODO"),
+        owl::OWL::NegativeDataPropertyAssertion(x) => translate_negative_data_property_assertion(x) 
     }
 }
 
+/// Given an OFN S-expression operator (as a string),
+/// return true if the operator encodes a class expression.
 pub fn is_class_expression(s: &str) -> bool {
      match s {
          "SomeValuesFrom" => true,
@@ -78,45 +80,48 @@ pub fn is_class_expression(s: &str) -> bool {
      } 
 }
 
+/// Given a string, return a JSON string
 pub fn translate_named(s: String) -> Value {
     Value::String(s)
 }
 
-//Note that a SomeValuesFrom expression
-//can be either an ObjectSomeValuesFrom or a DataSomeValuesFrom
-pub fn translate_some_values_from(s: &owl::SomeValuesFrom) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let filler =  translate(&s.owl_some_values_from[0].object);
+/// Given an existential restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_some_values_from(exp: &owl::SomeValuesFrom) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let filler =  translate(&exp.owl_some_values_from[0].object);
 
     let operator = Value::String(String::from("SomeValuesFrom"));
     let v = vec![operator, property, filler];
     Value::Array(v) 
 }
 
-//Note that a AllValuesFrom expression
-//can be either an ObjectAllValuesFrom or a DataAllValuesFrom
-pub fn translate_all_values_from(s: &owl::AllValuesFrom) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let filler =  translate(&s.owl_all_values_from[0].object);
+/// Given a universal restrictions,
+/// return its corresponding OFN S-expression.
+pub fn translate_all_values_from(exp: &owl::AllValuesFrom) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let filler =  translate(&exp.owl_all_values_from[0].object);
 
     let operator = Value::String(String::from("AllValuesFrom"));
     let v = vec![operator, property, filler];
     Value::Array(v)
 }
 
-//Note that a HasValue expression
-//can be either an ObjectHasValue or a DataHasValue
-pub fn translate_has_value(s: &owl::HasValue) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let filler =  translate(&s.owl_has_value[0].object);
+/// Given a HasValue restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_has_value(exp: &owl::HasValue) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let filler =  translate(&exp.owl_has_value[0].object);
 
     let operator = Value::String(String::from("HasValue"));
     let v = vec![operator, property, filler];
     Value::Array(v)
 }
 
-pub fn translate_has_self(s: &owl::HasSelf) -> Value { 
-    let property = translate(&s.owl_on_property[0].object); 
+/// Given a HasSelf restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_has_self(exp: &owl::HasSelf) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object); 
     let operator = Value::String(String::from("ObjectHasSelf"));
     let v = vec![operator, property];
     Value::Array(v)
@@ -125,110 +130,123 @@ pub fn translate_has_self(s: &owl::HasSelf) -> Value {
     //expression
 }
 
-//Note that a MinCardinality expression
-//can be either an ObjectMinCardinality or a DataMinCardinality
-pub fn translate_min_cardinality(s: &owl::MinCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_min_cardinality[0].object);
+/// Given a MinCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_min_cardinality[0].object);
 
     let operator = Value::String(String::from("MinCardinality"));
     let v = vec![operator, cardinality, property];
     Value::Array(v)
 }
 
-pub fn translate_object_min_qualified_cardinality(s: &owl::MinObjectQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
+/// Given a qualified ObjectMinCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_object_min_qualified_cardinality(exp: &owl::MinObjectQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_min_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_class[0].object);//this reveals the type
 
     let operator = Value::String(String::from("ObjectMinCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
-pub fn translate_data_min_qualified_cardinality(s: &owl::MinDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_min_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
+/// Given a DataMinCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_min_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_datarange[0].object);//this reveals the type
 
     let operator = Value::String(String::from("DataMinCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
-//Note that a MaxCardinality expression
-//can be either an ObjectMaxCardinality or a DataMaxCardinality
-pub fn translate_max_cardinality(s: &owl::MaxCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_max_cardinality[0].object);
+/// Given a MaxCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_max_cardinality[0].object);
 
     let operator = Value::String(String::from("MaxCardinality"));
     let v = vec![operator, cardinality, property];
     Value::Array(v)
-
 }
 
-pub fn translate_object_max_qualified_cardinality(s: &owl::MaxObjectQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_class[0].object);//this reveals the type
+/// Given a qualified ObjectMaxCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_object_max_qualified_cardinality(exp: &owl::MaxObjectQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_max_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_class[0].object);//this reveals the type
 
     let operator = Value::String(String::from("ObjectMaxCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
-pub fn translate_data_max_qualified_cardinality(s: &owl::MaxDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_max_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);//this reveals the type
+/// Given a qualified DataMaxCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_max_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_datarange[0].object);//this reveals the type
 
     let operator = Value::String(String::from("DataMaxCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 }
 
-//Note that an ExactCardinality expression
-//can be either an ObjectExactCardinality or a DataExactCardinality
-pub fn translate_exact_cardinality(s: &owl::ExactCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_cardinality[0].object);
+/// Given an ExactCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_cardinality[0].object);
 
     let operator = Value::String(String::from("ExactCardinality"));
     let v = vec![operator, cardinality, property];
     Value::Array(v)
 }
 
-pub fn translate_object_exact_qualified_cardinality(s: &owl::ExactObjectQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_class[0].object);
+/// Given an qualified ObjectExactCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_object_exact_qualified_cardinality(exp: &owl::ExactObjectQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_class[0].object);
 
     let operator = Value::String(String::from("ObjectExactCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 } 
 
-pub fn translate_data_exact_qualified_cardinality(s: &owl::ExactDataQualifiedCardinality) -> Value { 
-    let property = translate(&s.owl_on_property[0].object);
-    let cardinality =  translate(&s.owl_qualified_cardinality[0].object);
-    let filler =  translate(&s.owl_on_datarange[0].object);
+/// Given an qualified DataExactCardinality restriction,
+/// return its corresponding OFN S-expression.
+pub fn translate_data_exact_qualified_cardinality(exp: &owl::ExactDataQualifiedCardinality) -> Value { 
+    let property = translate(&exp.owl_on_property[0].object);
+    let cardinality =  translate(&exp.owl_qualified_cardinality[0].object);
+    let filler =  translate(&exp.owl_on_datarange[0].object);
 
     let operator = Value::String(String::from("DataExactCardinality"));
     let v = vec![operator, cardinality, property, filler];
     Value::Array(v)
 } 
 
-pub fn translate_members(s: &owl::Members) -> Value { 
-
-    translate(&s.members[0].object)
-
+/// Given a member list,
+/// return its corresponding list of OFN S-expressions.
+pub fn translate_members(exp: &owl::Members) -> Value { 
+    translate(&exp.members[0].object) 
 }
 
-//TODO: this translation is for an AXIOM (and needs to be refactored)
-pub fn translate_distinct_members(s: &owl::DistinctMembers) -> Value { 
+
+/// Given a list of distinct members,
+/// return its corresponding OFN S-expressions.
+pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value { 
     //extract opertor
-    let rdf_type = match &s.rdf_type {
+    let rdf_type = match &exp.rdf_type {
         Some(x) => match &x[0].object {
             owl::OWL::Named(t) => String::from(t),  //match on type
             _ => String::from("Error"), 
@@ -241,7 +259,7 @@ pub fn translate_distinct_members(s: &owl::DistinctMembers) -> Value {
         _ => Value::String(String::from("Error")),
     };
 
-    let mut members = translate(&s.distinct_members[0].object);
+    let mut members = translate(&exp.distinct_members[0].object);
 
     let mut expression = vec![operator];
     let arguments = members.as_array_mut().unwrap();
@@ -250,10 +268,12 @@ pub fn translate_distinct_members(s: &owl::DistinctMembers) -> Value {
 
 }
 
-pub fn translate_list(s: &owl::RDFList) -> Value { 
+/// Given an RDF list, 
+/// return its corresponding OFN S-expressions.
+pub fn translate_list(exp: &owl::RDFList) -> Value { 
     //translate RDF list recursively
-    let first = translate(&s.rdf_first[0].object);
-    let mut rest =  translate(&s.rdf_rest[0].object);
+    let first = translate(&exp.rdf_first[0].object);
+    let mut rest =  translate(&exp.rdf_rest[0].object);
 
     //base case for RDF lists
     if rest.is_string() && rest.as_str().unwrap() == "rdf:nil"  {
@@ -272,6 +292,8 @@ pub fn translate_list(s: &owl::RDFList) -> Value {
     }
 }
 
+/// Given an owl::Object,
+/// return true, if its rdf:type is owl:Class
 pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool { 
     let mut res : bool = false;
      match v {
@@ -289,6 +311,8 @@ pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool {
     return res;
 }
 
+/// Given an owl::Object,
+/// return true, if its rdf:type is rdfs:Datatype
 pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool { 
     let mut res : bool = false;
      match v {
@@ -306,12 +330,14 @@ pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool {
     return res;
 }
 
-//TODO: introduce case for data types
-pub fn translate_intersection_of(s: &owl::IntersectionOf) -> Value { 
-    let mut intersection_of = translate(&s.owl_intersection_of[0].object);
 
-    let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
+/// Given an owl:intersection,
+/// return its corresponding OFN S-expression
+pub fn translate_intersection_of(exp: &owl::IntersectionOf) -> Value { 
+    let mut intersection_of = translate(&exp.owl_intersection_of[0].object);
+
+    let is_class = check_class_type(&exp.rdf_type);
+    let is_data_range = check_data_range_type(&exp.rdf_type);
 
     let operator =
     if is_class { 
@@ -328,11 +354,13 @@ pub fn translate_intersection_of(s: &owl::IntersectionOf) -> Value {
     Value::Array(intersection.to_vec()) 
 }
 
-pub fn translate_union_of(s: &owl::UnionOf) -> Value { 
-    let mut union_of = translate(&s.owl_union_of[0].object);
+/// Given an owl:union,
+/// return its corresponding OFN S-expression
+pub fn translate_union_of(exp: &owl::UnionOf) -> Value { 
+    let mut union_of = translate(&exp.owl_union_of[0].object);
 
-    let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
+    let is_class = check_class_type(&exp.rdf_type);
+    let is_data_range = check_data_range_type(&exp.rdf_type);
 
     let operator =
     if is_class { 
@@ -349,11 +377,13 @@ pub fn translate_union_of(s: &owl::UnionOf) -> Value {
     Value::Array(union.to_vec())
 }
 
-pub fn translate_one_of(s: &owl::OneOf) -> Value { 
-    let mut one_of = translate(&s.owl_one_of[0].object);
+/// Given an owl:oneOf,
+/// return its corresponding OFN S-expression
+pub fn translate_one_of(exp: &owl::OneOf) -> Value { 
+    let mut one_of = translate(&exp.owl_one_of[0].object);
 
-    let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
+    let is_class = check_class_type(&exp.rdf_type);
+    let is_data_range = check_data_range_type(&exp.rdf_type);
 
     let operator =
     if is_class { 
@@ -370,11 +400,13 @@ pub fn translate_one_of(s: &owl::OneOf) -> Value {
     Value::Array(one.to_vec()) 
 }
 
-pub fn translate_complement_of(s: &owl::ComplementOf) -> Value { 
-    let complement_of = translate(&s.owl_complement_of[0].object);
+/// Given an owl:complementOf,
+/// return its corresponding OFN S-expression
+pub fn translate_complement_of(exp: &owl::ComplementOf) -> Value { 
+    let complement_of = translate(&exp.owl_complement_of[0].object);
 
-    let is_class = check_class_type(&s.rdf_type);
-    let is_data_range = check_data_range_type(&s.rdf_type);
+    let is_class = check_class_type(&exp.rdf_type);
+    let is_data_range = check_data_range_type(&exp.rdf_type);
 
     let operator = 
     if is_class { 
@@ -388,21 +420,24 @@ pub fn translate_complement_of(s: &owl::ComplementOf) -> Value {
     Value::Array(v)
 } 
 
-//NB: this encodes an axiom - not an expression
-pub fn translate_negative_object_property_assertion(s: &owl::NegativeObjectPropertyAssertion) -> Value { 
-    let source = translate(&s.source_individual[0].object);
-    let property =  translate(&s.assertion_property[0].object);
-    let target = translate(&s.target_individual[0].object);
+/// Given an owl:NegativePropertyAssertion,
+/// return its corresponding OFN S-expression
+pub fn translate_negative_object_property_assertion(exp: &owl::NegativeObjectPropertyAssertion) -> Value { 
+    let source = translate(&exp.source_individual[0].object);
+    let property =  translate(&exp.assertion_property[0].object);
+    let target = translate(&exp.target_individual[0].object);
 
     let operator = Value::String(String::from("NegativeObjectPropertyAssertion"));
     let v = vec![operator, source, property, target];
     Value::Array(v) 
 }
 
-pub fn translate_negative_data_property_assertion(s: &owl::NegativeDataPropertyAssertion) -> Value { 
-    let source = translate(&s.source_individual[0].object);
-    let property =  translate(&s.assertion_property[0].object);
-    let target = translate(&s.target_value[0].object);
+/// Given an owl:NegativePropertyAssertion,
+/// return its corresponding OFN S-expression
+pub fn translate_negative_data_property_assertion(exp: &owl::NegativeDataPropertyAssertion) -> Value { 
+    let source = translate(&exp.source_individual[0].object);
+    let property =  translate(&exp.assertion_property[0].object);
+    let target = translate(&exp.target_value[0].object);
 
     let operator = Value::String(String::from("NegativeDataPropertyAssertion"));
     let v = vec![operator, source, property, target];
