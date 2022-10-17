@@ -164,8 +164,8 @@ pub fn translate_object_min_cardinality(v : &Value) -> Value {
 pub fn translate_min_cardinality(v : &Value) -> Value {
     //TODO: check that this is not a *qualified* cardinality restriction
 
-    let property_o : Value = get_object(&v[1]);
-    let cardinality_o : Value = get_object(&v[2]);
+    let cardinality_o : Value = get_object(&v[1]);
+    let property_o : Value = get_object(&v[2]);
     let type_o : Value = get_object(&json!("owl:Restriction"));
 
     json!({"rdf:type" : vec![type_o],
