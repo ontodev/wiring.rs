@@ -87,6 +87,23 @@ pub fn translate_named(s: String) -> Value {
 
 /// Given an existential restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let some_values_from = r#"{"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"owl:someValuesFrom":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let some_values_from_owl : owl::OWL = serde_json::from_str(some_values_from).unwrap();
+///
+/// let axiom : Value = translation::translate(&some_values_from_owl);
+/// let axiom_expected_string = r#"["SomeValuesFrom","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected);
+/// ```
 pub fn translate_some_values_from(exp: &owl::SomeValuesFrom) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let filler =  translate(&exp.owl_some_values_from[0].object);
@@ -98,6 +115,23 @@ pub fn translate_some_values_from(exp: &owl::SomeValuesFrom) -> Value {
 
 /// Given a universal restrictions,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let all_values_from = r#"{"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"owl:allValuesFrom":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let all_values_from_owl : owl::OWL = serde_json::from_str(all_values_from).unwrap();
+///
+/// let axiom : Value = translation::translate(&all_values_from_owl);
+/// let axiom_expected_string = r#"["AllValuesFrom","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected);
+/// ```
 pub fn translate_all_values_from(exp: &owl::AllValuesFrom) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let filler =  translate(&exp.owl_all_values_from[0].object);
@@ -109,6 +143,24 @@ pub fn translate_all_values_from(exp: &owl::AllValuesFrom) -> Value {
 
 /// Given a HasValue restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let has_value = r#"{"owl:hasValue":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+
+/// let has_value_owl : owl::OWL = serde_json::from_str(has_value).unwrap();
+///
+/// let axiom : Value = translation::translate(&has_value_owl);
+/// let axiom_expected_string = r#"["HasValue","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected);
+/// ```
 pub fn translate_has_value(exp: &owl::HasValue) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let filler =  translate(&exp.owl_has_value[0].object);
@@ -120,6 +172,25 @@ pub fn translate_has_value(exp: &owl::HasValue) -> Value {
 
 /// Given a HasSelf restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let has_self = r#"{"owl:hasSelf":[{"datatype":"_IRI","object":"true^^xsd:boolean"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+///
+/// let has_self_owl : owl::OWL = serde_json::from_str(has_self).unwrap();
+///
+/// let axiom : Value = translation::translate(&has_self_owl);
+/// let axiom_expected_string = r#"["ObjectHasSelf","obo:IAO_0000120"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
+
 pub fn translate_has_self(exp: &owl::HasSelf) -> Value { 
     let property = translate(&exp.owl_on_property[0].object); 
     let operator = Value::String(String::from("ObjectHasSelf"));
@@ -132,6 +203,24 @@ pub fn translate_has_self(exp: &owl::HasSelf) -> Value {
 
 /// Given a MinCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let min_cardinality = r#"{"owl:minCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
+///
+/// let axiom : Value = translation::translate(&min_cardinality_owl);
+/// let axiom_expected_string = r#"["MinCardinality","1","obo:IAO_0000120"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_min_cardinality[0].object);
@@ -143,6 +232,24 @@ pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value {
 
 /// Given a qualified ObjectMinCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let min_cardinality = r#"{"owl:minQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&min_cardinality_owl);
+/// let axiom_expected_string = r#"["ObjectMinCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_object_min_qualified_cardinality(exp: &owl::MinObjectQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_min_qualified_cardinality[0].object);
@@ -155,6 +262,24 @@ pub fn translate_object_min_qualified_cardinality(exp: &owl::MinObjectQualifiedC
 
 /// Given a DataMinCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let min_cardinality = r#"{"owl:minQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#; 
+/// 
+/// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&min_cardinality_owl);
+/// let axiom_expected_string = r#"["DataMinCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_min_qualified_cardinality[0].object);
@@ -167,6 +292,24 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 
 /// Given a MaxCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let max_cardinality = r#"{"owl:maxCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
+///
+/// let axiom : Value = translation::translate(&max_cardinality_owl);
+/// let axiom_expected_string = r#"["MaxCardinality","1","obo:IAO_0000120"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_max_cardinality[0].object);
@@ -178,6 +321,24 @@ pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value {
 
 /// Given a qualified ObjectMaxCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let max_cardinality = r#"{"owl:maxQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&max_cardinality_owl);
+/// let axiom_expected_string = r#"["ObjectMaxCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_object_max_qualified_cardinality(exp: &owl::MaxObjectQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_max_qualified_cardinality[0].object);
@@ -190,6 +351,24 @@ pub fn translate_object_max_qualified_cardinality(exp: &owl::MaxObjectQualifiedC
 
 /// Given a qualified DataMaxCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let max_cardinality = r#"{"owl:maxQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#; 
+/// 
+/// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&max_cardinality_owl);
+/// let axiom_expected_string = r#"["DataMaxCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_max_qualified_cardinality[0].object);
@@ -202,6 +381,24 @@ pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardi
 
 /// Given an ExactCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let exact_cardinality = r#"{"owl:cardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
+///
+/// let axiom : Value = translation::translate(&exact_cardinality_owl);
+/// let axiom_expected_string = r#"["ExactCardinality","1","obo:IAO_0000120"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_cardinality[0].object);
@@ -213,6 +410,24 @@ pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value {
 
 /// Given an qualified ObjectExactCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let exact_cardinality = r#"{"owl:qualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// 
+/// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&exact_cardinality_owl);
+/// let axiom_expected_string = r#"["ObjectExactCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_object_exact_qualified_cardinality(exp: &owl::ExactObjectQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_qualified_cardinality[0].object);
@@ -225,6 +440,24 @@ pub fn translate_object_exact_qualified_cardinality(exp: &owl::ExactObjectQualif
 
 /// Given an qualified DataExactCardinality restriction,
 /// return its corresponding OFN S-expression.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let exact_cardinality = r#"{"owl:qualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#; 
+/// 
+/// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap(); 
+///
+/// let axiom : Value = translation::translate(&exact_cardinality_owl);
+/// let axiom_expected_string = r#"["DataExactCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected); 
+/// ```
 pub fn translate_data_exact_qualified_cardinality(exp: &owl::ExactDataQualifiedCardinality) -> Value { 
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality =  translate(&exp.owl_qualified_cardinality[0].object);
@@ -237,6 +470,24 @@ pub fn translate_data_exact_qualified_cardinality(exp: &owl::ExactDataQualifiedC
 
 /// Given a member list,
 /// return its corresponding list of OFN S-expressions.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let members = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+///
+/// let members_owl : owl::OWL = serde_json::from_str(members).unwrap(); 
+///
+/// let list : Value = translation::translate(&members_owl);
+/// let list_expected_string = r#"["obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+///
+/// let list_expected : Value = serde_json::from_str(list_expected_string).unwrap();
+/// assert_eq!(list, list_expected); 
+/// ```
 pub fn translate_members(exp: &owl::Members) -> Value { 
     translate(&exp.members[0].object) 
 }
@@ -244,6 +495,23 @@ pub fn translate_members(exp: &owl::Members) -> Value {
 
 /// Given a list of distinct members,
 /// return its corresponding OFN S-expressions.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let members = r#"{"rdf:type":[{"object":"owl:AllDifferent","datatype":"_IRI"}],"owl:distinctMembers":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let members_owl : owl::DistinctMembers = serde_json::from_str(members).unwrap();
+///
+/// let axiom : Value = translation::translate_distinct_members(&members_owl);
+/// let axiom_expected_string = r#"["DifferentIndividuals","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+/// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
+///
+/// assert_eq!(axiom, axiom_expected);
+/// ``` 
 pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value { 
     //extract opertor
     let rdf_type = match &exp.rdf_type {
@@ -270,6 +538,23 @@ pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value {
 
 /// Given an RDF list, 
 /// return its corresponding OFN S-expressions.
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let list = r#"{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}"#;
+/// let list_owl : owl::RDFList = serde_json::from_str(list).unwrap(); 
+///
+/// let list : Value = translation::translate_list(&list_owl);
+/// let list_expected_string = r#"["obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+///
+/// let list_expected : Value = serde_json::from_str(list_expected_string).unwrap();
+/// assert_eq!(list, list_expected); 
+/// ```
 pub fn translate_list(exp: &owl::RDFList) -> Value { 
     //translate RDF list recursively
     let first = translate(&exp.rdf_first[0].object);
@@ -294,6 +579,7 @@ pub fn translate_list(exp: &owl::RDFList) -> Value {
 
 /// Given an owl::Object,
 /// return true, if its rdf:type is owl:Class
+/// TODO: doc test
 pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool { 
     let mut res : bool = false;
      match v {
@@ -313,6 +599,7 @@ pub fn check_class_type(v : &Option<Vec<owl::Object>>) -> bool {
 
 /// Given an owl::Object,
 /// return true, if its rdf:type is rdfs:Datatype
+/// TODO: doc test
 pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool { 
     let mut res : bool = false;
      match v {
@@ -333,6 +620,24 @@ pub fn check_data_range_type(v : &Option<Vec<owl::Object>>) -> bool {
 
 /// Given an owl:intersection,
 /// return its corresponding OFN S-expression
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let intersection = r#"{"owl:intersectionOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+///
+/// let intersection_owl : owl::OWL = serde_json::from_str(intersection).unwrap(); 
+///
+/// let intersection_ofn : Value = translation::translate(&intersection_owl);
+/// let intersection_ofn_expected_string = r#"["ObjectIntersectionOf","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+///
+/// let intersection_ofn_expected : Value = serde_json::from_str(intersection_ofn_expected_string).unwrap();
+/// assert_eq!(intersection_ofn, intersection_ofn_expected); 
+/// ``` 
 pub fn translate_intersection_of(exp: &owl::IntersectionOf) -> Value { 
     let mut intersection_of = translate(&exp.owl_intersection_of[0].object);
 
@@ -356,6 +661,24 @@ pub fn translate_intersection_of(exp: &owl::IntersectionOf) -> Value {
 
 /// Given an owl:union,
 /// return its corresponding OFN S-expression
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let union = r#"{"owl:unionOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+///
+/// let union_owl : owl::OWL = serde_json::from_str(union).unwrap(); 
+///
+/// let union_ofn : Value = translation::translate(&union_owl);
+/// let union_ofn_expected_string = r#"["ObjectUnionOf","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+///
+/// let union_ofn_expected : Value = serde_json::from_str(union_ofn_expected_string).unwrap();
+/// assert_eq!(union_ofn, union_ofn_expected); 
+/// ``` 
 pub fn translate_union_of(exp: &owl::UnionOf) -> Value { 
     let mut union_of = translate(&exp.owl_union_of[0].object);
 
@@ -379,6 +702,24 @@ pub fn translate_union_of(exp: &owl::UnionOf) -> Value {
 
 /// Given an owl:oneOf,
 /// return its corresponding OFN S-expression
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+///
+/// let one_of = r#"{"owl:oneOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+///
+/// let one_of_owl : owl::OWL = serde_json::from_str(one_of).unwrap(); 
+///
+/// let one_of_ofn : Value = translation::translate(&one_of_owl);
+/// let one_of_expected_string = r#"["ObjectOneOf","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+///
+/// let one_of_expected : Value = serde_json::from_str(one_of_expected_string).unwrap();
+/// assert_eq!(one_of_ofn, one_of_expected); 
+/// ``` 
 pub fn translate_one_of(exp: &owl::OneOf) -> Value { 
     let mut one_of = translate(&exp.owl_one_of[0].object);
 
@@ -402,6 +743,25 @@ pub fn translate_one_of(exp: &owl::OneOf) -> Value {
 
 /// Given an owl:complementOf,
 /// return its corresponding OFN S-expression
+///
+///
+/// # Examples
+///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::class_translation as translation;
+/// use wiring_rs::owl::thick_triple as owl;
+/// 
+/// let complement = r#"{"owl:complementOf":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+///
+/// let complement_owl : owl::OWL = serde_json::from_str(complement).unwrap(); 
+///
+/// let complement_ofn : Value = translation::translate(&complement_owl);
+/// let complement_ofn_expected_string = r#"["ObjectComplementOf","obo:IAO_0000120"]"#;
+///
+/// let complement_ofn_expected : Value = serde_json::from_str(complement_ofn_expected_string).unwrap();
+/// assert_eq!(complement_ofn, complement_ofn_expected); 
+/// ``` 
 pub fn translate_complement_of(exp: &owl::ComplementOf) -> Value { 
     let complement_of = translate(&exp.owl_complement_of[0].object);
 
@@ -422,24 +782,30 @@ pub fn translate_complement_of(exp: &owl::ComplementOf) -> Value {
 
 /// Given an owl:NegativePropertyAssertion,
 /// return its corresponding OFN S-expression
+///
+/// # Examples
+/// see axiom_translation
 pub fn translate_negative_object_property_assertion(exp: &owl::NegativeObjectPropertyAssertion) -> Value { 
     let source = translate(&exp.source_individual[0].object);
     let property =  translate(&exp.assertion_property[0].object);
     let target = translate(&exp.target_individual[0].object);
 
     let operator = Value::String(String::from("NegativeObjectPropertyAssertion"));
-    let v = vec![operator, source, property, target];
+    let v = vec![operator, property, source, target];
     Value::Array(v) 
 }
 
 /// Given an owl:NegativePropertyAssertion,
 /// return its corresponding OFN S-expression
+///
+/// # Examples
+/// see axiom_translation
 pub fn translate_negative_data_property_assertion(exp: &owl::NegativeDataPropertyAssertion) -> Value { 
     let source = translate(&exp.source_individual[0].object);
     let property =  translate(&exp.assertion_property[0].object);
     let target = translate(&exp.target_value[0].object);
 
     let operator = Value::String(String::from("NegativeDataPropertyAssertion"));
-    let v = vec![operator, source, property, target];
+    let v = vec![operator, property, source, target];
     Value::Array(v) 
 }

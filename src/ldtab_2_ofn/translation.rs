@@ -8,6 +8,9 @@ use crate::util::parser as parser;
 /// 
 /// #Examples
 ///
+/// ```
+/// use serde_json::{Value};
+/// use wiring_rs::ldtab_2_ofn::translation as translation;
 /// let thick_triple_string = r#"{"subject": "obo:IAO_0000120",
 ///                               "predicate": "rdfs:subClassOf",
 ///                               "object": {"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
@@ -27,8 +30,13 @@ use crate::util::parser as parser;
 ///
 /// let thick_triple = serde_json::from_str(thick_triple_string).unwrap();
 ///
-/// let ofn = util::parser::thick_triple_2_ofn(&s);
-/// println!("{}", ofn); 
+/// let ofn = translation::thick_triple_2_ofn(&thick_triple);
+///
+/// let ofn_expected_string =r#"["SubClassOf","obo:IAO_0000120",["SomeValuesFrom","obo:BFO_0000050","obo:OBI_0500000"]]"#;
+/// let ofn_expected : Value = serde_json::from_str(ofn_expected_string).unwrap();
+///
+/// assert_eq!(ofn, ofn_expected);
+/// ```
 pub fn thick_triple_2_ofn(thick_triple : &Value) -> Value {
 
     //translate subject, predicate, object into OFN S-expression
