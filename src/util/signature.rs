@@ -1,7 +1,56 @@
-use serde_json::{Value};
+use serde_json::{Map, Value};
+use std::collections::HashSet;
 
 //extract language tags + datatypes
 //command line interface
+
+pub fn get_iris_from_object(ldtab_object: &Map<String, Value>, iris: &mut HashSet<String>) {
+    if ldtab_object.contains_key("datatype") {
+        match ldtab_object.get("datatype") {
+            Some(x) => {
+                //get datatype ...
+                match x {
+                    Value::String(y) => {
+                        //... as a string ...
+                        match y.as_str() {
+                            //... to check its value
+                            "_IRI" => {
+                                let object = ldtab_object.get("object").unwrap();
+                                iris.insert(String::from(object.as_str().unwrap()));
+                            }
+                            "_JSON" => {
+                                let object = ldtab_object.get("object").unwrap();
+                                get_iris(object, iris);
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            _ => panic!(), //TODO: error handling
+        }
+    } else {
+        for v in ldtab_object.values() {
+            get_iris(&v, iris);
+        }
+    }
+}
+
+pub fn get_iris_from_array(ldtab_array: &Vec<Value>, iris: &mut HashSet<String>) {
+    for a in ldtab_array {
+        get_iris(&a, iris);
+    }
+}
+
+//extract IRIs from a thick triple
+pub fn get_iris(ldtab_thick_triple_object: &Value, iris: &mut HashSet<String>) {
+    match ldtab_thick_triple_object {
+        Value::Array(a) => get_iris_from_array(&a, iris),
+        Value::Object(o) => get_iris_from_object(&o, iris),
+        _ => {}
+    }
+}
 
 //extract prefixes occuring in an OFN S-expression
 pub fn get_prefixes(v : &Value) -> Vec<String> {
