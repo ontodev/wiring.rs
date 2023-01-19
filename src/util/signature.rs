@@ -5,6 +5,11 @@ use std::collections::HashSet;
 //command line interface
 
 pub fn get_iris_from_object(ldtab_object: &Map<String, Value>, iris: &mut HashSet<String>) {
+
+    for k in ldtab_object.keys(){
+        iris.insert(k.clone());
+    }
+
     if ldtab_object.contains_key("datatype") {
         match ldtab_object.get("datatype") {
             Some(x) => {
