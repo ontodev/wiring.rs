@@ -80,22 +80,26 @@ pub fn translate_ontology_import(v : &Value) -> Value {
        }) 
 }
 
-//TODO
-//pub fn translate_ontology_annotation(v : &Value) -> Value {
-//
-//    let subject = class_translation::translate(&v[1]);
-//    let predicate = property_translation::translate(&v[1]);
-//
-//       json!({"assertion":"1",
-//           "retraction":"0",
-//           "graph":"graph",
-//           "subject": subject,
-//           "predicate":predicate,
-//           "object":value_ldtab,
-//           "datatype":value_datatype,
-//           "annotation":"Null"
-//       }) 
-//}
+//TODO: an "OntologyAnnotation" is not specified in OWL functional style syntax
+//but Horned-OWL introduces OntologyAnnotation as a data structure
+//this should better be serialized as a "ThinTriple" in OFN
+pub fn translate_ontology_annotation(v : &Value) -> Value {
+
+    let ontology = class_translation::translate(&v[1]);
+    let annotation = &v[2];
+    let property = property_translation::translate(&annotation[1]);
+    let value = annotation_translation::translate_value(&annotation[2]);
+
+       json!({"assertion":"1",
+           "retraction":"0",
+           "graph":"graph",
+           "subject": ontology,
+           "predicate":property,
+           "object":value["object"],
+           "datatype":value["datatype"],
+           "annotation":"Null"
+       })
+}
 
 pub fn translate_class_assertion_axiom(v : &Value) -> Value { 
 
