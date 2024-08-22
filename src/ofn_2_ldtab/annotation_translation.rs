@@ -57,6 +57,22 @@ pub fn get_annotations(v : &Value) -> Vec<Value> {
     } 
 }
 
+pub fn is_literal(value: &Value) -> bool {
+    // Ensure the Value is a string
+    if let Some(s) = value.as_str() {
+        // Regex for a simple quoted string
+        let simple_string_re = Regex::new("^\"(.+)\"$").unwrap();
+        // Regex for a string with a language tag (e.g., "hello"@en)
+        let lang_tag_re = Regex::new("^\"(.+)\"@(.*)$").unwrap();
+        // Regex for a string with a datatype IRI or CURIE (e.g., "42"^^<http://example.com> or "42"^^prefix:suffix)
+        let iri_or_curie_re = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
+
+        // Check if the string matches any of the forms
+        return simple_string_re.is_match(s) || lang_tag_re.is_match(s) || iri_or_curie_re.is_match(s);
+    }
+    false
+}
+
 pub fn translate_literal(s: &str) -> Value {
 
     let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
