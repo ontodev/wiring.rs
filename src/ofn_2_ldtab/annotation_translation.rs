@@ -57,7 +57,6 @@ pub fn get_annotations(v : &Value) -> Vec<Value> {
     } 
 }
 
-
 pub fn translate_literal(s: &str) -> Value {
 
     let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
@@ -84,7 +83,7 @@ pub fn translate_literal(s: &str) -> Value {
         match plain.captures(s){
             Some(x) => { 
                 json!({"object" : &x[1],
-                        "datatype" : "_plain"})},
+                        "datatype" : "xsd:string"})},
             None => json!("Error"), 
         } 
     
@@ -135,4 +134,3 @@ pub fn translate_annotations(annotations : &Vec<Value>) -> Value {
     } 
     json!(property_2_value) 
 }
-
