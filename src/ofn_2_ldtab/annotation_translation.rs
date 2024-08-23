@@ -81,8 +81,7 @@ pub fn translate_literal(s: &str) -> Value {
 
     if language_tag.is_match(s) {
         match language_tag.captures(s){
-            //Some(x) =>  json!(format!("@{}", &x[2])),
-            Some(x) => { let lang = format!("@{}", &x[2]);
+            Some(x) => { let lang = format!("{}", &x[2]);
                 json!({"object" : &x[1],
                        "datatype" : lang}) 
             }, 
