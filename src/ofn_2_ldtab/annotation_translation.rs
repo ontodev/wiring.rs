@@ -61,11 +61,11 @@ pub fn is_literal(value: &Value) -> bool {
     // Ensure the Value is a string
     if let Some(s) = value.as_str() {
         // Regex for a simple quoted string
-        let simple_string_re = Regex::new("^\"(.+)\"$").unwrap();
+        let simple_string_re = Regex::new("^\"(?s)(.*)\"$").unwrap();
         // Regex for a string with a language tag (e.g., "hello"@en)
-        let lang_tag_re = Regex::new("^\"(.+)\"@(.*)$").unwrap();
+        let lang_tag_re = Regex::new("^\"(?s)(.*)\"@(.*)$").unwrap();
         // Regex for a string with a datatype IRI or CURIE (e.g., "42"^^<http://example.com> or "42"^^prefix:suffix)
-        let iri_or_curie_re = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
+        let iri_or_curie_re = Regex::new("^\"(?s)(.*)\"\\^\\^(.*)$").unwrap();
 
         // Check if the string matches any of the forms
         return simple_string_re.is_match(s) || lang_tag_re.is_match(s) || iri_or_curie_re.is_match(s);
@@ -75,14 +75,15 @@ pub fn is_literal(value: &Value) -> bool {
 
 pub fn translate_literal(s: &str) -> Value {
 
-    let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
-    let datatype = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
-    let plain = Regex::new("^\"(.+)\"$").unwrap();
+    let language_tag = Regex::new("^\"(?s)(.*)\"@(.*)$").unwrap();
+    let datatype = Regex::new("^\"(?s)(.*)\"\\^\\^(.*)$").unwrap();
+    let plain = Regex::new("^\"(?s)(.*)\"$").unwrap();
 
     if language_tag.is_match(s) {
         match language_tag.captures(s){
-            Some(x) => { let lang = format!("{}", &x[2]);
+            Some(x) => { let lang = format!("@{}", &x[2]);
                 json!({"object" : &x[1],
+                       "meta" : "owl:Axiom",
                        "datatype" : lang}) 
             }, 
             None => json!("Error"), 
@@ -91,6 +92,7 @@ pub fn translate_literal(s: &str) -> Value {
         match datatype.captures(s){
             Some(x) => { let data = format!("{}", &x[2]); 
                 json!({"object" : &x[1],
+                       "meta" : "owl:Axiom",
                         "datatype" : data})},
             None => json!("Error"), 
         } 
@@ -98,11 +100,12 @@ pub fn translate_literal(s: &str) -> Value {
         match plain.captures(s){
             Some(x) => { 
                 json!({"object" : &x[1],
+                       "meta" : "owl:Axiom",
                         "datatype" : "xsd:string"})},
             None => json!("Error"), 
         } 
     
-    } else {
+    }  else {
         json!("error")
         //json!({"object" : s, "datatype": "_plain"})
     }
@@ -112,7 +115,7 @@ pub fn translate_value(v : &Value) -> Value {
 
     let s = v.as_str().unwrap(); 
 
-    let literal = Regex::new("^\"(.+)\"(.*)$").unwrap(); 
+    let literal = Regex::new("^\"(?s)(.+)\"(.*)$").unwrap(); 
     let uri = Regex::new("^<(.+)>$").unwrap(); 
     let curie = Regex::new("^(.+):(.+)$").unwrap();
 
@@ -120,9 +123,11 @@ pub fn translate_value(v : &Value) -> Value {
         translate_literal(s)
     } else if uri.is_match(s) { 
         json!({"object" : s,
+               "meta" : "owl:Axiom",
                "datatype" : "_IRI"})
     } else if curie.is_match(s) {
         json!({"object" : s,
+               "meta" : "owl:Axiom",
                "datatype" : "_IRI"})
     } else {
         json!("ERROR")
