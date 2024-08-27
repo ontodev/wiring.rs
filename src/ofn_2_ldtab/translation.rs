@@ -57,8 +57,9 @@ pub fn ofn_2_thick_triple(v : &Value) -> Value {
         Some("Import") => axiom_translation::translate_ontology_import(v),
 
         //TODO: ontology annotations
-        //Some("OntologyAnnotation") => axiom_translation::translate_ontology_annotation(v), 
-        //Some("Ontology") => axiom_translation::translate_annotation_property_range_axiom(v),
+        Some("OntologyAnnotation") => axiom_translation::translate_ontology_annotation(v), 
+        Some("DocIRI") => axiom_translation::translate_doc_iri(v), 
+        Some("Ontology") => axiom_translation::translate_ontology(v), 
 
         Some(_) => panic!(),
         None => panic!(),
