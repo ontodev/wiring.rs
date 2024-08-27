@@ -80,22 +80,24 @@ pub fn translate_ontology_import(v : &Value) -> Value {
        }) 
 }
 
-//TODO
-//pub fn translate_ontology_annotation(v : &Value) -> Value {
-//
-//    let subject = class_translation::translate(&v[1]);
-//    let predicate = property_translation::translate(&v[1]);
-//
-//       json!({"assertion":"1",
-//           "retraction":"0",
-//           "graph":"graph",
-//           "subject": subject,
-//           "predicate":predicate,
-//           "object":value_ldtab,
-//           "datatype":value_datatype,
-//           "annotation":"Null"
-//       }) 
-//}
+pub fn translate_ontology_annotation(v : &Value) -> Value {
+
+    let subject = class_translation::translate(&v[1]);
+    let predicate = property_translation::translate(&v[2][1]);
+    let annotation = annotation_translation::translate_value(&v[2][2]);
+    let object = annotation.get("object").unwrap().clone();
+    let datatype = annotation.get("datatype").unwrap().clone();
+
+       json!({"assertion":"1",
+           "retraction":"0",
+           "graph":"graph",
+           "subject": subject,
+           "predicate":predicate,
+           "object":object,
+           "datatype":datatype,
+           "annotation":""
+       }) 
+}
 
 pub fn translate_class_assertion_axiom(v : &Value) -> Value { 
 
@@ -500,7 +502,7 @@ pub fn translate_sub_object_property(v : &Value) -> Value {
             "subject":sup,
             "predicate":"owl:propertyChainAxiom", 
             "object":sub,
-            "datatype":util::translate_datatype(&json!(sup)), 
+            "datatype":util::translate_datatype(&json!(sub)), 
             "annotation":annotation 
         }) 
 
@@ -1048,27 +1050,89 @@ pub fn translate_has_key_axiom(v : &Value) -> Value {
     triple
 }
 
+
 pub fn translate_annotation_assertion_axiom(v : &Value) -> Value { 
 
-    //split annotations from logical structure
+    //TODO: check order
     let owl = annotation_translation::get_owl(v);
     let annotations = annotation_translation::get_annotations(v);
     let annotation = annotation_translation::translate_annotations(&annotations);
 
-    //translate OWL classes
-    let from = class_translation::translate(&owl[2]);
-    let property = property_translation::translate(&owl[1]);
-    let to = class_translation::translate(&owl[3]);
+    //if annotation_translation::has_annotation(v) {
+    //    println!("Input: {:?}",v);
+    //    println!("annotations: {:?}",annotations);
+    //    println!("annotation: {:?}",annotation);
+    //}
 
-    let triple = json!({ 
+    //translate OWL classes - these are not necessarily classes though..
+    let from = class_translation::translate(&owl[2]); //subject (class or individual)
+    let property = property_translation::translate(&owl[1]);
+
+    if annotation_translation::is_literal(&owl[3]) {
+        let to = annotation_translation::translate_literal(&owl[3].as_str().unwrap());
+        let object = to.get("object").unwrap();
+        let datatype = to.get("datatype").unwrap();
+
+        let triple = json!({ 
                      "assertion":"1",
                      "retraction":"0",
                      "graph":"graph", 
                      "subject":from,
                      "predicate":property, 
-                     "object":to,
-                     "datatype":"_IRI",//TODO
+                     "object":object,
+                     "datatype":datatype,
                      "annotation":annotation 
+                     }); 
+        triple 
+    } else {
+        let to = class_translation::translate(&owl[3]);
+
+        let triple = json!({ 
+                         "assertion":"1",
+                         "retraction":"0",
+                         "graph":"graph", 
+                         "subject":from,
+                         "predicate":property, 
+                         "object":to,
+                         "datatype":"_IRI",
+                         "annotation":annotation 
+                         }); 
+        triple 
+    }
+}
+
+pub fn translate_ontology(v : &Value) -> Value { 
+
+
+    let iri = &v[1];
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":"ontology",
+                     "predicate":"hasID", 
+                     "object":iri,
+                     "datatype":"_IRI",
+                     "annotation":"" 
+                     }); 
+    triple 
+}
+
+pub fn translate_doc_iri(v : &Value) -> Value { 
+
+
+    let iri = &v[1];
+
+    let triple = json!({ 
+                     "assertion":"1",
+                     "retraction":"0",
+                     "graph":"graph", 
+                     "subject":"ontology",
+                     "predicate":"hasIRI", 
+                     "object":iri,
+                     "datatype":"_IRI",
+                     "annotation":"" 
                      }); 
     triple 
 }
