@@ -349,6 +349,8 @@ pub fn translate_data_exact_cardinality(v : &Value) -> Value {
     }
 } 
 
+//TODO: qualifiedCardinality requires ^^xsd:nonNegativeInteger as a datatype
+//for cardinalities
 pub fn translate_exact_qualified_cardinality(v : &Value) -> Value {
 
     let property_o : Value = get_object(&v[1]);
@@ -372,8 +374,7 @@ pub fn translate_list(v : &[Value]) -> Value {
 
 
         json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o],
-               "datatype" : "_JSON"}) 
+               "rdf:rest" : vec![rest_o]}) 
     } else { 
 
         //let first: Value = translate(&v[0]); 
@@ -384,9 +385,7 @@ pub fn translate_list(v : &[Value]) -> Value {
         //let rest_o : Value = get_object(rest);
         //
         json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o],
-               "datatype" : "_JSON"}) 
-    }
+               "rdf:rest" : vec![rest_o]}) }
 }
 
 pub fn translate_intersection_of(v : &Value) -> Value {
