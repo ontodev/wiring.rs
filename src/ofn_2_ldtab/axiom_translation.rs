@@ -302,7 +302,7 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllDifferent", 
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
+                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSON"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDifferent"}]},
                             "datatype":"_JSON",
                             "annotation":annotation});
         triple
