@@ -1073,14 +1073,15 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
 
 pub fn translate_ontology(v: &Value) -> Value {
     let iri = &v[1];
+    let viri = &v[2];
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
-    "subject":"ontology",
-    "predicate":"hasID",
-    "object":iri,
+    "subject":iri,
+    "predicate":"owl:versionIRI",
+    "object":viri,
     "datatype":"_IRI",
     "annotation":""
     });
@@ -1094,8 +1095,8 @@ pub fn translate_doc_iri(v: &Value) -> Value {
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
-    "subject":"ontology",
-    "predicate":"hasIRI",
+    "subject":"ontology",//TODO
+    "predicate":"owl:versionIRI",
     "object":iri,
     "datatype":"_IRI",
     "annotation":""
