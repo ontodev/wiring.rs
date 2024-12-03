@@ -1,15 +1,16 @@
 use wiring_rs;
-use wiring_rs::thick2ofn as thick2ofn;
-use wiring_rs::ofn2thick as ofn2thick;
+use wiring_rs::ofn_2_thick;
+use wiring_rs::thick_2_ofn;
 
 #[test]
 fn test_intersection() {
+    let ofn_intersection =
+        r#"["SubClassOf","ex:intersection",["ObjectIntersectionOf","ex:I1","ex:I2","ex:I3"]]"#;
 
-    let ofn_intersection =  r#"["SubClassOf","ex:intersection",["ObjectIntersectionOf","ex:I1","ex:I2","ex:I3"]]"#;
+    let ofn2thick = ofn_2_thick::parser::parse(ofn_intersection);
+    let ofn_str = ofn2thick.to_string();
+    let thick2ofn = thick_2_ofn::parser::parse_triple(&ofn_str);
+    let thick2ofn_str = thick2ofn.to_string();
 
-    let ofn2thick = ofn2thick::ofn_parser::parse_ofn(ofn_intersection);
-    let thick2ofn = thick2ofn::thick_triple_parser::parse_triple(&ofn2thick); 
-
-    assert_eq!(ofn_intersection, thick2ofn);
-
+    assert_eq!(ofn_intersection, thick2ofn_str);
 }
