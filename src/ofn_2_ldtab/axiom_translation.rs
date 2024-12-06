@@ -1,6 +1,7 @@
 use crate::ofn_2_ldtab::annotation_translation;
 use crate::ofn_2_ldtab::class_translation;
 use crate::ofn_2_ldtab::property_translation;
+use crate::ofn_2_ldtab::rule_translation;
 use crate::ofn_2_ldtab::util;
 use rand::Rng;
 use serde_json::json;
@@ -1069,6 +1070,30 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
         });
         triple
     }
+}
+
+pub fn translate_rule(v: &Value) -> Value {
+
+    let owl = annotation_translation::get_owl(v);
+    let ofn_annotations = annotation_translation::get_annotations(v);
+    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+
+    let body = rule_translation::translate(&owl[1]);
+    let head = rule_translation::translate(&owl[2]);
+
+    //subject is a blank node (that needs to be a hash of the rule)
+
+    let triple = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject":"_:gen",
+    "predicate":"owl:versionIRI",
+    "object":body,
+    "datatype":"_IRI",
+    "annotation": annotation //NOTE: this deviates from ldtab.clj
+    });
+    triple
 }
 
 pub fn translate_ontology(v: &Value) -> Value {
