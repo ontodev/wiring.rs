@@ -56,6 +56,7 @@ pub fn translate_body(v: &Value) -> Value {
 
     let mut map = Map::new();
 
+    //TODO: change list representation
     for arg in args.iter().rev() {
         if map.is_empty() { //first element
             let rest_o: Value = get_object(&json!("rdf:nil"));
@@ -73,9 +74,10 @@ pub fn translate_body(v: &Value) -> Value {
         }
     }
 
-    json!({"swrl:body" : vec![map]})
+    json!(vec![map])
 }
 
+//same as body
 pub fn translate_head(v: &Value) -> Value {
 
     let array = v.as_array().unwrap();
@@ -100,5 +102,5 @@ pub fn translate_head(v: &Value) -> Value {
         }
     }
 
-    json!({"swrl:head" : vec![map]})
+    json!(vec![map])
 }

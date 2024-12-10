@@ -6,6 +6,8 @@ use crate::ofn_2_ldtab::util;
 use rand::Rng;
 use serde_json::json;
 use serde_json::Value;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
 //TODO
 //
@@ -1074,26 +1076,78 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
 
 pub fn translate_rule(v: &Value) -> Value {
 
+    //TODO: we should hash the LDTab representation
+    let mut hasher = DefaultHasher::new();
+    v.hash(&mut hasher);
+    let blank_node = format!("_:gen{}", hasher.finish());
+
     let owl = annotation_translation::get_owl(v);
     let ofn_annotations = annotation_translation::get_annotations(v);
     let annotation = annotation_translation::translate_annotations(&ofn_annotations);
 
+    let mut triples = Vec::new();
+
     let body = rule_translation::translate(&owl[1]);
     let head = rule_translation::translate(&owl[2]);
 
-    //subject is a blank node (that needs to be a hash of the rule)
-
-    let triple = json!({
+    let blank_node_type = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
-    "subject":"_:gen",
-    "predicate":"owl:versionIRI",
-    "object":body,
+    "subject": blank_node,
+    "predicate":"rdf:type",
+    "object":"swrl:Imp",
     "datatype":"_IRI",
-    "annotation": annotation //NOTE: this deviates from ldtab.clj
+    "annotation": Value::Null 
     });
-    triple
+
+    let body_triple = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject": blank_node,
+    "predicate":"swrl:body",
+    "object":body,
+    "datatype":"_JSONLIST",
+    "annotation": Value::Null 
+    });
+
+    let head_triple = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject":blank_node,
+    "predicate":"swrl:head",
+    "object":head,
+    "datatype":"_JSONLIST",
+    "annotation": Value::Null 
+    });
+
+    triples.push(blank_node_type);
+    triples.push(body_triple);
+    triples.push(head_triple);
+
+    if let Some(obj) = annotation.as_object() {
+
+        for (key,value) in obj {
+
+            let annotation = json!({
+            "assertion":"1",
+            "retraction":"0",
+            "graph":"graph",
+            "subject": blank_node,
+            "predicate":key,
+            "object":value["object"],
+            "datatype":value["datatype"],
+            "annotation": Value::Null 
+            });
+
+
+            triples.push(annotation);
+        }
+    } 
+
+    Value::Array(triples)
 }
 
 pub fn translate_ontology(v: &Value) -> Value {
@@ -1108,7 +1162,7 @@ pub fn translate_ontology(v: &Value) -> Value {
     "predicate":"owl:versionIRI",
     "object":viri,
     "datatype":"_IRI",
-    "annotation":""
+    "annotation": Value::Null
     });
     triple
 }
