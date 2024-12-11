@@ -10,10 +10,10 @@ pub fn translate(v: &Value) -> Value {
         Some("Body") => translate_body(v),
         Some("Head") => translate_head(v),
         Some("ObjectPropertyAtom") => translate_object_property_atom(v),
+        Some("Variable") => translate_variable(v),
         Some(_) => json!("TODO"),
         //None => owl::OWL::Named(String::from(v.as_str().unwrap())),
 
-        //Some("Variable") => axiom_translation::translate_ontology(v),
         //Some("SameIndividualAtom") => axiom_translation::translate_ontology(v),
         //Some("DifferentIndividualsAtom") => axiom_translation::translate_ontology(v),
         //Some("DataRangeAtom") => axiom_translation::translate_ontology(v),
@@ -37,12 +37,21 @@ pub fn get_object(v: &Value) -> Value {
            "datatype" : d})
 }
 
+pub fn translate_variable(v: &Value) -> Value {
+
+    let var = v[1].as_str();
+    json!( {"datatype" : "_IRI",
+            "object" : var})
+
+
+}
+
 pub fn translate_object_property_atom(v: &Value) -> Value {
     let type_o = get_object(&json!("swrl:IndividualPropertyAtom"));
     let property_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
-    json!( {"datatype" : "_JSON",
+    json!( {"datatype" : "_JSONMAP",
             "object": vec![json!({"rdf:type" : vec![type_o],
                             "swrl:propertyPredicate" : vec![property_o],
                             "swrl:argument1" : vec![arg1_o],
@@ -56,7 +65,7 @@ pub fn translate_body(v: &Value) -> Value {
 
     let mut map = Map::new();
 
-    //TODO: change list representation
+        //TODO: change list representation
     for arg in args.iter().rev() {
         if map.is_empty() { //first element
             let rest_o: Value = get_object(&json!("rdf:nil"));
