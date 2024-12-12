@@ -63,27 +63,13 @@ pub fn translate_body(v: &Value) -> Value {
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
-    let mut map = Map::new();
+    let mut list = Vec::new();
 
-        //TODO: change list representation
-    for arg in args.iter().rev() {
-        if map.is_empty() { //first element
-            let rest_o: Value = get_object(&json!("rdf:nil"));
-            let type_o: Value = get_object(&json!("swrl:AtomList"));
-            map.insert(String::from("rdf:rest"),json!(vec![rest_o]));
-            map.insert(String::from("rdf:type"),json!(vec![type_o]));
-            map.insert(String::from("rdf:first"),json!(vec![translate(arg)]));
-        } else {
-            let inner = map.clone();
-            map.clear();
-            let type_o: Value = get_object(&json!("swrl:AtomList"));
-            map.insert(String::from("rdf:type"),json!(vec![type_o]));
-            map.insert(String::from("rdf:first"),json!(vec![translate(arg)]));
-            map.insert(String::from("rdf:rest"),json!(vec![json!(inner)]));
-        }
+    for arg in args.iter() {
+        list.push(translate(arg));
     }
 
-    json!(vec![map])
+    json!(list)
 }
 
 //same as body
@@ -92,24 +78,11 @@ pub fn translate_head(v: &Value) -> Value {
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
-    let mut map = Map::new();
+    let mut list = Vec::new();
 
-    for arg in args.iter().rev() {
-        if map.is_empty() { //first element
-            let rest_o: Value = get_object(&json!("rdf:nil"));
-            let type_o: Value = get_object(&json!("swrl:AtomList"));
-            map.insert(String::from("rdf:rest"),json!(vec![rest_o]));
-            map.insert(String::from("rdf:type"),json!(vec![type_o]));
-            map.insert(String::from("rdf:first"),json!(vec![translate(arg)]));
-        } else {
-            let inner = map.clone();
-            map.clear();
-            let type_o: Value = get_object(&json!("swrl:AtomList"));
-            map.insert(String::from("rdf:type"),json!(vec![type_o]));
-            map.insert(String::from("rdf:first"),json!(vec![translate(arg)]));
-            map.insert(String::from("rdf:rest"),json!(vec![json!(inner)]));
-        }
+    for arg in args.iter() {
+        list.push(translate(arg));
     }
 
-    json!(vec![map])
+    json!(list)
 }
