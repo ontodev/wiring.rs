@@ -1079,7 +1079,7 @@ pub fn translate_rule(v: &Value) -> Value {
     //TODO: we should hash the LDTab representation
     let mut hasher = DefaultHasher::new();
     v.hash(&mut hasher);
-    let blank_node = format!("_:gen{}", hasher.finish());
+    let blank_node = format!("<wiring:gen{}>", hasher.finish());
 
     let owl = annotation_translation::get_owl(v);
     let ofn_annotations = annotation_translation::get_annotations(v);
@@ -1131,19 +1131,24 @@ pub fn translate_rule(v: &Value) -> Value {
 
         for (key,value) in obj {
 
-            let annotation = json!({
-            "assertion":"1",
-            "retraction":"0",
-            "graph":"graph",
-            "subject": blank_node,
-            "predicate":key,
-            "object":value["object"],
-            "datatype":value["datatype"],
-            "annotation": Value::Null 
-            });
+            if let Some(list) = value.as_array(){
 
+                for e in list {
 
-            triples.push(annotation);
+                    let annotation = json!({
+                    "assertion":"1",
+                    "retraction":"0",
+                    "graph":"graph",
+                    "subject": blank_node,
+                    "predicate":key,
+                    "object":e["object"],
+                    "datatype":e["datatype"],
+                    "annotation": Value::Null 
+                    });
+
+                    triples.push(annotation);
+                }
+            }
         }
     } 
 
