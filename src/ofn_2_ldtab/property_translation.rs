@@ -20,14 +20,14 @@ pub fn translate_inverse_of(v: &Value) -> Value {
     let argument: Value = translate(&v[1]);
 
     let argument_o: Value = json!({"object" : argument,
-                                    "datatype" : String::from(util::translate_datatype(&v[1]).as_str().unwrap())});
+                                   "datatype" : String::from(util::translate_datatype(&argument).as_str().unwrap())});
 
     json!({"owl:inverseOf" : vec![argument_o]})
 }
 
 pub fn get_object(v: &Value) -> Value {
     let o: Value = translate(&v);
-    let d: String = String::from(util::translate_datatype(&v).as_str().unwrap());
+    let d: String = String::from(util::translate_datatype(&o).as_str().unwrap());
 
     json!({"object" : o,
            "datatype" : d})
