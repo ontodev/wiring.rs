@@ -11,9 +11,13 @@ pub fn translate(v: &Value) -> Value {
         Some("Head") => translate_head(v),
         Some("ObjectPropertyAtom") => translate_object_property_atom(v),
         Some("Variable") => translate_variable(v),
-        Some(_) => json!("TODO"),
+        Some(_) => {
+            println!("Error: {}", v);
+            json!("TODO")}
+        ,
         //None => owl::OWL::Named(String::from(v.as_str().unwrap())),
 
+        //Some("Variable") => axiom_translation::translate_ontology(v),
         //Some("SameIndividualAtom") => axiom_translation::translate_ontology(v),
         //Some("DifferentIndividualsAtom") => axiom_translation::translate_ontology(v),
         //Some("DataRangeAtom") => axiom_translation::translate_ontology(v),
@@ -31,7 +35,7 @@ pub fn translate_named_entity(v: &Value) -> Value {
 
 pub fn get_object(v: &Value) -> Value {
     let o: Value = translate(&v);
-    let d: String = String::from(util::translate_datatype(&v).as_str().unwrap());
+    let d: String = String::from(util::translate_datatype(&o).as_str().unwrap());
 
     json!({"object" : o,
            "datatype" : d})
@@ -39,10 +43,7 @@ pub fn get_object(v: &Value) -> Value {
 
 pub fn translate_variable(v: &Value) -> Value {
 
-    let var = v[1].as_str();
-    json!( {"datatype" : "_IRI",
-            "object" : var})
-
+    translate_named_entity(&v[1])
 
 }
 
@@ -63,26 +64,27 @@ pub fn translate_body(v: &Value) -> Value {
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
-    let mut list = Vec::new();
+    let mut vec = Vec::new();
 
-    for arg in args.iter() {
-        list.push(translate(arg));
+    for arg in args.iter().rev() {
+        vec.push(translate(arg));
     }
 
-    json!(list)
+    json!(vec)
+
 }
 
-//same as body
 pub fn translate_head(v: &Value) -> Value {
 
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
-    let mut list = Vec::new();
 
-    for arg in args.iter() {
-        list.push(translate(arg));
+    let mut vec = Vec::new();
+    for arg in args.iter().rev() {
+        vec.push(translate(arg));
     }
 
-    json!(list)
+    json!(vec)
+
 }
