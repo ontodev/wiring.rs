@@ -479,7 +479,7 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
             "subject":sup,
             "predicate":"owl:propertyChainAxiom",
             "object":sub,
-            "datatype":util::translate_datatype(&json!(sub)),
+            "datatype":"_JSONLIST",
             "annotation":annotation
         })
     } else {
@@ -805,8 +805,9 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
     let annotations = annotation_translation::get_annotations(v);
 
     let lhs = property_translation::translate(&owl[1]);
-    let rhs = class_translation::translate(&owl[2]);
+    let rhs = property_translation::translate(&owl[2]);
     let annotation = annotation_translation::translate_annotations(&annotations);
+    let datatype = util::translate_datatype(&json!(rhs));
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -814,7 +815,7 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
                         "subject":lhs,
                         "predicate":"owl:inverseOf",
                         "object":rhs,
-                        "datatype": util::translate_datatype(&json!(rhs)),
+                        "datatype": datatype,
                         "annotation":annotation});
     triple
 }
