@@ -8,6 +8,7 @@ use serde_json::json;
 use serde_json::Value;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
+use sha2::{Sha256, Digest};
 
 //TODO
 //
@@ -254,20 +255,30 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        //TODO: construct JSON object (sort + expand IRIs) to create HASH
+        let blank_node = json!({"predicate":"owl:AllSameAs", //this is LDtab specific
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                                "datatype":"_JSONMAP"});
+                                //"annotation":annotation});
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("_:gen{:x}", blank_node_hash);
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             //"predicate":"owl:sameAs", 
                             "predicate":"owl:AllSameAs", //this is LDtab specific
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -305,8 +316,8 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllDifferent", 
-                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSON"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDifferent"}]},
-                            "datatype":"_JSON",
+                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDifferent"}]},
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -585,20 +596,31 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
         triple
     } else {
 
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+
+        let blank_node = json!({"predicate":"owl:AllDisjointClasses",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
+                                "datatype": "_JSONMAP"});
+                                //"annotation":annotation});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+        println!("blank_string: {}", blank_string);
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("_:gen{:x}", blank_node_hash);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph",
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:AllDisjointClasses",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
-                            "datatype": "_JSON", 
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
+                            "datatype": "_JSONMAP", 
                             "annotation":annotation});
         triple
     }
@@ -619,7 +641,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
                         "subject":lhs,
                         "predicate":"owl:disjointUnionOf",
                         "object":operands,
-                        "datatype": "_JSON", 
+                        "datatype": "_JSONLIST", 
                         "annotation":annotation});
     triple
 }
@@ -658,8 +680,8 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:equivalentClass",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype 
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -774,8 +796,8 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:equivalentProperty", //TODO AllEquivalentProperties?
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -997,8 +1019,8 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node,
                             "predicate":"owl:AllDisjointProperties", 
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -1021,7 +1043,7 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
                         "subject":blank_node,
                         "predicate":"owl:hasKey",
                         "object": {"owl:members":operands}, //TODO remove datatype
-                        "datatype": "_JSON", 
+                        "datatype": "_JSONMAP", 
                         "annotation":annotation});
     triple
 }
