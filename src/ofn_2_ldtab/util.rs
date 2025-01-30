@@ -54,7 +54,7 @@ pub fn sort_value(v: &Value) -> Value {
         Value::String(_s) => v.clone(),
         Value::Bool(_b) => v.clone(),
         Value::Number(_n) => v.clone(),
-        Value::Array(a) => sort_array(a),//TODO: exclude _JSONLIST
+        Value::Array(a) => sort_array(a), //TODO: exclude _JSONLIST
         Value::Object(o) => sort_object(o),
         Value::Null => v.clone(),
     }
@@ -67,11 +67,26 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
 
     //sort nested values
     for (key, value) in v.iter() {
-
         let mut sorted_value = Value::Null;
 
-        if key == "object" && v.contains_key("datatype") && v.get("datatype").unwrap() == &json!("_JSONLIST") {
-            let sorted_values: Vec<Value> = value.as_array().unwrap().into_iter().map(|x| sort_value(x)).collect();
+        if key == "object"
+            && v.contains_key("datatype")
+            && v.get("datatype").unwrap() == &json!("_JSONLIST")
+        {
+            //check if value is none
+            match value.as_array() {
+                Some(val) => {}
+                None => {
+                    println!("NOT AN ARRAY {:?}", value);
+                }
+            }
+
+            let sorted_values: Vec<Value> = value
+                .as_array()
+                .unwrap()
+                .into_iter()
+                .map(|x| sort_value(x))
+                .collect();
             sorted_value = Value::Array(sorted_values);
         } else {
             sorted_value = sort_value(value);
@@ -80,7 +95,6 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
     }
     Value::Object(map)
 }
-
 
 pub fn sort_array(v: &Vec<Value>) -> Value {
     //sort nested values

@@ -92,7 +92,7 @@ pub fn ofn_2_thick_triple(v: &Value) -> Value {
 
         //TODO: ontology annotations
         Some("OntologyAnnotation") => axiom_translation::translate_ontology_annotation(v),
-        Some("DocIRI") => axiom_translation::translate_doc_iri(v),//this is horned-owl specific 
+        Some("DocIRI") => axiom_translation::translate_doc_iri(v), //this is horned-owl specific
         Some("Ontology") => axiom_translation::translate_ontology(v),
 
         Some("DLSafeRule") => axiom_translation::translate_rule(v),

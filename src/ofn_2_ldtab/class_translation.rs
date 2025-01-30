@@ -336,13 +336,11 @@ pub fn translate_exact_qualified_cardinality(v: &Value) -> Value {
 }
 
 pub fn translate_list(v: &[Value]) -> Value {
-
     let mut list = Vec::new();
 
     for e in v.iter() {
         let e_object: Value = get_object(&e);
         list.push(e_object);
-
     }
 
     Value::Array(list)
