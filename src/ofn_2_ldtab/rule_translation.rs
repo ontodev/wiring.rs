@@ -1,9 +1,8 @@
-use crate::ofn_2_ldtab::util;
-use crate::ofn_2_ldtab::property_translation;
 use crate::ofn_2_ldtab::class_translation;
+use crate::ofn_2_ldtab::property_translation;
+use crate::ofn_2_ldtab::util;
 use serde_json::json;
 use serde_json::{Map, Value};
-
 
 pub fn translate(v: &Value) -> Value {
     match v[0].as_str() {
@@ -30,6 +29,10 @@ pub fn translate(v: &Value) -> Value {
 
 pub fn translate_named_entity(v: &Value) -> Value {
     let o: String = String::from(v.as_str().unwrap());
+    if o.starts_with("urn") {
+        let iri = format!("<{}>", o);
+        return json!(iri);
+    }
     json!(o)
 }
 
@@ -42,9 +45,7 @@ pub fn get_object(v: &Value) -> Value {
 }
 
 pub fn translate_variable(v: &Value) -> Value {
-
     translate_named_entity(&v[1])
-
 }
 
 pub fn translate_object_property_atom(v: &Value) -> Value {
@@ -53,38 +54,33 @@ pub fn translate_object_property_atom(v: &Value) -> Value {
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
     json!( {"datatype" : "_JSONMAP",
-            "object": vec![json!({"rdf:type" : vec![type_o],
-                            "swrl:propertyPredicate" : vec![property_o],
-                            "swrl:argument1" : vec![arg1_o],
-                            "swrl:argument2" : vec![arg2_o]})]})
+            "object": {"rdf:type" : vec![type_o],
+                        "swrl:propertyPredicate" : vec![property_o],
+                        "swrl:argument1" : vec![arg1_o],
+                        "swrl:argument2" : vec![arg2_o]}})
 }
 
 pub fn translate_body(v: &Value) -> Value {
-
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
     let mut vec = Vec::new();
 
-    for arg in args.iter().rev() {
+    for arg in args.iter() {
         vec.push(translate(arg));
     }
 
     json!(vec)
-
 }
 
 pub fn translate_head(v: &Value) -> Value {
-
     let array = v.as_array().unwrap();
     let args = array[1..].to_vec();
 
-
     let mut vec = Vec::new();
-    for arg in args.iter().rev() {
+    for arg in args.iter() {
         vec.push(translate(arg));
     }
 
     json!(vec)
-
 }
