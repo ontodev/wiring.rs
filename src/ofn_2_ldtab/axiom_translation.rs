@@ -1,10 +1,14 @@
 use crate::ofn_2_ldtab::annotation_translation;
 use crate::ofn_2_ldtab::class_translation;
 use crate::ofn_2_ldtab::property_translation;
+use crate::ofn_2_ldtab::rule_translation;
 use crate::ofn_2_ldtab::util;
 use rand::Rng;
 use serde_json::json;
 use serde_json::Value;
+use sha2::{Digest, Sha256};
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
 //TODO
 //
@@ -175,15 +179,25 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let mut rng = rand::thread_rng();
-    let blank_id: u8 = rng.gen();
-    let blank_node = format!("_:gen{}", blank_id);
+    let blank_node = json!({"predicate":"owl:NegativePropertyAssertion",
+                            "object": {"owl:sourceIndividual":[{"object":from}],
+                                        "owl:assertionProperty":[{"object":property}],
+                                        "owl:targetIndividual":[{"object":to}]},
+                            "datatype":"_IRI"});
+
+    let blank_sorted = util::sort_value(&blank_node);
+    let blank_string = blank_sorted.to_string();
+
+    let mut hasher = Sha256::new();
+    hasher.update(blank_string.as_bytes());
+    let blank_node_hash = hasher.finalize();
+    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
-    "subject":blank_node,
+    "subject":blank_node_id,
     "predicate":"owl:NegativePropertyAssertion",
     "object":{
         "owl:sourceIndividual":[{"object":from}],
@@ -207,15 +221,25 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let mut rng = rand::thread_rng();
-    let blank_id: u8 = rng.gen();
-    let blank_node = format!("_:gen{}", blank_id);
+    let blank_node = json!({"predicate":"owl:NegativePropertyAssertion",
+                            "object": {"owl:sourceIndividual":[{"object":from}],
+                                        "owl:assertionProperty":[{"object":property}],
+                                        "owl:targetIndividual":[{"object":to}]},
+                            "datatype":"_IRI"});
+
+    let blank_sorted = util::sort_value(&blank_node);
+    let blank_string = blank_sorted.to_string();
+
+    let mut hasher = Sha256::new();
+    hasher.update(blank_string.as_bytes());
+    let blank_node_hash = hasher.finalize();
+    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
-    "subject":blank_node,
+    "subject":blank_node_id,
     "predicate":"owl:NegativePropertyAssertion",
     "object":{
         "owl:sourceIndividual":[{"object":from}],
@@ -251,20 +275,30 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
+        let blank_node = json!({"predicate":"owl:AllSameAs",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+                                "datatype":"_JSONMAP"});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             //"predicate":"owl:sameAs", 
                             "predicate":"owl:AllSameAs", //this is LDtab specific
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -291,19 +325,29 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
+        let blank_node = json!({"predicate":"owl:AllDifferent",
+                                "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSONLIST"}]},
+                                "datatype":"_JSONMAP"});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:AllDifferent", 
-                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSON"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDifferent"}]},
-                            "datatype":"_JSON",
+                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSONLIST"}]},
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -476,7 +520,7 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
             "subject":sup,
             "predicate":"owl:propertyChainAxiom",
             "object":sub,
-            "datatype":util::translate_datatype(&json!(sub)),
+            "datatype":"_JSONLIST",
             "annotation":annotation
         })
     } else {
@@ -581,21 +625,29 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
                             "annotation":annotation});
         triple
     } else {
-
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        let blank_node = json!({"predicate":"owl:AllDisjointClasses",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
+                                "datatype": "_JSONMAP"});
+        //"annotation":annotation});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph",
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:AllDisjointClasses",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
-                            "datatype": "_JSON", 
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
+                            "datatype": "_JSONMAP", 
                             "annotation":annotation});
         triple
     }
@@ -616,7 +668,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
                         "subject":lhs,
                         "predicate":"owl:disjointUnionOf",
                         "object":operands,
-                        "datatype": "_JSON", 
+                        "datatype": "_JSONLIST", 
                         "annotation":annotation});
     triple
 }
@@ -644,19 +696,28 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        let blank_node = json!({"predicate":"owl:equivalentClass",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+                                "datatype":"_JSONMAP"});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:equivalentClass",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype 
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -760,19 +821,28 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        let blank_node = json!({"predicate":"owl:equivalentProperty",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+                                "datatype":"_JSONMAP"});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:equivalentProperty", //TODO AllEquivalentProperties?
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -802,8 +872,9 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
     let annotations = annotation_translation::get_annotations(v);
 
     let lhs = property_translation::translate(&owl[1]);
-    let rhs = class_translation::translate(&owl[2]);
+    let rhs = property_translation::translate(&owl[2]);
     let annotation = annotation_translation::translate_annotations(&annotations);
+    let datatype = util::translate_datatype(&json!(rhs));
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -811,7 +882,7 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
                         "subject":lhs,
                         "predicate":"owl:inverseOf",
                         "object":rhs,
-                        "datatype": util::translate_datatype(&json!(rhs)),
+                        "datatype": datatype,
                         "annotation":annotation});
     triple
 }
@@ -982,19 +1053,29 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                         "annotation":annotation});
         triple
     } else {
-        let mut rng = rand::thread_rng();
-        let blank_id: u8 = rng.gen();
-        let blank_node = format!("_:gen{}", blank_id);
-
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
+
+        let blank_node = json!({"predicate":"owl:AllDisjointProperties",
+                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+                                "datatype":"_JSONMAP"});
+
+        let blank_sorted = util::sort_value(&blank_node);
+        let blank_string = blank_sorted.to_string();
+
+        let mut hasher = Sha256::new();
+        hasher.update(blank_string.as_bytes());
+        let blank_node_hash = hasher.finalize();
+        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
+
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
-                            "subject":blank_node,
+                            "subject":blank_node_id,
                             "predicate":"owl:AllDisjointProperties", 
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSON"}]}, //TODO remove datatype
-                            "datatype":"_JSON",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
     }
@@ -1004,20 +1085,28 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
     let owl = annotation_translation::get_owl(v);
     let annotations = annotation_translation::get_annotations(v);
 
-    let mut rng = rand::thread_rng();
-    let blank_id: u8 = rng.gen();
-    let blank_node = format!("_:gen{}", blank_id);
-
     let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
     let annotation = annotation_translation::translate_annotations(&annotations);
+
+    let blank_node = json!({"predicate":"owl:hasKey",
+                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+                            "datatype": "_JSONMAP"});
+
+    let blank_sorted = util::sort_value(&blank_node);
+    let blank_string = blank_sorted.to_string();
+
+    let mut hasher = Sha256::new();
+    hasher.update(blank_string.as_bytes());
+    let blank_node_hash = hasher.finalize();
+    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
-                        "subject":blank_node,
+                        "subject":blank_node_id,
                         "predicate":"owl:hasKey",
-                        "object": {"owl:members":operands}, //TODO remove datatype
-                        "datatype": "_JSON", 
+                        "object": {"owl:members":operands, "datatype":"_JSONLIST"}, //TODO remove datatype
+                        "datatype": "_JSONMAP", 
                         "annotation":annotation});
     triple
 }
@@ -1071,6 +1160,149 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
     }
 }
 
+fn merge_json(a: &mut Value, b: Value) {
+    match (a, b) {
+        (Value::Object(a_map), Value::Object(b_map)) => {
+            for (k, v) in b_map {
+                // Merge if key exists, otherwise insert
+                merge_json(a_map.entry(k).or_insert(Value::Null), v);
+            }
+        }
+        (a, b) => {
+            // If `b` isn't an object (or `a` isn't an object),
+            // just overwrite `a` with `b`.
+            *a = b;
+        }
+    }
+}
+
+fn remove_meta(value: &mut Value) {
+    match value {
+        // If it's an object, we look for (key="meta", value="owl:Axiom")
+        Value::Object(map) => {
+            // First, remove all "meta" keys that have the value "owl:Axiom"
+            let mut keys_to_remove = Vec::new();
+            for (k, v) in map.iter() {
+                if k == "meta" {
+                    keys_to_remove.push(k.clone());
+                }
+            }
+            for k in keys_to_remove {
+                map.remove(&k);
+            }
+
+            // Then, recurse into any sub-values
+            for (_, v) in map.iter_mut() {
+                remove_meta(v);
+            }
+        }
+        // If it's an array, just recurse on each element
+        Value::Array(arr) => {
+            for item in arr {
+                remove_meta(item);
+            }
+        }
+        // Otherwise, it's a primitive (string, number, bool, null). No action needed.
+        _ => {}
+    }
+}
+
+pub fn translate_rule(v: &Value) -> Value {
+
+    let owl = annotation_translation::get_owl(v);
+    let ofn_annotations = annotation_translation::get_annotations(v);
+    let mut annotation = annotation_translation::translate_annotations(&ofn_annotations);
+
+
+
+    let mut triples = Vec::new();
+
+    let body = rule_translation::translate(&owl[1]);
+    let head = rule_translation::translate(&owl[2]);
+
+    remove_meta(&mut annotation);
+    let mut anno_blan = annotation.clone();
+
+    if let Value::Object(ref mut map) = anno_blan {
+        map.remove("meta");
+    }
+
+    let mut blank_node = json!({"rdf:type":[{"datatype":"_IRI", "object" :"swrl:Imp"}],
+                            "swrl:body":[{"datatype":"_JSONLIST", "object" : body}],
+                            "swrl:head":[{"datatype":"_JSONLIST", "object" :head}]});
+    merge_json(&mut blank_node, anno_blan.clone());
+
+    let blank_sorted = util::sort_value(&blank_node);
+    let blank_string = blank_sorted.to_string();
+
+    //println!("blank_node: {}", blank_string);
+
+    let mut hasher = Sha256::new();
+    hasher.update(blank_string.as_bytes());
+    let blank_node_hash = hasher.finalize();
+    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
+    let blank_node_type = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject": blank_node_id,
+    "predicate":"rdf:type",
+    "object":"swrl:Imp",
+    "datatype":"_IRI",
+    "annotation": Value::Null
+    });
+
+    let body_triple = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject": blank_node_id,
+    "predicate":"swrl:body",
+    "object":body,
+    "datatype":"_JSONLIST",
+    "annotation": Value::Null
+    });
+
+    let head_triple = json!({
+    "assertion":"1",
+    "retraction":"0",
+    "graph":"graph",
+    "subject":blank_node_id,
+    "predicate":"swrl:head",
+    "object":head,
+    "datatype":"_JSONLIST",
+    "annotation": Value::Null
+    });
+
+    triples.push(blank_node_type);
+    triples.push(body_triple);
+    triples.push(head_triple);
+
+    if let Some(obj) = annotation.as_object() {
+        for (key, value) in obj {
+            if let Some(list) = value.as_array() {
+                for e in list {
+                    let annotation = json!({
+                    "assertion":"1",
+                    "retraction":"0",
+                    "graph":"graph",
+                    "subject": blank_node_id,
+                    "predicate":key,
+                    "object":e["object"],
+                    "datatype":e["datatype"],
+                    "annotation": Value::Null
+                    });
+
+                    triples.push(annotation);
+                }
+            }
+        }
+    }
+
+    Value::Array(triples)
+}
+
 pub fn translate_ontology(v: &Value) -> Value {
     let iri = &v[1];
     let viri = &v[2];
@@ -1083,7 +1315,7 @@ pub fn translate_ontology(v: &Value) -> Value {
     "predicate":"owl:versionIRI",
     "object":viri,
     "datatype":"_IRI",
-    "annotation":""
+    "annotation": Value::Null
     });
     triple
 }

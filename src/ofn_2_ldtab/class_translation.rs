@@ -76,7 +76,7 @@ pub fn translate_named_entity(v: &Value) -> Value {
 
 pub fn get_object(v: &Value) -> Value {
     let o: Value = translate(&v);
-    let d: String = String::from(util::translate_datatype(&v).as_str().unwrap());
+    let d: String = String::from(util::translate_datatype(&o).as_str().unwrap());
 
     json!({"object" : o,
            "datatype" : d})
@@ -336,31 +336,21 @@ pub fn translate_exact_qualified_cardinality(v: &Value) -> Value {
 }
 
 pub fn translate_list(v: &[Value]) -> Value {
-    //TODO: refactor common parts
-    if v.len() == 1 {
-        let first_o: Value = get_object(&v[0]);
-        let rest_o: Value = get_object(&json!("rdf:nil"));
+    let mut list = Vec::new();
 
-        json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o]})
-    } else {
-        //let first: Value = translate(&v[0]);
-        let rest: Value = translate_list(&v[1..]); //datatype is necessarily _JSON?
-
-        let first_o: Value = get_object(&v[0]);
-        let rest_o: Value = json!({"object" : rest, "datatype" : String::from("_JSON")});
-        //let rest_o : Value = get_object(rest);
-        //
-        json!({"rdf:first" : vec![first_o],
-               "rdf:rest" : vec![rest_o]})
+    for e in v.iter() {
+        let e_object: Value = get_object(&e);
+        list.push(e_object);
     }
+
+    Value::Array(list)
 }
 
 pub fn translate_intersection_of(v: &Value) -> Value {
     let operands: Value = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o: Value = json!({"object" : operands,
-                                   "datatype" : "_JSON"});
+                                   "datatype" : "_JSONLIST"});
 
     let type_o: Value = get_object(&json!("owl:Class"));
 
@@ -373,7 +363,7 @@ pub fn translate_union_of(v: &Value) -> Value {
 
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
-                                    "datatype" : "_JSON"});
+                                    "datatype" : "_JSONLIST"});
     let type_o: Value = get_object(&json!("owl:Class"));
 
     json!({"rdf:type" : vec![type_o],
@@ -385,7 +375,7 @@ pub fn translate_one_of(v: &Value) -> Value {
 
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
-                                    "datatype" : "_JSON"});
+                                    "datatype" : "_JSONLIST"});
     let type_o: Value = get_object(&json!("owl:Class"));
 
     json!({"rdf:type" : vec![type_o],
