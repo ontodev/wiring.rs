@@ -21,14 +21,18 @@ pub fn is_annotation(v : &Value) -> bool {
 
 pub fn strip_annotations(v : &Value) -> Value {
 
-    let mut res = Vec::new();
-    let original = &v.as_array().unwrap()[0..];
-    for element in original { 
-        if !is_annotation(element){
-            res.push(element.clone());
-        } 
-    } 
-    Value::Array(res) 
+    match v.clone() {
+        Value::Array(x) => {
+            let mut res = Vec::new();
+            for element in x {
+                if !is_annotation(&element){
+                    res.push(strip_annotations(&element));
+                } 
+            }
+            Value::Array(res)
+        }
+        _ => v.clone(),
+    }
 }
 
 pub fn has_annotation(v : &Value) -> bool { 
@@ -186,19 +190,32 @@ pub fn type_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
     };
 
 
-    //merge logical OFN with annotation OFN
-    let rest = &ofn.as_array().unwrap()[1..];
 
-    let mut res = vec![ofn[0].clone()];
+    if let Some(arr) = ofn.as_array() {
+        if arr.len() > 1 {
+            //merge logical OFN with annotation OFN
+            let rest = &arr[1..];
 
-    for annotation in annotations {
-        res.push(annotation.clone());
-    } 
+            let mut res = vec![ofn[0].clone()];
 
-    for r in rest {
-        res.push(r.clone());
+            for annotation in annotations {
+                res.push(annotation.clone());
+            } 
+
+            for r in rest {
+                res.push(r.clone());
+            }
+
+            return Value::Array(res)
+
+        } else {
+            //no element at index 1
+            return ofn
+        }
+    } else {
+        //`ofn` is not an array
+        return ofn
     }
 
-    Value::Array(res)
 
 } 
