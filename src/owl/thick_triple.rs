@@ -282,6 +282,7 @@ pub enum OWL {
     ComplementOf(ComplementOf),
     InverseOf(InverseOf),
     RDFList(RDFList),
+    List(Vec<Object>),
     Members(Members),
     DistinctMembers(DistinctMembers),
 
