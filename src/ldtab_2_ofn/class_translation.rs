@@ -35,6 +35,7 @@ pub fn translate(owl: &owl::OWL) -> Value {
 
         //RDF
         owl::OWL::RDFList(x) => translate_list(x),
+        owl::OWL::List(x) => translate_list_2(x),
         owl::OWL::Members(x) => translate_members(x),
         owl::OWL::DistinctMembers(x) => translate_distinct_members(x),
 
@@ -585,6 +586,15 @@ pub fn translate_list(exp: &owl::RDFList) -> Value {
         v.append(r);
         Value::Array(v)
     }
+}
+
+pub fn translate_list_2(exp: &Vec<owl::Object>) -> Value {
+    let mut v = Vec::new();
+    for e in exp.iter() {
+        let e = translate(&e.object);
+        v.push(e);
+    }
+    Value::Array(v)
 }
 
 /// Given an owl::Object,
