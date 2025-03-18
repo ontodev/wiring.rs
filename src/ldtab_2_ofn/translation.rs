@@ -47,19 +47,21 @@ pub fn thick_triple_2_ofn(thick_triple: &Value) -> Value {
     //translate annotation
     let annotations = annotation_translation::translate(&thick_triple["annotation"]);
 
-    //merge OFN S-expression with annotations
-    let rest = &owl.as_array().unwrap()[1..];
+    match owl {
+        Value::Array(mut arr) if !arr.is_empty() => {
+            // Pull out the OWL operator, then merge annotations and the rest
+            let head = arr.remove(0);
+            let mut merged = Vec::with_capacity(1 + annotations.len() + arr.len());
+            merged.push(head);
+            merged.extend(annotations);
+            merged.extend(arr);
 
-    let mut res = vec![owl[0].clone()];
-    for annotation in annotations {
-        res.push(annotation.clone());
+            Value::Array(merged)
+        }
+        _ => {//TODO: error handling
+            owl
+        }
     }
-
-    for r in rest {
-        res.push(r.clone());
-    }
-
-    Value::Array(res)
 }
 
 fn translate_triple(subject: &str, predicate: &str, object: &str) -> Value {
