@@ -74,27 +74,31 @@ pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -
 /// assert_eq!(axiom, axiom_expected);
 /// ```
 pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Value {
-    let lhs: Value = class_translation::translate(subject);
-    let mut rhs: Value = class_translation::translate(object);
 
-    match object {
-        owl::OWL::Members(_) => {
-            let operator = Value::String(String::from("EquivalentClasses"));
-            let mut equivalent = vec![operator];
-            let arguments = rhs.as_array_mut().unwrap();
-            //equivalent.push(lhs); //LHS is a (generated) blank node
-            equivalent.append(arguments);
-            Value::Array(equivalent.to_vec())
+    let lhs = class_translation::translate(subject);
+    let rhs = class_translation::translate(object);
+
+    match (object, rhs) {
+        //equivalent classes axiom with multiple arguments
+        //(in this case, the lhs is a blank node)
+        (owl::OWL::Members(_), Value::Array(mut arr)) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(Value::String("EquivalentClasses".into()));
+            axiom.append(&mut arr);
+            Value::Array(axiom)
         }
-        _ => {
-            //type ambiguity:
-            //"owl:equivalentClass" is also used for DatatypeDefinition
-            let operator = Value::String(String::from("Equivalent"));
-            let v = vec![operator, lhs, rhs];
-            Value::Array(v)
+        //equivalent classes axiom with 2 arguments
+        (_, rhs) => {
+            Value::Array(vec![
+                Value::String("Equivalent".into()),
+                lhs,
+                rhs,
+            ])
         }
     }
 }
+
+
 
 /// Given two OWL expressions subject and object
 /// return the OFN S-expression ["EquivalentProperties",T(subject),T(object)],
@@ -122,25 +126,29 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_equivalent_properties(subject: &owl::OWL, object: &owl::OWL) -> Value {
-    let lhs: Value = class_translation::translate(subject);
-    let mut rhs: Value = class_translation::translate(object);
+    let lhs = class_translation::translate(subject);
+    let rhs = class_translation::translate(object);
 
-    match object {
-        owl::OWL::Members(_) => {
-            let operator = Value::String(String::from("EquivalentProperties"));
-            let mut equivalent = vec![operator];
-            let arguments = rhs.as_array_mut().unwrap();
-            //equivalent.push(lhs); //LHS is a (generated) blank node
-            equivalent.append(arguments);
-            Value::Array(equivalent.to_vec())
+    match (object, rhs) {
+        (owl::OWL::Members(_), Value::Array(mut arr)) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(Value::String("EquivalentProperties".into()));
+
+            axiom.append(&mut arr);
+            Value::Array(axiom)
         }
-        _ => {
-            let operator = Value::String(String::from("EquivalentProperties"));
-            let v = vec![operator, lhs, rhs];
-            Value::Array(v)
+        (_, rhs) => {
+            Value::Array(vec![
+                Value::String("EquivalentProperties".into()),
+                lhs,
+                rhs,
+            ])
         }
     }
 }
+
+
+
 
 /// Given two OWL expressions subject and object
 /// return the OFN S-expression ["DisjointProperties",T(subject),T(object)],
@@ -238,16 +246,21 @@ pub fn translate_sub_property_of(subject: &owl::OWL, object: &owl::OWL) -> Value
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_all_disjoint_properties(_subject: &owl::OWL, object: &owl::OWL) -> Value {
-    //let lhs : Value = class_translation::translate(subject);
-    let mut rhs: Value = class_translation::translate(object);
+    let rhs = class_translation::translate(object);
 
-    let operator = Value::String(String::from("DisjointProperties"));
+    let operator = Value::String("DisjointProperties".into());
 
-    let mut equivalent = vec![operator];
-    let arguments = rhs.as_array_mut().unwrap();
-    //equivalent.push(lhs); //LHS is a (generated) blank node
-    equivalent.append(arguments);
-    Value::Array(equivalent.to_vec())
+    match rhs {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(operator);
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        _ => {
+            Value::Array(vec![operator]) //TODO: error handling
+        }
+    }
 }
 
 /// Given an OWL expressions operands,
@@ -271,13 +284,21 @@ pub fn translate_all_disjoint_properties(_subject: &owl::OWL, object: &owl::OWL)
 /// assert_eq!(axiom, axiom_expected);
 /// ```
 pub fn translate_disjoint_classes(operands: &owl::OWL) -> Value {
-    let mut arguments: Value = class_translation::translate(operands);
+    let arguments = class_translation::translate(operands);
 
-    let operator = Value::String(String::from("DisjointClasses"));
-    let mut disjoint = vec![operator];
-    let arguments = arguments.as_array_mut().unwrap();
-    disjoint.append(arguments);
-    Value::Array(disjoint.to_vec())
+    let operator = Value::String("DisjointClasses".into());
+
+    match arguments {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(operator);
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        _ => {
+            Value::Array(vec![operator]) //TODO: error handling
+        }
+    }
 }
 
 /// Given the OWL expressions subject and object,
@@ -338,15 +359,21 @@ pub fn translate_disjoint_with(subject: &owl::OWL, object: &owl::OWL) -> Value {
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value {
-    let lhs: Value = class_translation::translate(union);
-    let mut rhs: Value = class_translation::translate(operands);
+    let lhs = class_translation::translate(union);
+    let rhs = class_translation::translate(operands);
 
-    let operator = Value::String(String::from("DisjointUnionOf"));
-    let mut union = vec![operator];
-    union.push(lhs);
-    let arguments = rhs.as_array_mut().unwrap();
-    union.append(arguments);
-    Value::Array(union.to_vec())
+    let operator = Value::String("DisjointUnionOf".into());
+
+    match rhs {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 2);
+            axiom.push(operator);
+            axiom.push(lhs);
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        other => Value::Array(vec![operator, lhs, other]), //TODO: error handling
+    }
 }
 
 /// Given an OWL operator represented as a string in RDF,
@@ -616,13 +643,18 @@ pub fn translate_same_as(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_all_same_as(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-    let mut arguments: Value = class_translation::translate(rhs);
+    let arguments = class_translation::translate(rhs);
+    let operator = Value::String("SameIndividual".into());
 
-    let operator = Value::String(String::from("SameIndividual"));
-    let mut res = vec![operator];
-    let arguments = arguments.as_array_mut().unwrap();
-    res.append(arguments);
-    Value::Array(res.to_vec())
+    match arguments {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(operator);
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        other => Value::Array(vec![operator, other]),//TODO: error handling
+    }
 }
 
 /// Given two OWL expressions lhs and rhs
@@ -683,13 +715,18 @@ pub fn translate_different_from(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-    let mut arguments: Value = class_translation::translate(rhs);
+    let arguments = class_translation::translate(rhs);
+    let operator = Value::String("DifferentIndividuals".into());
 
-    let operator = Value::String(String::from("DifferentIndividuals"));
-    let mut res = vec![operator];
-    let arguments = arguments.as_array_mut().unwrap();
-    res.append(arguments);
-    Value::Array(res.to_vec())
+    match arguments {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 1);
+            axiom.push(operator);
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        other => Value::Array(vec![operator, other]), //TODO: error handling
+    }
 }
 
 /// Given two OWL expressions lhs and rhs
@@ -709,18 +746,26 @@ pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// assert_eq!(axiom, axiom_expected);
 ///```
 pub fn translate_property_chain(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-    let lhs: Value = class_translation::translate(lhs);
-    let mut rhs: Value = class_translation::translate(rhs); //this is a list
+    let lhs_value = class_translation::translate(lhs);
+    let rhs_value = class_translation::translate(rhs); // this is a list
 
-    let operator = Value::String(String::from("ObjectPropertyChain"));
-    let mut res = vec![operator];
-    let arguments = rhs.as_array_mut().unwrap();
-    res.append(arguments);
-    let chain = Value::Array(res);
+    let chain = match rhs_value {
+        Value::Array(mut arr) => {
+            let mut chain_items = Vec::with_capacity(arr.len() + 1);
+            chain_items.push(Value::String("ObjectPropertyChain".into()));
+            chain_items.append(&mut arr);
+            Value::Array(chain_items)
+        }
+        other => {
+            Value::Array(vec![Value::String("ObjectPropertyChain".into()), other]) //TODO: error handling
+        }
+    };
 
-    let operator = Value::String(String::from("SubObjectPropertyOf"));
-    let v = vec![operator, chain, lhs];
-    Value::Array(v)
+    Value::Array(vec![
+        Value::String("SubObjectPropertyOf".into()),
+        chain,
+        lhs_value,
+    ])
 }
 
 /// Given the OWL expression rhs encoding a NegativePropertyAssertion
@@ -758,15 +803,22 @@ pub fn translate_negative_property_assertion(_lhs: &owl::OWL, rhs: &owl::OWL) ->
 /// where T(lhs) and T(rhs) are lists of OFN S-expressions.
 /// TODO: example
 pub fn translate_has_key(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
-    let class: Value = class_translation::translate(lhs);
-    let mut keys: Value = class_translation::translate(rhs); //this is a list
+    let class_value = class_translation::translate(lhs);
+    let keys_value = class_translation::translate(rhs); // Expected to be a list
 
-    let operator = Value::String(String::from("HasKey"));
-    let mut res = vec![operator];
-    let arguments = keys.as_array_mut().unwrap();
-    res.push(class);
-    res.append(arguments);
-    Value::Array(res.to_vec())
+    let operator = Value::String("HasKey".into());
+
+    match keys_value {
+        Value::Array(mut arr) => {
+            let mut axiom = Vec::with_capacity(arr.len() + 2);
+            axiom.push(operator);
+            axiom.push(class_value);
+            // Move the array elements without extra cloning
+            axiom.append(&mut arr);
+            Value::Array(axiom)
+        }
+        other => Value::Array(vec![operator, class_value, other]),//TODO: error handling
+    }
 }
 
 /// Given the OWL expressions lhs and rhs,
@@ -827,15 +879,24 @@ pub fn translate_import(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 ///
 /// assert_eq!(axiom, axiom_expected);
 /// ```
+fn parse_json_or_string(input: &str) -> Value {
+    match serde_json::from_str(input) {
+        Ok(val) => val,
+        Err(_) => Value::String(input.to_owned()),
+    }
+}
+
 pub fn translate_thin_triple(s: &str, p: &str, o: &str) -> Value {
-    //NB: AnnotationAssertions are ambiguous and are translated as ThickTriples
-    //T(Property Subject Object)  rather then T(Subject Property Object)
+    // NB: AnnotationAssertions are ambiguous and are translated as ThickTriples
+    // T(Property Subject Object) rather than T(Subject Property Object)
+    let subject = parse_json_or_string(s);
+    let predicate = parse_json_or_string(p);
+    let object = parse_json_or_string(o);
 
-    let subject: Value = serde_json::from_str(s).unwrap();
-    let predicate: Value = serde_json::from_str(p).unwrap();
-    let object: Value = serde_json::from_str(o).unwrap();
-
-    let operator = Value::String(String::from("ThinTriple"));
-    let v = vec![operator, subject, predicate, object];
-    Value::Array(v)
+    Value::Array(vec![
+        Value::String("ThinTriple".into()),
+        subject,
+        predicate,
+        object,
+    ])
 }
