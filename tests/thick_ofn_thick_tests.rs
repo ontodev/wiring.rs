@@ -35,11 +35,11 @@ fn sub_class_of_axiom() {
     assert!(round_trip(subclass_of));
 }
 
-//#[test]
-//fn test_n_ary_equivalence_axiom() {
-//    let equivalence = r#" {"subject": "_:genid1", "predicate": "owl:equivalentClass", "object": {"rdf:rest": [{"object": {"rdf:rest": [{"object": {"rdf:rest": [{"object": "rdf:nil"}], "rdf:first": [{"object": "ex:equivalent2"}]}}], "rdf:first": [{"object": "ex:equivalent1"}]}}], "rdf:first": [{"object": "ex:equivalent3"}]}} "#;
-//    assert!(round_trip(equivalence));
-//}
+#[test]
+fn test_n_ary_equivalence_axiom() {
+    let equivalence = r#" {"subject": "_:genid1", "predicate": "owl:equivalentClass", "object": [{"object": "ex:equivalent1"}, {"object": "ex:equivalent2"}, {"object": "ex:equivalent3"}] } "#;
+    assert!(round_trip(equivalence));
+}
 
 #[test]
 fn binary_equivalence_axiom() {
@@ -50,7 +50,7 @@ fn binary_equivalence_axiom() {
 
 #[test]
 fn disjoint_union_axiom() {
-    let disjoint_union = r#" {"subject": "ex:disjointUnion", "predicate": "owl:disjointUnionOf", "object": {"rdf:first": [{"object": "ex:u1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}} "#;
+    let disjoint_union = r#" {"subject": "ex:disjointUnion", "predicate": "owl:disjointUnionOf", "object": [{"object": "ex:u1"}, {"object": "ex:u2"}, {"object": "ex:u3"}] } "#;
     assert!(round_trip(disjoint_union));
 }
 
@@ -117,18 +117,18 @@ fn exact_qualified_cardinality_expression() {
 
 #[test]
 fn intersection_expression() {
-    let intersection = r#" {"subject": "ex:intersection", "predicate": "rdfs:subClassOf", "object": {"owl:intersectionOf": [{"object": {"rdf:first": [{"object": "ex:I1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:I2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:I3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}], "rdf:type": [{"object": "owl:Class"}]}} "#;
+    let intersection = r#" {"subject": "ex:intersection", "predicate": "rdfs:subClassOf", "object": {"owl:intersectionOf": [{"object" : "ex:I1"}, {"object" : "ex:I2"}, {"object" : "ex:I3"}], "rdf:type": [{"object": "owl:Class"}]}} "#;
     assert!(round_trip(intersection));
 }
 
 #[test]
 fn one_of() {
-    let one_of = r#" {"subject": "ex:oneOf", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Class"}], "owl:oneOf": [{"object": {"rdf:first": [{"object": "ex:a1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:a2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:a3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}]}} "#;
+    let one_of = r#" {"subject": "ex:oneOf", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Class"}], "owl:oneOf": [{"object" : "ex:a1"}, {"object" : "ex:a2"}, {"object" : "ex:a3"}]}} "#;
     assert!(round_trip(one_of));
 }
 
 #[test]
 fn union_of() {
-    let union_of = r#" {"subject": "ex:union", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Class"}], "owl:unionOf": [{"object": {"rdf:first": [{"object": "ex:u1"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u2"}], "rdf:rest": [{"object": {"rdf:first": [{"object": "ex:u3"}], "rdf:rest": [{"object": "rdf:nil"}]}}]}}]}}]}} "#;
+    let union_of = r#" {"subject": "ex:union", "predicate": "rdfs:subClassOf", "object": {"rdf:type": [{"object": "owl:Class"}], "owl:unionOf": [{"object" : "ex:u1"}, {"object" : "ex:u2"}, {"object" : "ex:u3" }]}} "#;
     assert!(round_trip(union_of));
 }
