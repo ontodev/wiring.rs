@@ -502,7 +502,7 @@ pub fn translate_data_exact_qualified_cardinality(
 /// assert_eq!(list, list_expected);
 /// ```
 pub fn translate_members(exp: &owl::Members) -> Value {
-    translate(&exp.members[0].object)
+    translate(&exp.members[0].object) 
 }
 
 /// Given a list of distinct members,

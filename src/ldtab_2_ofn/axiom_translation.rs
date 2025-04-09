@@ -56,7 +56,7 @@ pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -
 /// let superclass_owl : owl::OWL = serde_json::from_str(superclass).unwrap();
 ///
 /// let axiom : Value = translation::translate_equivalent_class(&subclass_owl, &superclass_owl);
-/// let axiom_expected_string = r#"["Equivalent","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["EquivalentClasses","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -78,7 +78,7 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
     let lhs = class_translation::translate(subject);
     let rhs = class_translation::translate(object);
 
-    match (object, rhs) {
+    match (object, rhs.clone()) {
         //equivalent classes axiom with multiple arguments
         //(in this case, the lhs is a blank node)
         (owl::OWL::Members(_), Value::Array(mut arr)) => {
@@ -88,9 +88,9 @@ pub fn translate_equivalent_class(subject: &owl::OWL, object: &owl::OWL) -> Valu
             Value::Array(axiom)
         }
         //equivalent classes axiom with 2 arguments
-        (_, rhs) => {
+        (_, _) => {
             Value::Array(vec![
-                Value::String("Equivalent".into()),
+                Value::String("EquivalentClasses".into()),
                 lhs,
                 rhs,
             ])
