@@ -443,7 +443,7 @@ pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value {
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&exact_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectExactCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectExactCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -453,7 +453,10 @@ pub fn translate_object_exact_qualified_cardinality(
 ) -> Value {
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality = translate(&exp.owl_qualified_cardinality[0].object);
+    let datatype = exp.owl_qualified_cardinality[0].datatype.clone();
     let filler = translate(&exp.owl_on_class[0].object);
+
+    let cardinality = Value::String(format!("{}^^{}", cardinality, datatype));
 
     let operator = Value::String(String::from("ObjectExactCardinality"));
     let v = vec![operator, cardinality, property, filler];
