@@ -252,7 +252,7 @@ pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value {
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&min_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectMinCardinality","1","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectMinCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -262,7 +262,9 @@ pub fn translate_object_min_qualified_cardinality(
 ) -> Value {
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality = translate(&exp.owl_min_qualified_cardinality[0].object);
+    let datatype = exp.owl_min_qualified_cardinality[0].datatype.clone();
     let filler = translate(&exp.owl_on_class[0].object); //this reveals the type
+    let cardinality = Value::String(format!("{}^^{}", cardinality, datatype));
 
     let operator = Value::String(String::from("ObjectMinCardinality"));
     let v = vec![operator, cardinality, property, filler];
