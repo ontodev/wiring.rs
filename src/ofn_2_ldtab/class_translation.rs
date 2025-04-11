@@ -278,8 +278,8 @@ pub fn translate_max_qualified_cardinality(v: &Value) -> Value {
 }
 
 pub fn translate_exact_cardinality(v: &Value) -> Value {
-    let property_o: Value = get_object(&v[1]);
-    let cardinality_o: Value = get_cardinality_object(&v[2]);
+    let cardinality_o: Value = get_cardinality_object(&v[1]);
+    let property_o: Value = get_object(&v[2]);
     let type_o: Value = get_object(&json!("owl:Restriction"));
 
     json!({"rdf:type" : vec![type_o],
