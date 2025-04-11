@@ -312,7 +312,7 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&max_cardinality_owl);
-/// let axiom_expected_string = r#"["MaxCardinality","1","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["MaxCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -320,6 +320,8 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value {
     let property = translate(&exp.owl_on_property[0].object);
     let cardinality = translate(&exp.owl_max_cardinality[0].object);
+    let datatype = exp.owl_max_cardinality[0].datatype.clone();
+    let cardinality = Value::String(format!("{}^^{}", cardinality, datatype));
 
     let operator = Value::String(String::from("MaxCardinality"));
     let v = vec![operator, cardinality, property];
