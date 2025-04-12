@@ -4,6 +4,7 @@ use serde_json::json;
 use serde_json::Value;
 
 pub fn translate(v: &Value) -> Value {
+
     match v[0].as_str() {
         Some("ObjectSomeValuesFrom") => translate_some_values_from(v),
         Some("ObjectAllValuesFrom") => translate_all_values_from(v),
@@ -83,10 +84,19 @@ pub fn get_object(v: &Value) -> Value {
 }
 
 pub fn get_cardinality_object(v: &Value) -> Value {
-    let o: Value = translate(&v);
-
-    json!({"object" : o,
-           "datatype" : "xsd:nonNegativeInteger"})
+    if let Some(s) = v.as_str() {
+        if let Some((literal, datatype)) = s.split_once("^^") {
+            let trimmed = literal.trim_matches('"');
+            json!({
+                "object": trimmed,
+                "datatype": datatype
+            })
+        } else {
+            json!({ "error": "Invalid format" })
+        }
+    } else {
+        json!({ "error": "Expected a string" })
+    }
 }
 
 pub fn translate_some_values_from(v: &Value) -> Value {
@@ -202,8 +212,8 @@ pub fn translate_min_qualified_cardinality(v: &Value) -> Value {
 }
 
 pub fn translate_max_cardinality(v: &Value) -> Value {
-    let property_o: Value = get_object(&v[1]);
-    let cardinality_o: Value = get_cardinality_object(&v[2]);
+    let cardinality_o: Value = get_cardinality_object(&v[1]);
+    let property_o: Value = get_object(&v[2]);
     let type_o: Value = get_object(&json!("owl:Restriction"));
 
     json!({"rdf:type" : vec![type_o],
@@ -268,8 +278,8 @@ pub fn translate_max_qualified_cardinality(v: &Value) -> Value {
 }
 
 pub fn translate_exact_cardinality(v: &Value) -> Value {
-    let property_o: Value = get_object(&v[1]);
-    let cardinality_o: Value = get_cardinality_object(&v[2]);
+    let cardinality_o: Value = get_cardinality_object(&v[1]);
+    let property_o: Value = get_object(&v[2]);
     let type_o: Value = get_object(&json!("owl:Restriction"));
 
     json!({"rdf:type" : vec![type_o],
