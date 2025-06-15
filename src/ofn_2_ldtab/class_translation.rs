@@ -91,12 +91,18 @@ pub fn get_cardinality_object(v: &Value) -> Value {
                 "object": trimmed,
                 "datatype": datatype
             })
+        } else if s.chars().all(|c| c.is_ascii_digit()) {
+            json!({
+                "object": s,
+                "datatype": "<http://www.w3.org/2001/XMLSchema#nonNegativeInteger>"
+            })
         } else {
             json!({ "error": "Invalid format" })
         }
     } else {
         json!({ "error": "Expected a string" })
     }
+
 }
 
 pub fn translate_some_values_from(v: &Value) -> Value {
