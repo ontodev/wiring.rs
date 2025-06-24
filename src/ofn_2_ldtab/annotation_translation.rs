@@ -73,44 +73,50 @@ pub fn is_literal(value: &Value) -> bool {
 }
 
 pub fn translate_literal(s: &str) -> Value {
-    let language_tag = Regex::new("^\"(?s)(.*)\"@(.*)$").unwrap();
-    let datatype = Regex::new("^\"(?s)(.*)\"\\^\\^(.*)$").unwrap();
-    let plain = Regex::new("^\"(?s)(.*)\"$").unwrap();
 
-    if language_tag.is_match(s) {
-        match language_tag.captures(s) {
-            Some(x) => {
-                let lang = format!("@{}", &x[2]);
-                json!({"object" : &x[1],
-                       "meta" : "owl:Axiom",
-                       "datatype" : lang})
-            }
-            None => json!("Error"),
+    if s.starts_with('"') && !s.ends_with('"') {
+        // typed literal
+        if let Some((lexical_form, datatype)) = s.rsplit_once("\"^^") {
+            let text = lexical_form[1..].to_string(); // drop the leading "
+            return json!({
+                "object":   text,
+                "meta":     "owl:Axiom",
+                "datatype": datatype
+            });
         }
-    } else if datatype.is_match(s) {
-        match datatype.captures(s) {
-            Some(x) => {
-                let data = format!("{}", &x[2]);
-                json!({"object" : &x[1],
-                       "meta" : "owl:Axiom",
-                        "datatype" : data})
-            }
-            None => json!("Error"),
+
+        // literal with language tag
+        if let Some((lexical_form, lang)) = s.rsplit_once("\"@") {
+            let text = lexical_form[1..].to_string(); // drop the leading "
+            return json!({
+                "object":   text,
+                "meta":     "owl:Axiom",
+                "datatype": format!("@{}", lang)
+            });
         }
-    } else if plain.is_match(s) {
-        match plain.captures(s) {
-            Some(x) => {
-                json!({"object" : &x[1],
-                       "meta" : "owl:Axiom",
-                        "datatype" : "xsd:string"})
-            }
-            None => json!("Error"),
-        }
-    } else {
-        json!("error")
-        //json!({"object" : s, "datatype": "_plain"})
     }
+
+    // plain literal
+    if s.starts_with('"') && s.ends_with('"') {
+        // remove quotes
+        let text = &s[1..s.len()-1];
+        return json!({
+            "object":   text,
+            "meta":     "owl:Axiom",
+            "datatype": "xsd:string"
+        });
+    }
+
+    // fallback: treat the entire thing as xsd:string
+    // TODO: this case should not occur
+    json!({
+        "object":   s,
+        "meta":     "owl:Axiom",
+        "datatype": "xsd:string"
+    })
 }
+
+
 
 pub fn translate_value(v: &Value) -> Value {
     let s = v.as_str().unwrap();
