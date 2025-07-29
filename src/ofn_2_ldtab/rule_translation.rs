@@ -54,7 +54,7 @@ pub fn translate_object_property_atom(v: &Value) -> Value {
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
     json!( {"datatype" : "_JSONMAP",
-            "object": {"rdf:type" : vec![type_o],
+            "object": {"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
                         "swrl:propertyPredicate" : vec![property_o],
                         "swrl:argument1" : vec![arg1_o],
                         "swrl:argument2" : vec![arg2_o]}})

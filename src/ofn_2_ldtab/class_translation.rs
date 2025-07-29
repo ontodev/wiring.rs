@@ -108,12 +108,12 @@ pub fn get_cardinality_object(v: &Value) -> Value {
 pub fn translate_some_values_from(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let filler_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     //build struct
-    let res: Value = json!({"rdf:type" : vec![type_o],
-                             "owl:onProperty" : vec![property_o],
-                             "owl:someValuesFrom" : vec![filler_o]});
+    let res: Value = json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+                             "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+                             "<http://www.w3.org/2002/07/owl#someValuesFrom>" : vec![filler_o]});
 
     //return type
     res
@@ -122,37 +122,37 @@ pub fn translate_some_values_from(v: &Value) -> Value {
 pub fn translate_all_values_from(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let filler_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:allValuesFrom": vec![filler_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#allValuesFrom>": vec![filler_o]})
 }
 
 pub fn translate_has_value(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let filler_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:hasValue" : vec![filler_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#hasValue>" : vec![filler_o]})
 }
 
 pub fn translate_has_self(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let has_self_o: Value = get_object(&json!("true^^xsd:boolean"));
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:hasSelf" : vec![has_self_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#hasSelf>" : vec![has_self_o]})
 }
 
 pub fn translate_object_min_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -160,14 +160,14 @@ pub fn translate_object_min_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:minQualifiedCardinality" : vec![cardinality_o],
-            "owl:onClass" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:minCardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#minCardinality>" : vec![cardinality_o]})
     }
 }
 
@@ -176,17 +176,17 @@ pub fn translate_min_cardinality(v: &Value) -> Value {
 
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-        "owl:onProperty" : vec![property_o],
-        "owl:minCardinality" : vec![cardinality_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+        "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+        "<http://www.w3.org/2002/07/owl#minCardinality>" : vec![cardinality_o]})
 }
 
 pub fn translate_data_min_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -194,14 +194,14 @@ pub fn translate_data_min_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:minQualifiedCardinality" : vec![cardinality_o],
-            "owl:onDataRange" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onDataRange>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:minCardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#minCardinality>" : vec![cardinality_o]})
     }
 }
 
@@ -209,28 +209,28 @@ pub fn translate_min_qualified_cardinality(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let cardinality_o: Value = get_cardinality_object(&v[2]);
     let filler_o: Value = get_object(&v[3]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:minQualifiedCardinality" : vec![cardinality_o],
-           "owl:onClass" : vec![filler_o] })
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>" : vec![cardinality_o],
+           "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o] })
 }
 
 pub fn translate_max_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:maxCardinality" : vec![cardinality_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#maxCardinality>" : vec![cardinality_o]})
 }
 
 pub fn translate_object_max_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -238,21 +238,21 @@ pub fn translate_object_max_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:maxQualifiedCardinality" : vec![cardinality_o],
-            "owl:onClass" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:maxCardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#maxCardinality>" : vec![cardinality_o]})
     }
 }
 
 pub fn translate_data_max_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -260,14 +260,14 @@ pub fn translate_data_max_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:maxQualifiedCardinality" : vec![cardinality_o],
-            "owl:onDataRange" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onDataRange>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:maxCardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#maxCardinality>" : vec![cardinality_o]})
     }
 }
 
@@ -275,28 +275,28 @@ pub fn translate_max_qualified_cardinality(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let cardinality_o: Value = get_cardinality_object(&v[2]);
     let filler_o: Value = get_object(&v[3]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:maxQualifiedCardinality" : vec![cardinality_o],
-           "owl:onClass" : vec![filler_o] })
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>" : vec![cardinality_o],
+           "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o] })
 }
 
 pub fn translate_exact_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:cardinality" : vec![cardinality_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#cardinality>" : vec![cardinality_o]})
 }
 
 pub fn translate_object_exact_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -304,21 +304,21 @@ pub fn translate_object_exact_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:qualifiedCardinality" : vec![cardinality_o],
-            "owl:onClass" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#qualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:cardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#cardinality>" : vec![cardinality_o]})
     }
 }
 
 pub fn translate_data_exact_cardinality(v: &Value) -> Value {
     let cardinality_o: Value = get_cardinality_object(&v[1]);
     let property_o: Value = get_object(&v[2]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     let ofn = v.as_array().unwrap();
     let is_qualified = ofn.len() == 4;
@@ -326,14 +326,14 @@ pub fn translate_data_exact_cardinality(v: &Value) -> Value {
     if is_qualified {
         let filler_o: Value = get_object(&v[3]);
 
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:qualifiedCardinality" : vec![cardinality_o],
-            "owl:onDataRange" : vec![filler_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#qualifiedCardinality>" : vec![cardinality_o],
+            "<http://www.w3.org/2002/07/owl#onDataRange>" : vec![filler_o]})
     } else {
-        json!({"rdf:type" : vec![type_o],
-            "owl:onProperty" : vec![property_o],
-            "owl:cardinality" : vec![cardinality_o]})
+        json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+            "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+            "<http://www.w3.org/2002/07/owl#cardinality>" : vec![cardinality_o]})
     }
 }
 
@@ -343,12 +343,12 @@ pub fn translate_exact_qualified_cardinality(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
     let cardinality_o: Value = get_cardinality_object(&v[2]);
     let filler_o: Value = get_object(&v[3]);
-    let type_o: Value = get_object(&json!("owl:Restriction"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:onProperty" : vec![property_o],
-           "owl:qualifiedCardinality" : vec![cardinality_o],
-           "owl:onClass" : vec![filler_o] })
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#onProperty>" : vec![property_o],
+           "<http://www.w3.org/2002/07/owl#qualifiedCardinality>" : vec![cardinality_o],
+           "<http://www.w3.org/2002/07/owl#onClass>" : vec![filler_o] })
 }
 
 pub fn translate_list(v: &[Value]) -> Value {
@@ -368,10 +368,10 @@ pub fn translate_intersection_of(v: &Value) -> Value {
     let operands_o: Value = json!({"object" : operands,
                                    "datatype" : "_JSONLIST"});
 
-    let type_o: Value = get_object(&json!("owl:Class"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Class>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:intersectionOf" : vec![operands_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#intersectionOf>" : vec![operands_o]})
 }
 
 pub fn translate_union_of(v: &Value) -> Value {
@@ -380,10 +380,10 @@ pub fn translate_union_of(v: &Value) -> Value {
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
                                     "datatype" : "_JSONLIST"});
-    let type_o: Value = get_object(&json!("owl:Class"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Class>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:unionOf" : vec![operands_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#unionOf>" : vec![operands_o]})
 }
 
 pub fn translate_one_of(v: &Value) -> Value {
@@ -392,16 +392,16 @@ pub fn translate_one_of(v: &Value) -> Value {
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
                                     "datatype" : "_JSONLIST"});
-    let type_o: Value = get_object(&json!("owl:Class"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Class>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:oneOf" : vec![operands_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#oneOf>" : vec![operands_o]})
 }
 
 pub fn translate_complement_of(v: &Value) -> Value {
     let argument_o: Value = get_object(&v[1]);
-    let type_o: Value = get_object(&json!("owl:Class"));
+    let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Class>"));
 
-    json!({"rdf:type" : vec![type_o],
-           "owl:complementOf" : vec![argument_o]})
+    json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+           "<http://www.w3.org/2002/07/owl#complementOf>" : vec![argument_o]})
 }

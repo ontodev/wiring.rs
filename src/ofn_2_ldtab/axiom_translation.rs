@@ -51,8 +51,8 @@ pub fn translate_class_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":class,
-    "predicate":"rdf:type",
-    "object":"owl:Class",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2002/07/owl#Class>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -72,7 +72,7 @@ pub fn translate_ontology_import(v: &Value) -> Value {
         "retraction":"0",
         "graph":"graph",
         "subject": subject,
-        "predicate":"owl:imports",
+        "predicate":"<http://www.w3.org/2002/07/owl#imports>",
         "object": object,
         "datatype":"_IRI",
         "annotation":annotation
@@ -112,7 +112,7 @@ pub fn translate_class_assertion_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":individual,
-    "predicate":"rdf:type",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
     "object":class,
     "datatype":"_IRI",
     "annotation":annotation
@@ -179,10 +179,10 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"owl:NegativePropertyAssertion",
-                            "object": {"owl:sourceIndividual":[{"object":from}],
-                                        "owl:assertionProperty":[{"object":property}],
-                                        "owl:targetIndividual":[{"object":to}]},
+    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
+                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
+                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
+                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
                             "datatype":"_IRI"});
 
     let blank_sorted = util::sort_value(&blank_node);
@@ -198,11 +198,11 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"owl:NegativePropertyAssertion",
+    "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
     "object":{
-        "owl:sourceIndividual":[{"object":from}],
-        "owl:assertionProperty":[{"object":property}],
-        "owl:targetIndividual":[{"object":to}]
+        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
+        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
+        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
     },
     "datatype":"_IRI",
     "annotation":annotation
@@ -221,10 +221,10 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"owl:NegativePropertyAssertion",
-                            "object": {"owl:sourceIndividual":[{"object":from}],
-                                        "owl:assertionProperty":[{"object":property}],
-                                        "owl:targetIndividual":[{"object":to}]},
+    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
+                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
+                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
+                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
                             "datatype":"_IRI"});
 
     let blank_sorted = util::sort_value(&blank_node);
@@ -240,11 +240,11 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"owl:NegativePropertyAssertion",
+    "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
     "object":{
-        "owl:sourceIndividual":[{"object":from}],
-        "owl:assertionProperty":[{"object":property}],
-        "owl:targetIndividual":[{"object":to}]
+        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
+        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
+        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
     },
     "datatype":"_IRI",
     "annotation":annotation
@@ -269,7 +269,7 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:sameAs",
+                        "predicate":"<http://www.w3.org/2002/07/owl#sameAs>",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
@@ -279,8 +279,8 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
         let annotation = annotation_translation::translate_annotations(&annotations);
 
         //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
-        let blank_node = json!({"predicate":"owl:AllSameAs",
-                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllSameAs>",
+                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
         let blank_sorted = util::sort_value(&blank_node);
@@ -295,9 +295,9 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            //"predicate":"owl:sameAs", 
-                            "predicate":"owl:AllSameAs", //this is LDtab specific
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            //"predicate":"<http://www.w3.org/2002/07/owl#sameAs>", 
+                            "predicate":"<http://www.w3.org/2002/07/owl#AllSameAs>", //this is LDtab specific
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -319,7 +319,7 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:differentFrom",
+                        "predicate":"<http://www.w3.org/2002/07/owl#differentFrom>",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
@@ -329,8 +329,8 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
         let annotation = annotation_translation::translate_annotations(&annotations);
 
         //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
-        let blank_node = json!({"predicate":"owl:AllDifferent",
-                                "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSONLIST"}]},
+        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>",
+                                "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
         let blank_sorted = util::sort_value(&blank_node);
@@ -345,8 +345,8 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"owl:AllDifferent", 
-                            "object": {"owl:distinctMembers":[{"object":operands, "datatype":"_JSONLIST"}]},
+                            "predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>", 
+                            "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -369,8 +369,8 @@ pub fn translate_object_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"rdf:type",
-    "object":"owl:ObjectProperty",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2002/07/owl#ObjectProperty>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -393,8 +393,8 @@ pub fn translate_data_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"rdf:type",
-    "object":"owl:DatatypeProperty",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2002/07/owl#DatatypeProperty>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -417,8 +417,8 @@ pub fn translate_annotation_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"rdf:type",
-    "object":"owl:AnnotationProperty",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2002/07/owl#AnnotationProperty>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -441,7 +441,7 @@ pub fn translate_datatype_definition(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":lhs,
-    "predicate":"owl:equivalentClass",
+    "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
     "object":rhs,
     "datatype":"_IRI",
     "annotation":annotation
@@ -466,8 +466,8 @@ pub fn translate_datatype_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":datatype,
-    "predicate":"rdf:type",
-    "object":"rdfs:Datatype",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2000/01/rdf-schema#Datatype>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -491,8 +491,8 @@ pub fn translate_individual_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":individual,
-    "predicate":"rdf:type",
-    "object":"owl:NamedIndividual",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2002/07/owl#NamedIndividual>",
     "datatype":"_IRI",
     "annotation":annotation
     });
@@ -518,7 +518,7 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
             "retraction":"0",
             "graph":"graph",
             "subject":sup,
-            "predicate":"owl:propertyChainAxiom",
+            "predicate":"<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
             "object":sub,
             "datatype":"_JSONLIST",
             "annotation":annotation
@@ -532,7 +532,7 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
             "retraction":"0",
             "graph":"graph",
             "subject":sub,
-            "predicate":"rdfs:subPropertyOf",
+            "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
             "object":sup,
             "datatype":util::translate_datatype(&json!(sup)),
             "annotation":annotation
@@ -553,7 +553,7 @@ pub fn translate_sub_data_property(v: &Value) -> Value {
         "retraction":"0",
         "graph":"graph",
         "subject":sub,
-        "predicate":"rdfs:subPropertyOf",
+        "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
         "object":sup,
         "datatype":util::translate_datatype(&json!(sup)),
         "annotation":annotation
@@ -575,7 +575,7 @@ pub fn translate_subclass_of_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":subclass,
-    "predicate":"rdfs:subClassOf",
+    "predicate":"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",
     "object":superclass,
     "datatype":util::translate_datatype(&json!(superclass)),
     "annotation":annotation
@@ -598,7 +598,7 @@ pub fn translate_sub_annotation_property_of_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":lhs,
-    "predicate":"rdfs:subPropertyOf",
+    "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
     "object":rhs,
     "datatype":util::translate_datatype(&json!(rhs)),
     "annotation":annotation
@@ -619,7 +619,7 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph",
                             "subject":lhs,
-                            "predicate":"owl:disjointWith",
+                            "predicate":"<http://www.w3.org/2002/07/owl#disjointWith>",
                             "object": rhs,
                             "datatype":util::translate_datatype(&json!(rhs)),
                             "annotation":annotation});
@@ -628,13 +628,14 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"owl:AllDisjointClasses",
-                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
-                                "datatype": "_JSONMAP"});
+        let blank_node = json!({"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>"}]});
+
         //"annotation":annotation});
 
         let blank_sorted = util::sort_value(&blank_node);
         let blank_string = blank_sorted.to_string();
+
+        println!("Blank node: {}", blank_string);
 
         let mut hasher = Sha256::new();
         hasher.update(blank_string.as_bytes());
@@ -645,8 +646,8 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph",
                             "subject":blank_node_id,
-                            "predicate":"owl:AllDisjointClasses",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}],"rdf:type":[{"datatype":"_IRI","object":"owl:AllDisjointClasses"}]},
+                            "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>",
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>"}]},
                             "datatype": "_JSONMAP", 
                             "annotation":annotation});
         triple
@@ -666,7 +667,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:disjointUnionOf",
+                        "predicate":"<http://www.w3.org/2002/07/owl#disjointUnionOf>",
                         "object":operands,
                         "datatype": "_JSONLIST", 
                         "annotation":annotation});
@@ -690,7 +691,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:equivalentClass",
+                        "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
@@ -699,8 +700,8 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"owl:equivalentClass",
-                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
         let blank_sorted = util::sort_value(&blank_node);
@@ -715,8 +716,8 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"owl:equivalentClass",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
+                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -735,7 +736,7 @@ pub fn translate_object_property_domain_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:domain",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -754,7 +755,7 @@ pub fn translate_object_property_range_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:range",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -773,7 +774,7 @@ pub fn translate_annotation_property_domain_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:domain",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -792,7 +793,7 @@ pub fn translate_annotation_property_range_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:range",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -815,7 +816,7 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:equivalentProperty",
+                        "predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
@@ -824,8 +825,8 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"owl:equivalentProperty",
-                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>",
+                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
         let blank_sorted = util::sort_value(&blank_node);
@@ -840,8 +841,8 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"owl:equivalentProperty", //TODO AllEquivalentProperties?
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>", //TODO AllEquivalentProperties?
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -860,7 +861,7 @@ pub fn translate_data_property_domain_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:domain",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -880,7 +881,7 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:inverseOf",
+                        "predicate":"<http://www.w3.org/2002/07/owl#inverseOf>",
                         "object":rhs,
                         "datatype": datatype,
                         "annotation":annotation});
@@ -898,8 +899,8 @@ pub fn translate_functional_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:FunctionalProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#FunctionalProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -916,8 +917,8 @@ pub fn translate_inverse_functional_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:InverseFunctionalProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#InverseFunctionalProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -934,8 +935,8 @@ pub fn translate_reflexive_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:ReflexiveProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#ReflexiveProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -952,8 +953,8 @@ pub fn translate_irreflexive_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:IrreflexiveProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#IrreflexiveProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -970,8 +971,8 @@ pub fn translate_symmetric_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:SymmetricProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#SymmetricProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -988,8 +989,8 @@ pub fn translate_asymmetric_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:AsymmetricProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#AsymmetricProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -1006,8 +1007,8 @@ pub fn translate_transitive_object_property_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"rdf:type",
-                        "object":"owl:TransitiveProperty",
+                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+                        "object":"<http://www.w3.org/2002/07/owl#TransitiveProperty>",
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
@@ -1025,7 +1026,7 @@ pub fn translate_data_property_range_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"rdfs:range",
+                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -1047,7 +1048,7 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"owl:propertyDisjointWith",
+                        "predicate":"<http://www.w3.org/2002/07/owl#propertyDisjointWith>",
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
@@ -1056,8 +1057,8 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"owl:AllDisjointProperties",
-                                "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllDisjointProperties>",
+                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
         let blank_sorted = util::sort_value(&blank_node);
@@ -1073,8 +1074,8 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"owl:AllDisjointProperties", 
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
+                            "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointProperties>", 
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -1088,8 +1089,8 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
     let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
     let annotation = annotation_translation::translate_annotations(&annotations);
 
-    let blank_node = json!({"predicate":"owl:hasKey",
-                            "object": {"owl:members":[{"object":operands, "datatype":"_JSONLIST"}]},
+    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
+                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
                             "datatype": "_JSONMAP"});
 
     let blank_sorted = util::sort_value(&blank_node);
@@ -1104,8 +1105,8 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":blank_node_id,
-                        "predicate":"owl:hasKey",
-                        "object": {"owl:members":operands, "datatype":"_JSONLIST"}, //TODO remove datatype
+                        "predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
+                        "object": {"<http://www.w3.org/2002/07/owl#members>":operands, "datatype":"_JSONLIST"}, //TODO remove datatype
                         "datatype": "_JSONMAP", 
                         "annotation":annotation});
     triple
@@ -1227,9 +1228,9 @@ pub fn translate_rule(v: &Value) -> Value {
         map.remove("meta");
     }
 
-    let mut blank_node = json!({"rdf:type":[{"datatype":"_IRI", "object" :"swrl:Imp"}],
-                            "swrl:body":[{"datatype":"_JSONLIST", "object" : body}],
-                            "swrl:head":[{"datatype":"_JSONLIST", "object" :head}]});
+    let mut blank_node = json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI", "object" :"<http://www.w3.org/2003/11/swrl#Imp>"}],
+                            "<http://www.w3.org/2003/11/swrl#body>":[{"datatype":"_JSONLIST", "object" : body}],
+                            "<http://www.w3.org/2003/11/swrl#head>":[{"datatype":"_JSONLIST", "object" :head}]});
     merge_json(&mut blank_node, anno_blan.clone());
 
     let blank_sorted = util::sort_value(&blank_node);
@@ -1247,8 +1248,8 @@ pub fn translate_rule(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject": blank_node_id,
-    "predicate":"rdf:type",
-    "object":"swrl:Imp",
+    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "object":"<http://www.w3.org/2003/11/swrl#Imp>",
     "datatype":"_IRI",
     "annotation": Value::Null
     });
@@ -1258,7 +1259,7 @@ pub fn translate_rule(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject": blank_node_id,
-    "predicate":"swrl:body",
+    "predicate":"<http://www.w3.org/2003/11/swrl#body>",
     "object":body,
     "datatype":"_JSONLIST",
     "annotation": Value::Null
@@ -1269,7 +1270,7 @@ pub fn translate_rule(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"swrl:head",
+    "predicate":"<http://www.w3.org/2003/11/swrl#head>",
     "object":head,
     "datatype":"_JSONLIST",
     "annotation": Value::Null
@@ -1312,7 +1313,7 @@ pub fn translate_ontology(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":iri,
-    "predicate":"owl:versionIRI",
+    "predicate":"<http://www.w3.org/2002/07/owl#versionIRI>",
     "object":viri,
     "datatype":"_IRI",
     "annotation": Value::Null
@@ -1328,7 +1329,7 @@ pub fn translate_doc_iri(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":"ontology",//TODO
-    "predicate":"owl:versionIRI",
+    "predicate":"<http://www.w3.org/2002/07/owl#versionIRI>",
     "object":iri,
     "datatype":"_IRI",
     "annotation":""
