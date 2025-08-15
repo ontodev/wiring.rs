@@ -30,7 +30,7 @@ pub fn translate_named(s: String) -> Value {
 /// use wiring_rs::ldtab_2_ofn::property_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let inverse_of = r#"{"owl:inverseOf":[{"datatype":"_IRI","object":"obo:IAO_0000120"}]}"#;
+/// let inverse_of = r#"{"<http://www.w3.org/2002/07/owl#inverseOf>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}]}"#;
 /// let inverse_of_owl : owl::InverseOf = serde_json::from_str(inverse_of).unwrap();
 ///
 /// let inverse_of_ofn : Value = translation::translate_inverse_of(&inverse_of_owl);
