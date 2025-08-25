@@ -49,15 +49,15 @@ pub fn translate_variable(v: &Value) -> Value {
 }
 
 pub fn translate_object_property_atom(v: &Value) -> Value {
-    let type_o = get_object(&json!("swrl:IndividualPropertyAtom"));
+    let type_o = get_object(&json!("<http://www.w3.org/2003/11/swrl#IndividualPropertyAtom>"));
     let property_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
     json!( {"datatype" : "_JSONMAP",
             "object": {"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
-                        "swrl:propertyPredicate" : vec![property_o],
-                        "swrl:argument1" : vec![arg1_o],
-                        "swrl:argument2" : vec![arg2_o]}})
+                        "<http://www.w3.org/2003/11/swrl#propertyPredicate>" : vec![property_o],
+                        "<http://www.w3.org/2003/11/swrl#argument1>" : vec![arg1_o],
+                        "<http://www.w3.org/2003/11/swrl#argument2>" : vec![arg2_o]}})
 }
 
 pub fn translate_body(v: &Value) -> Value {
