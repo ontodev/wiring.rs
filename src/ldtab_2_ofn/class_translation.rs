@@ -100,7 +100,7 @@ pub fn translate_named(s: String) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let some_values_from = r#"{"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"owl:someValuesFrom":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let some_values_from = r#"{"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/2002/07/owl#someValuesFrom>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 /// let some_values_from_owl : owl::OWL = serde_json::from_str(some_values_from).unwrap();
 ///
 /// let axiom : Value = translation::translate(&some_values_from_owl);
@@ -128,7 +128,7 @@ pub fn translate_some_values_from(exp: &owl::SomeValuesFrom) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let all_values_from = r#"{"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"owl:allValuesFrom":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let all_values_from = r#"{"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/2002/07/owl#allValuesFrom>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 /// let all_values_from_owl : owl::OWL = serde_json::from_str(all_values_from).unwrap();
 ///
 /// let axiom : Value = translation::translate(&all_values_from_owl);
@@ -156,7 +156,7 @@ pub fn translate_all_values_from(exp: &owl::AllValuesFrom) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let has_value = r#"{"owl:hasValue":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let has_value = r#"{"<http://www.w3.org/2002/07/owl#hasValue>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 
 /// let has_value_owl : owl::OWL = serde_json::from_str(has_value).unwrap();
 ///
@@ -185,7 +185,7 @@ pub fn translate_has_value(exp: &owl::HasValue) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let has_self = r#"{"owl:hasSelf":[{"datatype":"_IRI","object":"true^^xsd:boolean"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let has_self = r#"{"<http://www.w3.org/2002/07/owl#hasSelf>":[{"datatype":"_IRI","object":"true^^xsd:boolean"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let has_self_owl : owl::OWL = serde_json::from_str(has_self).unwrap();
 ///
@@ -216,7 +216,7 @@ pub fn translate_has_self(exp: &owl::HasSelf) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let min_cardinality = r#"{"owl:minCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let min_cardinality = r#"{"<http://www.w3.org/2002/07/owl#minCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
@@ -247,7 +247,7 @@ pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let min_cardinality = r#"{"owl:minQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let min_cardinality = r#"{"<http://www.w3.org/2002/07/owl#minQualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onClass>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
@@ -281,7 +281,7 @@ pub fn translate_object_min_qualified_cardinality(
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let min_cardinality = r#"{"owl:minQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let min_cardinality = r#"{"<http://www.w3.org/2002/07/owl#minQualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onDataRange>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
@@ -311,7 +311,7 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let max_cardinality = r#"{"owl:maxCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let max_cardinality = r#"{"<http://www.w3.org/2002/07/owl#maxCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
@@ -342,7 +342,7 @@ pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let max_cardinality = r#"{"owl:maxQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let max_cardinality = r#"{"<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onClass>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
@@ -377,7 +377,7 @@ pub fn translate_object_max_qualified_cardinality(
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let max_cardinality = r#"{"owl:maxQualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let max_cardinality = r#"{"<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onDataRange>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
@@ -407,7 +407,7 @@ pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardi
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let exact_cardinality = r#"{"owl:cardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let exact_cardinality = r#"{"<http://www.w3.org/2002/07/owl#cardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
@@ -438,7 +438,7 @@ pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let exact_cardinality = r#"{"owl:qualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onClass":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let exact_cardinality = r#"{"<http://www.w3.org/2002/07/owl#qualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onClass>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
@@ -473,7 +473,7 @@ pub fn translate_object_exact_qualified_cardinality(
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let exact_cardinality = r#"{"owl:qualifiedCardinality":[{"datatype":"xsd:int","object":"1"}],"owl:onDataRange":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"owl:onProperty":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Restriction"}]}"#;
+/// let exact_cardinality = r#"{"<http://www.w3.org/2002/07/owl#qualifiedCardinality>":[{"datatype":"<http://www.w3.org/2001/XMLSchema#int>","object":"1"}],"<http://www.w3.org/2002/07/owl#onDataRange>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/2002/07/owl#onProperty>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}"#;
 ///
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
@@ -505,7 +505,7 @@ pub fn translate_data_exact_qualified_cardinality(
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let members = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let members = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 ///
 /// let members_owl : owl::OWL = serde_json::from_str(members).unwrap();
 ///
@@ -529,7 +529,7 @@ pub fn translate_members(exp: &owl::Members) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let members = r#"{"rdf:type":[{"object":"owl:AllDifferent","datatype":"_IRI"}],"owl:distinctMembers":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let members = r#"{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object":"<http://www.w3.org/2002/07/owl#AllDifferent>","datatype":"_IRI"}],"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 /// let members_owl : owl::DistinctMembers = serde_json::from_str(members).unwrap();
 ///
 /// let axiom : Value = translation::translate_distinct_members(&members_owl);
@@ -549,7 +549,7 @@ pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value {
     };
 
     let operator = match rdf_type.as_str() {
-        "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")),
+        "<http://www.w3.org/2002/07/owl#AllDifferent>" => Value::String(String::from("DifferentIndividuals")),
         _ => Value::String(String::from("Error")),
     };
 
@@ -571,7 +571,7 @@ pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let list = r#"{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}"#;
+/// let list = r#"{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}"#;
 /// let list_owl : owl::RDFList = serde_json::from_str(list).unwrap();
 ///
 /// let list : Value = translation::translate_list(&list_owl);
@@ -586,7 +586,7 @@ pub fn translate_list(exp: &owl::RDFList) -> Value {
     let mut rest = translate(&exp.rdf_rest[0].object);
 
     //base case for RDF lists
-    if rest.is_string() && rest.as_str().unwrap() == "rdf:nil" {
+    if rest.is_string() && rest.as_str().unwrap() == "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>" {
         let mut v = Vec::new();
         v.push(first);
         Value::Array(v)
@@ -624,7 +624,7 @@ pub fn check_class_type(v: &Option<Vec<owl::Object>>) -> bool {
                 match &t.object {
                     //look for an owl:Class
                     owl::OWL::Named(s) => {
-                        if s == "owl:Class" {
+                        if s == "<http://www.w3.org/2002/07/owl#Class>" {
                             res = true
                         }
                     }
@@ -649,7 +649,7 @@ pub fn check_data_range_type(v: &Option<Vec<owl::Object>>) -> bool {
                 //check all types
                 match &t.object {
                     owl::OWL::Named(s) => {
-                        if s == "rdfs:Datatype" {
+                        if s == "<http://www.w3.org/2000/01/rdf-schema#Datatype>" {
                             res = true
                         }
                     }
@@ -672,7 +672,7 @@ pub fn check_data_range_type(v: &Option<Vec<owl::Object>>) -> bool {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let intersection = r#"{"owl:intersectionOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+/// let intersection = r#"{"<http://www.w3.org/2002/07/owl#intersectionOf>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Class>"}]}"#;
 ///
 /// let intersection_owl : owl::OWL = serde_json::from_str(intersection).unwrap();
 ///
@@ -712,7 +712,7 @@ pub fn translate_intersection_of(exp: &owl::IntersectionOf) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let union = r#"{"owl:unionOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+/// let union = r#"{"<http://www.w3.org/2002/07/owl#unionOf>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Class>"}]}"#;
 ///
 /// let union_owl : owl::OWL = serde_json::from_str(union).unwrap();
 ///
@@ -752,7 +752,7 @@ pub fn translate_union_of(exp: &owl::UnionOf) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let one_of = r#"{"owl:oneOf":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+/// let one_of = r#"{"<http://www.w3.org/2002/07/owl#oneOf>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Class>"}]}"#;
 ///
 /// let one_of_owl : owl::OWL = serde_json::from_str(one_of).unwrap();
 ///
@@ -793,7 +793,7 @@ pub fn translate_one_of(exp: &owl::OneOf) -> Value {
 /// use wiring_rs::ldtab_2_ofn::class_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let complement = r#"{"owl:complementOf":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:type":[{"datatype":"_IRI","object":"owl:Class"}]}"#;
+/// let complement = r#"{"<http://www.w3.org/2002/07/owl#complementOf>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#Class>"}]}"#;
 ///
 /// let complement_owl : owl::OWL = serde_json::from_str(complement).unwrap();
 ///

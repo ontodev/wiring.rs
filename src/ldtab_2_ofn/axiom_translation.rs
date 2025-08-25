@@ -62,7 +62,7 @@ pub fn translate_subclass_of_axiom(subclass: &owl::OWL, superclass: &owl::OWL) -
 /// assert_eq!(axiom, axiom_expected);
 ///
 /// let subclass = "\"_:genID123\"";
-/// let superclass = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let superclass = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 ///
 /// let subclass_owl : owl::OWL = serde_json::from_str(subclass).unwrap();
 /// let superclass_owl : owl::OWL = serde_json::from_str(superclass).unwrap();
@@ -234,7 +234,7 @@ pub fn translate_sub_property_of(subject: &owl::OWL, object: &owl::OWL) -> Value
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let blank_node = "\"_:genID123\"";
-/// let properties = r#"{"owl:members":[{"datatype":"_JSON","object":{"rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let properties = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 ///
 /// let blank_node_owl : owl::OWL = serde_json::from_str(blank_node).unwrap();
 /// let properties_owl : owl::OWL = serde_json::from_str(properties).unwrap();
@@ -274,7 +274,7 @@ pub fn translate_all_disjoint_properties(_subject: &owl::OWL, object: &owl::OWL)
 /// use wiring_rs::ldtab_2_ofn::axiom_translation as translation;
 /// use wiring_rs::owl::thick_triple as owl;
 ///
-/// let operands = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let operands = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 /// let operands_owl : owl::OWL = serde_json::from_str(operands).unwrap();
 ///
 /// let axiom : Value = translation::translate_disjoint_classes(&operands_owl);
@@ -346,7 +346,7 @@ pub fn translate_disjoint_with(subject: &owl::OWL, object: &owl::OWL) -> Value {
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let union = "\"obo:IAO_0000120\"";
-/// let operands = r#"{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}"#;
+/// let operands = r#"{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}"#;
 ///
 /// let union_owl : owl::OWL = serde_json::from_str(union).unwrap();
 /// let operands_owl : owl::OWL = serde_json::from_str(operands).unwrap();
@@ -383,7 +383,7 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
 /// ```
 /// use wiring_rs::ldtab_2_ofn::axiom_translation as translation;
 ///
-/// let operator = "rdfs:Datatype";
+/// let operator = "<http://www.w3.org/2000/01/rdf-schema#Datatype>";
 /// let ofn_operator = translation::get_ofn_operator(operator);
 /// let ofn_operator_expected = "Datatype";
 ///
@@ -391,8 +391,8 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
 ///```
 pub fn get_ofn_operator(op: &str) -> Value {
     match op {
-        "rdfs:Datatype" => Value::String(String::from("Datatype")),
-        "owl:Class" => Value::String(String::from("Class")),
+        "<http://www.w3.org/2000/01/rdf-schema#Datatype>" => Value::String(String::from("Datatype")),
+        "<http://www.w3.org/2002/07/owl#Class>" => Value::String(String::from("Class")),
         "owl:ObjectProperty" => Value::String(String::from("ObjectProperty")),
         "owl:DatatypeProperty" => Value::String(String::from("DataProperty")),
         "owl:AnnotationProperty" => Value::String(String::from("AnnotationProperty")),
@@ -409,7 +409,7 @@ pub fn get_ofn_operator(op: &str) -> Value {
         "owl:AsymmetricProperty" => Value::String(String::from("AsymmetricObjectProperty")),
         "owl:TransitiveProperty" => Value::String(String::from("TransitiveObjectProperty")),
 
-        "owl:AllDifferent" => Value::String(String::from("DifferentIndividuals")),
+        "<http://www.w3.org/2002/07/owl#AllDifferent>" => Value::String(String::from("DifferentIndividuals")),
 
         "owl:Ontology" => Value::String(String::from("ThinTriple")),
 
@@ -417,7 +417,7 @@ pub fn get_ofn_operator(op: &str) -> Value {
     }
 }
 
-/// Given the OWL expressions lhs and rhs of an RDF triple with property "rdf:type",
+/// Given the OWL expressions lhs and rhs of an RDF triple with property "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
 /// return the corresponding OFN S-expression.
 ///
 /// #Examples
@@ -630,7 +630,7 @@ pub fn translate_same_as(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let blank_node = "\"_:genID123\"";
-/// let arguments = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let arguments = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 ///
 /// let blank_node_owl : owl::OWL = serde_json::from_str(blank_node).unwrap();
 /// let arguments_owl : owl::OWL = serde_json::from_str(arguments).unwrap();
@@ -702,7 +702,7 @@ pub fn translate_different_from(lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let blank_node = "\"_:genID123\"";
-/// let arguments = r#"{"owl:members":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_JSON","object":{"datatype":"_JSON","rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}}]}}]}"#;
+/// let arguments = r#"{"<http://www.w3.org/2002/07/owl#members>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"datatype":"_JSON","<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000122"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}}]}}]}"#;
 ///
 /// let blank_node_owl : owl::OWL = serde_json::from_str(blank_node).unwrap();
 /// let arguments_owl : owl::OWL = serde_json::from_str(arguments).unwrap();
@@ -734,7 +734,7 @@ pub fn translate_all_different(_lhs: &owl::OWL, rhs: &owl::OWL) -> Value {
 /// where T(lhs) and T(rhs) are OFN S-expressions.
 ///
 /// let lhs = "\"obo:IAO_0000122\"";
-/// let rhs = r#"{"rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"rdf:rest":[{"datatype":"_JSON","object":{"rdf:first":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"rdf:rest":[{"datatype":"_IRI","object":"rdf:nil"}]}}]}"#;
+/// let rhs = r#"{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000120"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_JSON","object":{"<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>":[{"datatype":"_IRI","object":"obo:IAO_0000121"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>":[{"datatype":"_IRI","object":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>"}]}}]}"#;
 ///
 /// let lhs_owl : owl::OWL = serde_json::from_str(lhs).unwrap();
 /// let rhs_owl : owl::OWL = serde_json::from_str(rhs).unwrap();
