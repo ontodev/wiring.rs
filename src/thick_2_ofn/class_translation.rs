@@ -229,7 +229,7 @@ pub fn translate_rdf_list(s: &owl::RDFList) -> Value {
     let mut rest = translate(&s.rdf_rest[0].object);
 
     //base case for RDF lists
-    if rest.is_string() && rest.as_str().unwrap() == "rdf:nil" {
+    if rest.is_string() && rest.as_str().unwrap() == "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>" {
         let mut v = Vec::new();
         v.push(first);
         Value::Array(v)
@@ -255,7 +255,7 @@ pub fn check_class_type(v: &Option<Vec<owl::Object>>) -> bool {
                 match &t.object {
                     //look for an owl:Class
                     owl::OWL::Named(s) => {
-                        if s == "owl:Class" {
+                        if s == "<http://www.w3.org/2002/07/owl#Class>" {
                             res = true
                         }
                     }

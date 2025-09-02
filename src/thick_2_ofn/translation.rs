@@ -6,10 +6,10 @@ use serde_json::Value;
 //Consider the following trick triple as an example:
 //
 //{"subject": "ex:A",
-// "predicate": "rdfs:subClassOf",
-// "object": {"owl:onProperty":[{"object":"ex:prop"}],
-//            "owl:someValuesFrom":[{"object":"ex:B"}],
-//            "rdf:type":[{"object":"owl:Restriction"}]}}
+// "predicate": "<http://www.w3.org/2000/01/rdf-schema#subClassOf>",
+// "object": {"<http://www.w3.org/2002/07/owl#onProperty>":[{"object":"ex:prop"}],
+//            "<http://www.w3.org/2002/07/owl#someValuesFrom>":[{"object":"ex:B"}],
+//            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object":"<http://www.w3.org/2002/07/owl#Restriction>"}]}}
 //
 //Without type information about either the property or the filler of the existential restriction,
 //we cannot decide whether it is
@@ -29,15 +29,15 @@ pub fn thick_2_ofn(thick_triple: &Value) -> Value {
     let predicate = thick_triple["predicate"].as_str();
 
     match predicate {
-        Some("rdfs:subClassOf") => axiom_translation::translate_subclass_of_axiom(subj, obj),
-        Some("owl:equivalentClass") => axiom_translation::translate_equivalent_class(subj, obj),
-        Some("owl:AllDisjointClasses") => {
-            let members_helper: String = thick_triple["object"]["owl:members"].to_string();
+        Some("<http://www.w3.org/2000/01/rdf-schema#subClassOf>") => axiom_translation::translate_subclass_of_axiom(subj, obj),
+        Some("<http://www.w3.org/2002/07/owl#equivalentClass>") => axiom_translation::translate_equivalent_class(subj, obj),
+        Some("<http://www.w3.org/2002/07/owl#AllDisjointClasses>") => {
+            let members_helper: String = thick_triple["object"]["<http://www.w3.org/2002/07/owl#members>"].to_string();
             let members: &str = members_helper.as_str();
             axiom_translation::translate_disjoint_classes(members)
         }
-        Some("owl:disjointUnionOf") => axiom_translation::translate_disjoint_union(subj, obj),
-        Some("owl:disjointWith") => axiom_translation::translate_disjoint_with(subj, obj),
+        Some("<http://www.w3.org/2002/07/owl#disjointUnionOf>") => axiom_translation::translate_disjoint_union(subj, obj),
+        Some("<http://www.w3.org/2002/07/owl#disjointWith>") => axiom_translation::translate_disjoint_with(subj, obj),
         Some(_) => axiom_translation::translate_thin_triple(&thick_triple),
         None => Value::String(String::from("Fail")),
     }
