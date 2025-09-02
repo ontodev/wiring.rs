@@ -31,7 +31,7 @@ fn is_typing_triple(t: &str) -> bool {
     //let predicate : String = thick_triple["predicate"].to_string(); 
     //predicate == "\"rdf:type\"" 
     let predicate : &str = thick_triple["predicate"].as_str().unwrap();
-    predicate.eq("rdf:type")
+    predicate.eq("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")
 }
 
 fn get_type_mapping(t: &str) -> (String, String) {

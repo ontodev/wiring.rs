@@ -140,7 +140,7 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
 pub fn type_look_up(s : &str, m: &HashMap<String, HashSet<String>>) -> bool { 
 
     match m.get(s) {
-        Some(set) => set.contains("owl:Class"),
+        Some(set) => set.contains("<http://www.w3.org/2002/07/owl#Class>"),
         _ => false,
     }
 }
@@ -163,8 +163,8 @@ pub fn translate_rdf_type(v : &Value, m : &HashMap<String, HashSet<String>>) -> 
 
     match v[3].as_str() {
         //declarations
-        Some("owl:Class") => translate_declaration(v,m),
-        Some("rdfs:Datatype") => translate_declaration(v,m), 
+        Some("<http://www.w3.org/2002/07/owl#Class>") => translate_declaration(v,m),
+        Some("<http://www.w3.org/2000/01/rdf-schema#Datatype>") => translate_declaration(v,m), 
         Some("owl:ObjectProperty") => translate_declaration(v,m),
         Some("owl:DatatypeProperty") => translate_declaration(v,m), 
         Some("owl:AnnotationProperty") => translate_declaration(v,m),
@@ -292,8 +292,8 @@ pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>)
     let entity = Value::String(String::from(s));
     let operator = 
     match v[3].as_str() {
-        Some("owl:Class") => Value::String(String::from("Class")),
-        Some("rdfs:Datatype") => Value::String(String::from("Datatype")), 
+        Some("<http://www.w3.org/2002/07/owl#Class>") => Value::String(String::from("Class")),
+        Some("<http://www.w3.org/2000/01/rdf-schema#Datatype>") => Value::String(String::from("Datatype")), 
         Some("owl:ObjectProperty") => Value::String(String::from("ObjectProperty")),
         Some("owl:DatatypeProperty") => Value::String(String::from("DataProperty")), 
         Some("owl:AnnotationProperty") => Value::String(String::from("AnnotationProperty")),
