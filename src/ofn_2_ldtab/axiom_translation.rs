@@ -328,10 +328,9 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>",
-                                "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        //TODO: this object should be reused
+        let blank_node = json!({"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}],
+                                "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDifferent>"}]});
 
         let blank_sorted = util::sort_value(&blank_node);
         let blank_string = blank_sorted.to_string();
@@ -346,7 +345,8 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
                             "predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>", 
-                            "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
+                            "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}],
+                                       "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDifferent>"}]},
                             "datatype":"_JSONMAP",
                             "annotation":annotation});
         triple
@@ -641,6 +641,8 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
         hasher.update(blank_string.as_bytes());
         let blank_node_hash = hasher.finalize();
         let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+
+        println!("Blank node Id: {}", blank_node_id);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
