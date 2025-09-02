@@ -6,27 +6,27 @@ use serde::{Deserialize, Serialize};
 //
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct RDFList {
-    //#[serde(rename = "rdf:type")]
+    //#[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     //pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "rdf:first")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>")]
     pub rdf_first: Vec<Object>,
-    #[serde(rename = "rdf:rest")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>")]
     pub rdf_rest: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct Members {
-    #[serde(rename = "rdf:type")]//TODO: the type is *not* optional for 'owl:members'?
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]//TODO: the type is *not* optional for 'owl:members'?
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:members")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#members>")]
     pub members: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct DistinctMembers {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:distinctMembers")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#distinctMembers>")]
     pub distinct_members: Vec<Object>, 
 }
 
@@ -36,143 +36,143 @@ pub struct DistinctMembers {
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct SomeValuesFrom {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:someValuesFrom")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#someValuesFrom>")]
     pub owl_some_values_from: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct AllValuesFrom {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:allValuesFrom")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#allValuesFrom>")]
     pub owl_all_values_from: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct HasValue {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:hasValue")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#hasValue>")]
     pub owl_has_value: Vec<Object>, 
 } 
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MinCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:minCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#minCardinality>")]
     pub owl_min_cardinality: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MinObjectQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:minQualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>")]
     pub owl_min_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onClass")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onClass>")]
     pub owl_on_class: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MinDataQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:minQualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>")]
     pub owl_min_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onDataRange")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onDataRange>")]
     pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MaxCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:maxCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#maxCardinality>")]
     pub owl_max_cardinality: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MaxObjectQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:maxQualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>")]
     pub owl_max_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onClass")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onClass>")]
     pub owl_on_class: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct MaxDataQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:maxQualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>")]
     pub owl_max_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onDataRange")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onDataRange>")]
     pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ExactCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:cardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#cardinality>")]
     pub owl_cardinality: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ExactObjectQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:qualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#qualifiedCardinality>")]
     pub owl_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onClass")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onClass>")]
     pub owl_on_class: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ExactDataQualifiedCardinality {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:qualifiedCardinality")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#qualifiedCardinality>")]
     pub owl_qualified_cardinality: Vec<Object>, 
-    #[serde(rename = "owl:onDataRange")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onDataRange>")]
     pub owl_on_datarange: Vec<Object>, 
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct HasSelf {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:onProperty")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#onProperty>")]
     pub owl_on_property: Vec<Object>,
-    #[serde(rename = "owl:hasSelf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#hasSelf>")]
     pub owl_has_self: Vec<Object>,
 }
 
@@ -182,39 +182,39 @@ pub struct HasSelf {
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct IntersectionOf {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:intersectionOf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#intersectionOf>")]
     pub owl_intersection_of: Vec<Object>,
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct UnionOf {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:unionOf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#unionOf>")]
     pub owl_union_of: Vec<Object>,
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct OneOf {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:oneOf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#oneOf>")]
     pub owl_one_of: Vec<Object>,
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct ComplementOf {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
-    #[serde(rename = "owl:complementOf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#complementOf>")]
     pub owl_complement_of: Vec<Object>,
 }
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct NegativeObjectPropertyAssertion {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:sourceIndividual")]
     pub source_individual: Vec<Object>,
@@ -226,7 +226,7 @@ pub struct NegativeObjectPropertyAssertion {
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct NegativeDataPropertyAssertion {
-    #[serde(rename = "rdf:type")]
+    #[serde(rename = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")]
     pub rdf_type: Option<Vec<Object>>,
     #[serde(rename = "owl:sourceIndividual")]
     pub source_individual: Vec<Object>,
@@ -242,7 +242,7 @@ pub struct NegativeDataPropertyAssertion {
 
 #[derive(Debug,Serialize, Deserialize,Clone,Hash)]
 pub struct InverseOf {
-    #[serde(rename = "owl:inverseOf")]
+    #[serde(rename = "<http://www.w3.org/2002/07/owl#inverseOf>")]
     pub owl_inverse_of: Vec<Object>,
 }
 
