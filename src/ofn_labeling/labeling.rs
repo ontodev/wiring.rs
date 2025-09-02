@@ -51,7 +51,7 @@ fn is_labeling_triple(t: &str) -> bool {
 
     let predicate : &str = thick_triple["predicate"].as_str().unwrap();
 
-    predicate.eq("rdfs:label")
+    predicate.eq("<http://www.w3.org/2000/01/rdf-schema#label>")
 }
 
 fn get_label_mapping(t: &str) -> (String, String) {
