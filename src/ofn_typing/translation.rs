@@ -69,7 +69,7 @@ pub fn get_owl(v : &Value) -> Value {
 ///
 /// let mut entity_2_type = HashMap::new();
 /// let entity = String::from("obo:OBI_0500000");
-/// let entity_type = String::from("owl:Class");
+/// let entity_type = String::from("<http://www.w3.org/2002/07/owl#Class>");
 /// let mut types = HashSet::new();
 /// types.insert(entity_type);
 /// entity_2_type.insert(entity, types); 
@@ -88,7 +88,7 @@ pub fn type_ofn(v: &Value, m : &HashMap<String, HashSet<String>>) -> Value {
     match v[0].as_str() {
         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v,m),
         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v,m),
-        Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v,m),
+        Some("DisjointUnion") => axiom_translation::translate_disjoint_union_of_axiom(v,m),
         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v,m),
         Some("ClassAssertion") => axiom_translation::translate_class_assertion(v,m),
         Some("DataPropertyDomain") => axiom_translation::translate_data_property_domain(v,m),

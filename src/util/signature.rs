@@ -102,7 +102,7 @@ pub fn extract(v: &Value) -> Vec<Value> {
     let res = match v[0].as_str() {
         Some("SubClassOf") => translate_subclass_of(v),
         Some("DisjointClasses") => translate_disjoint_classes(v),
-        Some("DisjointUnionOf") => translate_disjoint_union_of(v),
+        Some("DisjointUnion") => translate_disjoint_union_of(v),
         Some("EquivalentClasses") => translate_equivalent_classes(v),
         Some("ObjectSomeValuesFrom") => translate_some_values_from(v),
         Some("DataSomeValuesFrom") => translate_some_values_from(v),

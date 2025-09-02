@@ -42,7 +42,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value, m : &HashMap<String,String>
     let lhs = class_translation::translate(&v[1], m);
     let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[2..], m); 
 
-    let operator = Value::String(String::from("DisjointUnionOf"));
+    let operator = Value::String(String::from("DisjointUnion"));
     let v = vec![operator, lhs, operands];
     Value::Array(v)
 }

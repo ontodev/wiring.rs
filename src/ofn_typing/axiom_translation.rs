@@ -42,7 +42,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value, m : &HashMap<String,HashSet
     let lhs : Value = class_translation::translate(&v[1], m);
     let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[2..], m); 
 
-    let operator = Value::String(String::from("DisjointUnionOf"));
+    let operator = Value::String(String::from("DisjointUnion"));
     let v = vec![operator, lhs, operands];
     Value::Array(v) 
 }
@@ -390,7 +390,7 @@ pub fn translate_thin_triple(v : &Value, m : &HashMap<String,HashSet<String>>) -
 
     match v[2].as_str() {
 
-        Some("rdf:type") => class_translation::translate_rdf_type(v,m),
+        Some("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>") => class_translation::translate_rdf_type(v,m),
         //TODO: translate annotation (and then check what kind of annotation)
         _ => class_translation::translate_assertion(v,m),
     } 

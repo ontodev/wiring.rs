@@ -68,7 +68,7 @@ pub fn translate_disjoint_union(u: &str, ops: &str) -> Value {
     let lhs: Value = class_translation::translate(&union);
     let mut rhs: Value = class_translation::translate(&operands);
 
-    let operator = Value::String(String::from("DisjointUnionOf"));
+    let operator = Value::String(String::from("DisjointUnion"));
     let mut union = vec![operator];
     union.push(lhs);
     let arguments = rhs.as_array_mut().unwrap();

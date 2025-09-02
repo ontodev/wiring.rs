@@ -353,7 +353,7 @@ pub fn translate_disjoint_with(subject: &owl::OWL, object: &owl::OWL) -> Value {
 ///
 /// let axiom : Value = translation::translate_disjoint_union(&union_owl,
 /// &operands_owl);
-/// let axiom_expected_string = r#"["DisjointUnionOf","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+/// let axiom_expected_string = r#"["DisjointUnion","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -362,7 +362,7 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
     let lhs = class_translation::translate(union);
     let rhs = class_translation::translate(operands);
 
-    let operator = Value::String("DisjointUnionOf".into());
+    let operator = Value::String("DisjointUnion".into());
 
     match rhs {
         Value::Array(mut arr) => {
