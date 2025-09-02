@@ -11,7 +11,7 @@ pub fn translate_subclass_of_axiom(v: &Value) -> Value {
     let superclass = class_translation::translate(&v[2]);
 
     let triple = json!({"subject":subclass,
-                     "predicate":"rdfs:subClassOf", 
+                     "predicate":"<http://www.w3.org/2000/01/rdf-schema#subClassOf>", 
                      "object":superclass});
     triple
 }
@@ -25,8 +25,8 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
     let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]);
 
     let triple = json!({"subject":blank_node,
-                        "predicate":"owl:AllDisjointClasses",
-                        "object": {"owl:members":operands}});
+                        "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>",
+                        "object": {"<http://www.w3.org/2002/07/owl#members>":operands}});
     triple
 }
 
@@ -35,7 +35,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
     let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[2..]);
 
     let triple = json!({"subject":lhs,
-                        "predicate":"owl:disjointUnionOf",
+                        "predicate":"<http://www.w3.org/2002/07/owl#disjointUnionOf>",
                         "object":operands});
     triple
 }
@@ -49,7 +49,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
         let rhs = class_translation::translate(&v[2]);
 
         let triple = json!({"subject":lhs,
-                            "predicate":"owl:equivalentClass",
+                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
                             "object":rhs});
         triple
     } else {
@@ -59,7 +59,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
 
         let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]);
         let triple = json!({"subject":blank_node,
-                            "predicate":"owl:equivalentClass",
+                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
                             "object":operands});
         triple
     }
