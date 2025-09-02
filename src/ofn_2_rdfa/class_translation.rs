@@ -7,20 +7,20 @@ use std::collections::HashMap;
 pub fn get_type(ofn: &Value) -> &str {
 
      match ofn[0].as_str() {
-         Some("ObjectSomeValuesFrom") => "owl:Restriction", 
-         Some("ObjectAllValuesFrom") => "owl:Restriction",
-         Some("ObjectHasValue") => "owl:Restriction", 
-         Some("ObjectMinCardinality") => "owl:Restriction", 
-         Some("ObjectMinQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectMaxCardinality") => "owl:Restriction", 
-         Some("ObjectMaxQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectExactCardinality") => "owl:Restriction", 
-         Some("ObjectExactQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectHasSelf") => "owl:Restriction", 
-         Some("ObjectIntersectionOf") => "owl:Class", 
-         Some("ObjectUnionOf") => "owl:Class", 
-         Some("ObjectOneOf") => "owl:Class", 
-         Some("ObjectComplementOf") => "owl:Class", 
+         Some("ObjectSomeValuesFrom") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectAllValuesFrom") => "<http://www.w3.org/2002/07/owl#Restriction>",
+         Some("ObjectHasValue") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectMinCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectMinQualifiedCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectMaxCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectMaxQualifiedCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectExactCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectExactQualifiedCardinality") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectHasSelf") => "<http://www.w3.org/2002/07/owl#Restriction>", 
+         Some("ObjectIntersectionOf") => "<http://www.w3.org/2002/07/owl#Class>", 
+         Some("ObjectUnionOf") => "<http://www.w3.org/2002/07/owl#Class>", 
+         Some("ObjectOneOf") => "<http://www.w3.org/2002/07/owl#Class>", 
+         Some("ObjectComplementOf") => "<http://www.w3.org/2002/07/owl#Class>", 
          Some(_) => ofn.as_str().unwrap(),
          None => panic!(),
      }
@@ -116,23 +116,23 @@ pub fn translate_list(arguments: Vec<Value>, subject_2_label: &HashMap<String,St
     let first = translate(&y[0], subject_2_label, None);
     let mut list;
     if is_named_class(&y[0]) {
-        list = json!(["span", {"property":"rdf:rest", "typeof":"rdf:List"},modifier,first,["span",{"resource":"rdf:nil", "property":"rdf:rest"}]] );
+        list = json!(["span", {"property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>", "typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},modifier,first,["span",{"resource":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>", "property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>"}]] );
     } else {
-        list = json!(["span", {"property":"rdf:rest", "typeof":"rdf:List"},modifier,"(",first,")",["span",{"resource":"rdf:nil", "property":"rdf:rest"}]] ); 
+        list = json!(["span", {"property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>", "typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},modifier,"(",first,")",["span",{"resource":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>", "property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>"}]] ); 
     }
 
     //build middle elements
     for arg in y[1..y.len()-1].iter() {
-        let t_arg = translate(&arg, subject_2_label, Some("rdf:first"));
+        let t_arg = translate(&arg, subject_2_label, Some("<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>"));
         if is_named_class(&arg) {
-            list = json!(["span",{"property":"rdf:rest","typeof":"rdf:List"},modifier,t_arg,list]);
+            list = json!(["span",{"property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},modifier,t_arg,list]);
         } else { 
-            list = json!(["span",{"property":"rdf:rest","typeof":"rdf:List"},modifier,"(",t_arg,")",list]);
+            list = json!(["span",{"property":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},modifier,"(",t_arg,")",list]);
         }
     } 
 
     //build last element
-    let last = translate(&y[y.len()-1], subject_2_label, Some("rdf:first"));
+    let last = translate(&y[y.len()-1], subject_2_label, Some("<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>"));
     if is_named_class(&y[y.len()-1]) {
         list = json!(["span",last,list]);
     } else {
@@ -149,8 +149,8 @@ pub fn translate_intersection_of(ofn: &Value, subject_2_label: &HashMap<String,S
     let ops = translate_list(operands, subject_2_label, modifier);
 
     match rdfa_property {
-        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},ops]]),
-        None => json!(["span",["span",{"property":"owl:intersectionOf","typeof":"rdf:List"},ops]]) 
+        Some(p) => json!(["span",{"property":p},["span",{"property":"<http://www.w3.org/2002/07/owl#intersectionOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},ops]]),
+        None => json!(["span",["span",{"property":"<http://www.w3.org/2002/07/owl#intersectionOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},ops]]) 
     }
 }
 
@@ -161,8 +161,8 @@ pub fn translate_union_of(ofn: &Value, subject_2_label: &HashMap<String,String>,
     let ops = translate_list(operands, subject_2_label, modifier);
 
     match rdfa_property {
-        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:unionOf","typeof":"rdf:List"},ops]]),
-        None => json!(["span",["span",{"property":"owl:unionOf","typeof":"rdf:List"},ops]]) 
+        Some(p) => json!(["span",{"property":p},["span",{"property":"<http://www.w3.org/2002/07/owl#unionOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},ops]]),
+        None => json!(["span",["span",{"property":"<http://www.w3.org/2002/07/owl#unionOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},ops]]) 
     }
 }
 
@@ -175,8 +175,8 @@ pub fn translate_one_of(ofn: &Value, subject_2_label: &HashMap<String,String>, r
     //TODO: we need to check for OneOf operator when adding parenthesis
     //currently, we translate ObjectOneOf(a,b,c) to ({a,b,c}) instead of {a,b,c}
     match rdfa_property {
-        Some(p) => json!(["span",{"property":p},["span",{"property":"owl:oneOf","typeof":"rdf:List"},"{",ops,"}"]]),
-        None => json!(["span",["span",{"property":"owl:oneOf","typeof":"rdf:List"},"{",ops,"}"]]) 
+        Some(p) => json!(["span",{"property":p},["span",{"property":"<http://www.w3.org/2002/07/owl#oneOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},"{",ops,"}"]]),
+        None => json!(["span",["span",{"property":"<http://www.w3.org/2002/07/owl#oneOf>","typeof":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>"},"{",ops,"}"]]) 
     }
 }
 
@@ -185,16 +185,16 @@ pub fn translate_one_of(ofn: &Value, subject_2_label: &HashMap<String,String>, r
 pub fn render_restriction_base(prop: &Value, modifier: &Value, filler: &Value, rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, filler]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, filler]),
+        Some(p) => json!(["span", {"property":p, "typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, filler]),
+        None => json!(["span",{"typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, filler]),
     }
 }
 
 pub fn render_restriction_nested(prop: &Value, modifier: &Value, filler: &Value, rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, "(", filler, ")"]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, "(", filler, ")"]),
+        Some(p) => json!(["span", {"property":p, "typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, "(", filler, ")"]),
+        None => json!(["span",{"typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, "(", filler, ")"]),
     }
 }
 
@@ -205,8 +205,8 @@ pub fn render_qualified_cardinality_restriction_base(prop: &Value,
                                                      rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", filler]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", filler]),
+        Some(p) => json!(["span", {"property":p, "typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, cardinality, " ", filler]),
+        None => json!(["span",{"typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, cardinality, " ", filler]),
     }
 }
 
@@ -217,8 +217,8 @@ pub fn render_qualified_cardinality_restriction_nested(prop: &Value,
                                                        rdfa_property: Option<&str>) -> Value {
 
     match rdfa_property {
-        Some(p) => json!(["span", {"property":p, "typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
-        None => json!(["span",{"typeof":"owl:Restriction"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
+        Some(p) => json!(["span", {"property":p, "typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
+        None => json!(["span",{"typeof":"<http://www.w3.org/2002/07/owl#Restriction>"}, prop, modifier, cardinality, " ", "(", filler, ")"]),
     }
 }
 
@@ -257,7 +257,7 @@ pub fn label_substitution(named_class: &str, subject_2_label: &HashMap<String,St
 pub fn translate_complement_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let argument = translate(&ofn[1], subject_2_label, Some("owl:complementOf"));
+    let argument = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#complementOf>"));
 
     if ofn[1].is_array() { 
         match rdfa_property {
@@ -275,7 +275,7 @@ pub fn translate_complement_of(ofn: &Value, subject_2_label: &HashMap<String,Str
 pub fn translate_inverse_of(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let argument = translate(&ofn[1], subject_2_label, Some("owl:inverseOf"));
+    let argument = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#inverseOf>"));
 
     if ofn[1].is_array() { 
         match rdfa_property {
@@ -294,9 +294,9 @@ pub fn translate_inverse_of(ofn: &Value, subject_2_label: &HashMap<String,String
 pub fn translate_some_values_from(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" some "));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:someValuesFrom")); 
+    let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#someValuesFrom>")); 
 
     //check whether the filler of this expression is atomic or nested further
     if ofn[2].is_array() {
@@ -310,9 +310,9 @@ pub fn translate_some_values_from(ofn: &Value, subject_2_label: &HashMap<String,
 pub fn translate_has_value(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" value "));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:hasValue")); 
+    let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#hasValue>")); 
 
     //check whether the filler of this expression is atomic or nested further
     if ofn[2].is_array() {
@@ -326,9 +326,9 @@ pub fn translate_has_value(ofn: &Value, subject_2_label: &HashMap<String,String>
 pub fn translate_has_self(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" some Self "));
-    let filler = json!(["span", {"property":"owl:hasSelf", "hidden":"true"}, "true^^xsd:boolean"]); 
+    let filler = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#hasSelf>", "hidden":"true"}, "true^^xsd:boolean"]); 
 
     //check whether the filler of this expression is atomic or nested further
     if ofn[2].is_array() {
@@ -342,9 +342,9 @@ pub fn translate_has_self(ofn: &Value, subject_2_label: &HashMap<String,String>,
 pub fn translate_all_values_from(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" only "));
-    let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
+    let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#allValuesFrom>")); 
 
     if ofn[2].is_array() {
         render_restriction_nested(&property, &modifier, &filler, rdfa_property) 
@@ -356,7 +356,7 @@ pub fn translate_all_values_from(ofn: &Value, subject_2_label: &HashMap<String,S
 pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" min "));
 
     //encode cardinality
@@ -364,9 +364,9 @@ pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:minCardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#minCardinality>"}, number]); 
 
-    //let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
+    //let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#allValuesFrom>")); 
 
     if ofn[2].is_array() {
         render_restriction_nested(&property, &modifier, &card, rdfa_property) 
@@ -378,7 +378,7 @@ pub fn translate_min_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
 pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" min "));
 
     //encode cardinality
@@ -386,9 +386,9 @@ pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:minQualifiedCardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#minQualifiedCardinality>"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onClass>")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
@@ -400,7 +400,7 @@ pub fn translate_min_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
 pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" max "));
 
     //encode cardinality
@@ -408,9 +408,9 @@ pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:maxCardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#maxCardinality>"}, number]); 
 
-    //let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
+    //let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#allValuesFrom>")); 
 
     if ofn[2].is_array() {
         render_restriction_nested(&property, &modifier, &card, rdfa_property) 
@@ -422,7 +422,7 @@ pub fn translate_max_cardinality(ofn: &Value, subject_2_label: &HashMap<String,S
 pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" max "));
 
     //encode cardinality
@@ -430,9 +430,9 @@ pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:maxQualifiedCardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onClass>")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
@@ -444,7 +444,7 @@ pub fn translate_max_qualified_cardinality(ofn: &Value, subject_2_label: &HashMa
 pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" exactly "));
 
     //encode cardinality
@@ -452,9 +452,9 @@ pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:cardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#cardinality>"}, number]); 
 
-    //let filler = translate(&ofn[2], subject_2_label, Some("owl:allValuesFrom")); 
+    //let filler = translate(&ofn[2], subject_2_label, Some("<http://www.w3.org/2002/07/owl#allValuesFrom>")); 
 
     if ofn[2].is_array() {
         render_restriction_nested(&property, &modifier, &card, rdfa_property) 
@@ -466,7 +466,7 @@ pub fn translate_exact_cardinality(ofn: &Value, subject_2_label: &HashMap<String
 pub fn translate_exact_qualified_cardinality(ofn: &Value, subject_2_label: &HashMap<String,String>, rdfa_property: Option<&str>) -> Value { 
 
     //TODO: use propertytranslation?
-    let property = translate(&ofn[1], subject_2_label, Some("owl:onProperty"));
+    let property = translate(&ofn[1], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onProperty>"));
     let modifier = Value::String(String::from(" exactly "));
 
     //encode cardinality
@@ -474,9 +474,9 @@ pub fn translate_exact_qualified_cardinality(ofn: &Value, subject_2_label: &Hash
     //I am expecting OFN S-expressions to follow OWL functional syntax
     //so, datatypes for numbers do not need to be added
     //number.push_str("^^xsd:nonNegativeInteger");
-    let card = json!(["span", {"property":"owl:qualifiedCardinality"}, number]); 
+    let card = json!(["span", {"property":"<http://www.w3.org/2002/07/owl#qualifiedCardinality>"}, number]); 
 
-    let filler = translate(&ofn[3], subject_2_label, Some("owl:onClass")); 
+    let filler = translate(&ofn[3], subject_2_label, Some("<http://www.w3.org/2002/07/owl#onClass>")); 
 
     if ofn[2].is_array() {
         render_qualified_cardinality_restriction_nested(&property, &modifier, &card, &filler, rdfa_property) 
