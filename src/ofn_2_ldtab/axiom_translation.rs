@@ -179,11 +179,11 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
-                            "datatype":"_IRI"});
+    //TODO reuse blank node object
+    let blank_node = json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object" : "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>", "datatype" : "_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to, "datatype":"_IRI"}]});
 
     let blank_sorted = util::sort_value(&blank_node);
     let blank_string = blank_sorted.to_string();
@@ -199,15 +199,20 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":blank_node_id,
     "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-    "object":{
-        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
-    },
+    "object": {"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object" : "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>", "datatype" : "_IRI"}],
+               "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
+               "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
+               "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to, "datatype":"_IRI"}]},
     "datatype":"_IRI",
     "annotation":annotation
     });
     triple
+}
+
+fn unquote_once(s: &str) -> &str {
+    s.strip_prefix('"')
+        .and_then(|t| t.strip_suffix('"'))
+        .unwrap_or(s)
 }
 
 pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
@@ -219,13 +224,29 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
     let from = class_translation::translate(&owl[2]);
-    let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
-                            "datatype":"_IRI"});
+    //TODO: handle data values properly
+    //TODO need to check for datatypes first
+    //let to = class_translation::translate(&owl[3]);
+    let to: Value = if let Some(s) = owl[3].as_str() {
+    if let Some((literal, datatype)) = s.split_once("^^") {
+        json!({ "object": unquote_once(literal), "datatype": datatype })
+    } else if let Some((literal, language)) = s.split_once('@') {
+        json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
+    } else {
+        json!({ "object": unquote_once(s), "datatype": "http://www.w3.org/2001/XMLSchema#string" })
+    }
+} else {
+        Value::Null
+    };
+
+    let literal = to.get("object").unwrap().as_str().unwrap();
+    let datatype = to.get("datatype").unwrap().as_str().unwrap();
+
+    let blank_node = json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object" : "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>", "datatype" : "_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
+                            "<http://www.w3.org/2002/07/owl#targetValue>":[{"object":literal, "datatype":datatype }]});
 
     let blank_sorted = util::sort_value(&blank_node);
     let blank_string = blank_sorted.to_string();
@@ -241,11 +262,10 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":blank_node_id,
     "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-    "object":{
-        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
-    },
+    "object":{ "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"object" : "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>", "datatype" : "_IRI"}],
+               "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
+               "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
+               "<http://www.w3.org/2002/07/owl#targetValue>":[{"object":literal, "datatype":datatype }]},
     "datatype":"_IRI",
     "annotation":annotation
     });
