@@ -74,7 +74,7 @@ pub fn ofn_2_thick_triple(v: &Value) -> Value {
             axiom_translation::translate_negative_object_property_assertion_axiom(v)
         }
         Some("DataPropertyAssertion") => {
-            axiom_translation::translate_object_property_assertion_axiom(v)
+            axiom_translation::translate_data_property_assertion_axiom(v)
         }
         Some("NegativeDataPropertyAssertion") => {
             axiom_translation::translate_negative_data_property_assertion_axiom(v)
