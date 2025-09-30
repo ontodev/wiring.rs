@@ -75,9 +75,58 @@ pub fn translate_named_entity(v: &Value) -> Value {
     json!(o)
 }
 
+
+pub fn strip_rdf_literal(v: &Value) -> Value {
+    match v.as_str() {
+        Some(s) if s.starts_with('"') => {
+            let bytes = s.as_bytes();
+            let mut i = 1usize;
+            let mut escaped = false;
+
+            while i < bytes.len() {
+                match bytes[i] {
+                    b'\\' if !escaped => { escaped = true; }
+                    b'"' if !escaped => {
+                        // Found closing quote
+                        return json!(&s[1..i]);
+                    }
+                    _ => { escaped = false; }
+                }
+                i += 1;
+            }
+            // No closing quote found → return unchanged
+            json!(s)
+        }
+        Some(s) => json!(s), // not a quoted literal
+        None => v.clone(),   // not a string
+    }
+}
+
+
 pub fn get_object(v: &Value) -> Value {
-    let o: Value = translate(&v);
+    let mut o: Value = translate(v);
     let d: String = String::from(util::translate_datatype(&o).as_str().unwrap());
+    if d == "<http://www.w3.org/2001/XMLSchema#string>" ||
+       d == "<http://www.w3.org/2001/XMLSchema#boolean>" || 
+       d == "<http://www.w3.org/2001/XMLSchema#integer>" || 
+       d == "<http://www.w3.org/2001/XMLSchema#decimal>" ||
+       d == "<http://www.w3.org/2001/XMLSchema#integer" ||
+       d == "<http://www.w3.org/2001/XMLSchema#nonNegativeInteger" ||
+       d == "<http://www.w3.org/2001/XMLSchema#nonPositiveInteger" ||
+       d == "<http://www.w3.org/2001/XMLSchema#positiveInteger" ||
+       d == "<http://www.w3.org/2001/XMLSchema#negativeInteger" ||
+       d == "<http://www.w3.org/2001/XMLSchema#long" ||
+       d == "<http://www.w3.org/2001/XMLSchema#int" ||
+       d == "<http://www.w3.org/2001/XMLSchema#short" ||
+       d == "<http://www.w3.org/2001/XMLSchema#byte" ||
+       d == "<http://www.w3.org/2001/XMLSchema#unsignedLong" ||
+       d == "<http://www.w3.org/2001/XMLSchema#unsignedInt" ||
+       d == "<http://www.w3.org/2001/XMLSchema#unsignedShort" ||
+       d == "<http://www.w3.org/2001/XMLSchema#unsignedByte" ||
+       d == "<http://www.w3.org/2002/07/owl#real>" ||
+       d == "<http://www.w3.org/2002/07/owl#rational>" {
+        o = strip_rdf_literal(&o);
+    };
 
     json!({"object" : o,
            "datatype" : d})
@@ -141,7 +190,7 @@ pub fn translate_has_value(v: &Value) -> Value {
 
 pub fn translate_has_self(v: &Value) -> Value {
     let property_o: Value = get_object(&v[1]);
-    let has_self_o: Value = get_object(&json!("true^^xsd:boolean"));
+    let has_self_o: Value = get_object(&json!("\"true\"^^<http://www.w3.org/2001/XMLSchema#boolean>"));
     let type_o: Value = get_object(&json!("<http://www.w3.org/2002/07/owl#Restriction>"));
 
     json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
