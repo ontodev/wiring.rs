@@ -153,7 +153,22 @@ pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
     let from = class_translation::translate(&owl[2]);
-    let to = class_translation::translate(&owl[3]);
+
+    let to: Value = if let Some(s) = owl[3].as_str() {
+    if let Some((literal, datatype)) = s.split_once("^^") {
+        json!({ "object": unquote_once(literal), "datatype": datatype })
+    } else if let Some((literal, language)) = s.split_once('@') {
+        json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
+    } else {
+        json!({ "object": unquote_once(s), "datatype": "http://www.w3.org/2001/XMLSchema#string" })
+    }
+} else {
+        Value::Null
+    };
+
+    let literal = to.get("object").unwrap().as_str().unwrap();
+    let datatype = to.get("datatype").unwrap().as_str().unwrap();
+
 
     let triple = json!({
     "assertion":"1",
@@ -161,8 +176,8 @@ pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":from,
     "predicate":property,
-    "object":to,
-    "datatype":"_IRI",
+    "object":literal,
+    "datatype":datatype,
     "annotation":annotation
     });
     triple
@@ -226,8 +241,6 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     let from = class_translation::translate(&owl[2]);
 
     //TODO: handle data values properly
-    //TODO need to check for datatypes first
-    //let to = class_translation::translate(&owl[3]);
     let to: Value = if let Some(s) = owl[3].as_str() {
     if let Some((literal, datatype)) = s.split_once("^^") {
         json!({ "object": unquote_once(literal), "datatype": datatype })
