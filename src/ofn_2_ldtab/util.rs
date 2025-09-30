@@ -18,7 +18,7 @@ pub fn translate_literal(s: &str) -> Value {
             None => json!("Error"),
         }
     } else {
-        json!("_plain")
+        json!("<http://www.w3.org/2001/XMLSchema#string>")
     }
 }
 
