@@ -4,18 +4,17 @@ use serde_json::Value;
 use std::collections::HashMap;
 
 pub fn is_annotation(v: &Value) -> bool {
-    match v.clone() {
-        Value::Array(x) => {
-            match x[0].as_str() {
-                Some("Annotation") => true,
-                //Some("AnnotationList") => true, //NB: this shouldn't occur
-                Some(_) => false,
-                None => false,
-            }
-        }
-        _ => false,
-    }
+    matches!(
+        v,
+        Value::Array(xs)
+            if xs.get(0)
+                 .and_then(Value::as_str)
+                 == Some("Annotation")
+    )
 }
+
+
+
 
 pub fn has_annotation(v: &Value) -> bool {
     match v.clone() {
