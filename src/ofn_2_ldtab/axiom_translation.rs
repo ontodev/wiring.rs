@@ -1121,28 +1121,33 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
     let owl = annotation_translation::get_owl(v);
     let annotations = annotation_translation::get_annotations(v);
 
-    let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
+    let class = class_translation::translate(&owl[1]);
+    let ops = property_translation::translate_list(&owl[2].as_array().unwrap());
+    let dps = property_translation::translate_list(&owl[3].as_array().unwrap());
+
+    let mut operands = ops;
+    if !dps.is_null() {
+        if operands.is_null() {
+            operands = dps;
+        } else if operands.is_array() && dps.is_array() {
+            let mut ops_array = operands.as_array().unwrap().clone();
+            let dps_array = dps.as_array().unwrap();
+            ops_array.extend(dps_array.iter().cloned());
+            operands = Value::Array(ops_array);
+        }
+    }
+
+    //let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
     let annotation = annotation_translation::translate_annotations(&annotations);
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                            "datatype": "_JSONMAP"});
-
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
-                        "subject":blank_node_id,
+                        "subject":class,
                         "predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
-                        "object": {"<http://www.w3.org/2002/07/owl#members>":operands, "datatype":"_JSONLIST"}, //TODO remove datatype
-                        "datatype": "_JSONMAP", 
+                        "object": operands,
+                        "datatype": "_JSONLIST", 
                         "annotation":annotation});
     triple
 }
