@@ -218,7 +218,7 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
                "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
                "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
                "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to, "datatype":"_IRI"}]},
-    "datatype":"_IRI",
+    "datatype":"_JSONMAP",
     "annotation":annotation
     });
     triple
@@ -279,7 +279,7 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
                "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from, "datatype":"_IRI"}],
                "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property, "datatype":"_IRI"}],
                "<http://www.w3.org/2002/07/owl#targetValue>":[{"object":literal, "datatype":datatype }]},
-    "datatype":"_IRI",
+    "datatype":"_JSONMAP",
     "annotation":annotation
     });
     triple
