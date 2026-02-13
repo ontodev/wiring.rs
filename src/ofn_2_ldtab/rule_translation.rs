@@ -10,19 +10,19 @@ pub fn translate(v: &Value) -> Value {
         Some("Head") => translate_head(v),
         Some("ObjectPropertyAtom") => translate_object_property_atom(v),
         Some("Variable") => translate_variable(v),
+        Some("ClassAtom") => translate_class_atom(v),
+        //TODO
+        //Some("SameIndividualAtom") => axiom_translation::translate_ontology(v),
+        //Some("DifferentIndividualsAtom") => axiom_translation::translate_ontology(v),
+        //Some("DataRangeAtom") => axiom_translation::translate_ontology(v),
+        //Some("BuiltInAtom") => axiom_translation::translate_ontology(v),
         Some(_) => {
             println!("Error: {}", v);
             json!("TODO")}
         ,
         //None => owl::OWL::Named(String::from(v.as_str().unwrap())),
 
-        //Some("Variable") => axiom_translation::translate_ontology(v),
-        //Some("SameIndividualAtom") => axiom_translation::translate_ontology(v),
-        //Some("DifferentIndividualsAtom") => axiom_translation::translate_ontology(v),
-        //Some("DataRangeAtom") => axiom_translation::translate_ontology(v),
-        //Some("ClassAtom") => axiom_translation::translate_ontology(v),
-        //Some("BuiltInAtom") => axiom_translation::translate_ontology(v),
-        //
+
         None => translate_named_entity(&v),
     }
 }
@@ -46,6 +46,16 @@ pub fn get_object(v: &Value) -> Value {
 
 pub fn translate_variable(v: &Value) -> Value {
     translate_named_entity(&v[1])
+}
+
+pub fn translate_class_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!("<http://www.w3.org/2003/11/swrl#ClassAtom>"));
+    let class_o = get_object(&v[1]);
+    let arg1_o = get_object(&v[2]);
+    json!( {"datatype" : "_JSONMAP",
+            "object": {"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
+                        "<http://www.w3.org/2003/11/swrl#classPredicate>" : vec![class_o],
+                        "<http://www.w3.org/2003/11/swrl#argument1>" : vec![arg1_o]}})
 }
 
 pub fn translate_object_property_atom(v: &Value) -> Value {
