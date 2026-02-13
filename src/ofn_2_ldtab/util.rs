@@ -1,3 +1,4 @@
+use crate::ofn_2_ldtab::constants::*;
 use regex::Regex;
 use serde_json::json;
 use serde_json::{Map, Value};
@@ -18,7 +19,7 @@ pub fn translate_literal(s: &str) -> Value {
             None => json!("Error"),
         }
     } else {
-        json!("<http://www.w3.org/2001/XMLSchema#string>")
+        json!(XSD_STRING)
     }
 }
 

@@ -1,3 +1,4 @@
+use crate::ofn_2_ldtab::constants::*;
 use crate::ofn_2_ldtab::util;
 use serde_json::json;
 use serde_json::Value;
@@ -22,7 +23,7 @@ pub fn translate_inverse_of(v: &Value) -> Value {
     let argument_o: Value = json!({"object" : argument,
                                    "datatype" : String::from(util::translate_datatype(&argument).as_str().unwrap())});
 
-    json!({"<http://www.w3.org/2002/07/owl#inverseOf>" : vec![argument_o]})
+    json!({OWL_INVERSE_OF : vec![argument_o]})
 }
 
 pub fn get_object(v: &Value) -> Value {
