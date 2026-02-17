@@ -4,6 +4,18 @@ use serde_json::json;
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static RE_LANGUAGE_TAG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"@(.*)$").unwrap());
+static RE_DATATYPE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap());
+static RE_LITERAL: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"(.*)$").unwrap());
+static RE_URI: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^<(.+)>$").unwrap());
+static RE_CURIE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^(.+):(.+)$").unwrap());
 
 /// Generates a blank node ID for an LDTab object.
 pub fn generate_blank_node_id(v: &Value) -> String {
@@ -16,16 +28,13 @@ pub fn generate_blank_node_id(v: &Value) -> String {
 }
 
 pub fn translate_literal(s: &str) -> Value {
-    let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
-    let datatype = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
-
-    if language_tag.is_match(s) {
-        match language_tag.captures(s) {
+    if RE_LANGUAGE_TAG.is_match(s) {
+        match RE_LANGUAGE_TAG.captures(s) {
             Some(x) => json!(format!("@{}", &x[2])),
             None => json!("Error"),
         }
-    } else if datatype.is_match(s) {
-        match datatype.captures(s) {
+    } else if RE_DATATYPE.is_match(s) {
+        match RE_DATATYPE.captures(s) {
             Some(x) => json!(format!("{}", &x[2])),
             None => json!("Error"),
         }
@@ -35,15 +44,11 @@ pub fn translate_literal(s: &str) -> Value {
 }
 
 pub fn translate_string(s: &str) -> Value {
-    let literal = Regex::new("^\"(.+)\"(.*)$").unwrap();
-    let uri = Regex::new("^<(.+)>$").unwrap();
-    let curie = Regex::new("^(.+):(.+)$").unwrap();
-
-    if literal.is_match(s) {
+    if RE_LITERAL.is_match(s) {
         translate_literal(s)
-    } else if uri.is_match(s) {
+    } else if RE_URI.is_match(s) {
         json!("_IRI")
-    } else if curie.is_match(s) {
+    } else if RE_CURIE.is_match(s) {
         json!("_IRI")
     } else {
         json!("ERROR")
