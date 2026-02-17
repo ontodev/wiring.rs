@@ -4,12 +4,20 @@ use crate::ofn_2_ldtab::constants::*;
 use crate::ofn_2_ldtab::property_translation;
 use crate::ofn_2_ldtab::rule_translation;
 use crate::ofn_2_ldtab::util;
-use rand::Rng;
 use serde_json::json;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+
+
+/// Splits an annotated axiom into its logical part and translated annotations.
+/// Returns `(owl, annotation)` where `owl` is the axiom with annotations stripped,
+/// and `annotation` is the JSON representation of the annotations.
+fn split_axiom(v: &Value) -> (Value, Value) {
+    let owl = annotation_translation::get_owl(v);
+    let annotations = annotation_translation::get_annotations(v);
+    let annotation = annotation_translation::translate_annotations(&annotations);
+    (owl, annotation)
+}
 
 
 pub fn translate_declaration(v: &Value) -> Value {
@@ -29,10 +37,7 @@ pub fn translate_declaration(v: &Value) -> Value {
 }
 
 pub fn translate_class_declaration(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -54,10 +59,7 @@ pub fn translate_class_declaration(v: &Value) -> Value {
 }
 
 pub fn translate_ontology_import(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     let subject = class_translation::translate(&owl[1]);
     let object = class_translation::translate(&owl[2]);
@@ -92,10 +94,7 @@ pub fn translate_ontology_annotation(v: &Value) -> Value {
 }
 
 pub fn translate_class_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let class = class_translation::translate(&owl[1]);
@@ -115,10 +114,7 @@ pub fn translate_class_assertion_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_object_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
@@ -139,10 +135,7 @@ pub fn translate_object_property_assertion_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
@@ -178,10 +171,7 @@ pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
@@ -225,10 +215,7 @@ fn unquote_once(s: &str) -> &str {
 }
 
 pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
@@ -280,8 +267,7 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_same_individuals_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
 
@@ -289,7 +275,6 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
         //TODO check that class_translation supports individuals
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
@@ -303,7 +288,6 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
         let blank_node = json!({"predicate":OWL_ALL_SAME_AS,
@@ -332,14 +316,12 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_different_individuals_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
@@ -353,7 +335,6 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         //TODO: this object should be reused
         let blank_node = json!({OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],
@@ -382,9 +363,7 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
 
 pub fn translate_object_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -406,9 +385,7 @@ pub fn translate_object_property_declaration(v: &Value) -> Value {
 
 pub fn translate_data_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -430,9 +407,7 @@ pub fn translate_data_property_declaration(v: &Value) -> Value {
 
 pub fn translate_annotation_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -455,9 +430,7 @@ pub fn translate_annotation_property_declaration(v: &Value) -> Value {
 //TODO: test this
 pub fn translate_datatype_definition(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //TODO: check this (should just be a string)
     let lhs = owl[1].clone();
@@ -478,9 +451,7 @@ pub fn translate_datatype_definition(v: &Value) -> Value {
 
 pub fn translate_datatype_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -503,9 +474,7 @@ pub fn translate_datatype_declaration(v: &Value) -> Value {
 
 pub fn translate_individual_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -528,8 +497,7 @@ pub fn translate_individual_declaration(v: &Value) -> Value {
 
 pub fn translate_sub_object_property(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     //SubObjectPropertyOf( ObjectPropertyChain( OPE1 ... OPEn ) OPE )
     //is translated as
@@ -539,7 +507,6 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
     if owl[1].is_array() && owl[1][0].as_str().unwrap().eq("ObjectPropertyChain") {
         let sub = property_translation::translate_list(&(owl[1].as_array().unwrap())[1..]);
         let sup = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         json!({ "assertion":"1",
             "retraction":"0",
@@ -553,7 +520,6 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
     } else {
         let sub = property_translation::translate(&owl[1]);
         let sup = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         json!({ "assertion":"1",
             "retraction":"0",
@@ -568,13 +534,10 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
 }
 
 pub fn translate_sub_data_property(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let sub = property_translation::translate(&owl[1]);
     let sup = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     json!({ "assertion":"1",
         "retraction":"0",
@@ -588,14 +551,10 @@ pub fn translate_sub_data_property(v: &Value) -> Value {
 }
 
 pub fn translate_subclass_of_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
-    //translate OWL classes
     let subclass = class_translation::translate(&owl[1]);
     let superclass = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
     "assertion":"1",
@@ -611,14 +570,10 @@ pub fn translate_subclass_of_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_sub_annotation_property_of_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
-    //translate OWL classes
     let lhs = property_translation::translate(&owl[1]);
     let rhs = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
     "assertion":"1",
@@ -680,12 +635,10 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let lhs = class_translation::translate(&owl[1]);
     let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[2..]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
                         "assertion":"1",
@@ -702,14 +655,12 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
 //TODO:: equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)
 pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
@@ -723,7 +674,6 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let blank_node = json!({"predicate":OWL_EQUIVALENT_CLASS,
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
@@ -750,12 +700,10 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_object_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -769,12 +717,10 @@ pub fn translate_object_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_object_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -788,12 +734,10 @@ pub fn translate_object_property_range_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_annotation_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]); //TODO IRI
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -807,12 +751,10 @@ pub fn translate_annotation_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_annotation_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -827,14 +769,12 @@ pub fn translate_annotation_property_range_axiom(v: &Value) -> Value {
 
 //TODO test n-ary case
 pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = property_translation::translate(&owl[1]);
         let rhs = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
@@ -848,7 +788,6 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
         triple
     } else {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let blank_node = json!({"predicate":OWL_EQUIVALENT_PROPERTY,
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
@@ -875,12 +814,10 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_data_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -894,12 +831,10 @@ pub fn translate_data_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let lhs = property_translation::translate(&owl[1]);
     let rhs = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
     let datatype = util::translate_datatype(&json!(rhs));
 
     let triple = json!({"assertion":"1",
@@ -914,11 +849,9 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_functional_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -932,11 +865,9 @@ pub fn translate_functional_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_inverse_functional_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -950,11 +881,9 @@ pub fn translate_inverse_functional_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_reflexive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -968,11 +897,9 @@ pub fn translate_reflexive_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_irreflexive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -986,11 +913,9 @@ pub fn translate_irreflexive_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_symmetric_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -1004,11 +929,9 @@ pub fn translate_symmetric_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_asymmetric_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -1022,11 +945,9 @@ pub fn translate_asymmetric_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_transitive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -1040,12 +961,10 @@ pub fn translate_transitive_object_property_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_data_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
@@ -1059,14 +978,12 @@ pub fn translate_data_property_range_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = property_translation::translate(&owl[1]);
         let rhs = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
@@ -1080,7 +997,6 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
         triple
     } else {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let blank_node = json!({"predicate":OWL_ALL_DISJOINT_PROPERTIES,
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
@@ -1108,8 +1024,7 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_has_key_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let class = class_translation::translate(&owl[1]);
     let ops = property_translation::translate_list(&owl[2].as_array().unwrap());
@@ -1128,7 +1043,6 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
     }
 
     //let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
 
     let triple = json!({"assertion":"1",
@@ -1144,9 +1058,7 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
 
 pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
     //TODO: check order
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //if annotation_translation::has_annotation(v) {
     //    println!("Input: {:?}",v);
