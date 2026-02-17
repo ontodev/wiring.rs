@@ -6,7 +6,6 @@ use crate::ofn_2_ldtab::rule_translation;
 use crate::ofn_2_ldtab::util;
 use serde_json::json;
 use serde_json::Value;
-use sha2::{Digest, Sha256};
 
 
 /// Splits an annotated axiom into its logical part and translated annotations.
@@ -184,13 +183,7 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
                             OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
                             OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":"_IRI"}]});
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let triple = json!({
     "assertion":"1",
@@ -242,13 +235,7 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
                             OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
                             OWL_TARGET_VALUE:[{"object":literal, "datatype":datatype }]});
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let triple = json!({
     "assertion":"1",
@@ -294,13 +281,7 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
@@ -340,13 +321,7 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
         let blank_node = json!({OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],
                                 RDF_TYPE:[{"datatype":"_IRI","object":OWL_ALL_DIFFERENT}]});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
@@ -614,13 +589,7 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
 
         //"annotation":annotation});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
@@ -679,13 +648,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
@@ -793,13 +756,7 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
@@ -1002,13 +959,7 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                                 "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
                                 "datatype":"_JSONMAP"});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
 
         let triple = json!({"assertion":"1",
@@ -1175,15 +1126,7 @@ pub fn translate_rule(v: &Value) -> Value {
                             SWRL_HEAD:[{"datatype":"_JSONLIST", "object" :head}]});
     //merge_json(&mut blank_node, anno_blan.clone());
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    //println!("blank_node: {}", blank_string);
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let blank_node_type = json!({
     "assertion":"1",

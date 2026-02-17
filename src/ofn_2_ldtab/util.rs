@@ -2,7 +2,18 @@ use crate::ofn_2_ldtab::constants::*;
 use regex::Regex;
 use serde_json::json;
 use serde_json::{Map, Value};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
+
+/// Generates a blank node ID for an LDTab object.
+pub fn generate_blank_node_id(v: &Value) -> String {
+    let sorted = sort_value(v);
+    let s = sorted.to_string();
+    let mut hasher = Sha256::new();
+    hasher.update(s.as_bytes());
+    let hash = hasher.finalize();
+    format!("<ldtab:blanknode:{:x}>", hash)
+}
 
 pub fn translate_literal(s: &str) -> Value {
     let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
