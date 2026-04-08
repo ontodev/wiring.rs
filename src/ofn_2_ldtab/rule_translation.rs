@@ -1,5 +1,5 @@
 use crate::ofn_2_ldtab::class_translation;
-use crate::ofn_2_ldtab::constants::*;
+use crate::constants::*;
 use crate::ofn_2_ldtab::property_translation;
 use crate::ofn_2_ldtab::util;
 use serde_json::json;

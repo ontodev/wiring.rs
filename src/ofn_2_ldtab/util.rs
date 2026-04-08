@@ -1,4 +1,4 @@
-use crate::ofn_2_ldtab::constants::*;
+use crate::constants::*;
 use regex::Regex;
 use serde_json::json;
 use serde_json::{Map, Value};

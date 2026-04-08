@@ -1,5 +1,6 @@
 #![warn(clippy::all, clippy::pedantic)]
 
+pub mod constants;
 pub mod thick_2_ofn;
 pub mod ofn_2_thick;
 pub mod ofn_2_man;

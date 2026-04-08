@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-use crate::ofn_2_ldtab::constants::*;
+use crate::constants::*;
 
 static RE_SIMPLE_STRING: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("^\"(?s)(.*)\"$").unwrap());
