@@ -111,7 +111,7 @@ pub fn translate_literal(s: &str) -> Value {
         return json!({
             "object":   text,
             "meta":     OWL_AXIOM,
-            "datatype": "xsd:string"
+            "datatype": XSD_STRING
         });
     }
 
@@ -120,7 +120,7 @@ pub fn translate_literal(s: &str) -> Value {
     json!({
         "object":   s,
         "meta":     OWL_AXIOM,
-        "datatype": "xsd:string"
+        "datatype": XSD_STRING
     })
 }
 

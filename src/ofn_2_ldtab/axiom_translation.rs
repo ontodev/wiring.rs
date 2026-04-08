@@ -146,7 +146,7 @@ pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
     } else if let Some((literal, language)) = s.split_once('@') {
         json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
     } else {
-        json!({ "object": unquote_once(s), "datatype": XSD_STRING_BARE })
+        json!({ "object": unquote_once(s), "datatype": XSD_STRING })
     }
 } else {
         Value::Null
@@ -221,7 +221,7 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     } else if let Some((literal, language)) = s.split_once('@') {
         json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
     } else {
-        json!({ "object": unquote_once(s), "datatype": XSD_STRING_BARE })
+        json!({ "object": unquote_once(s), "datatype": XSD_STRING })
     }
 } else {
         Value::Null

@@ -21,7 +21,6 @@ pub const XSD_NON_POSITIVE_INTEGER: &str = "<http://www.w3.org/2001/XMLSchema#no
 pub const XSD_POSITIVE_INTEGER: &str = "<http://www.w3.org/2001/XMLSchema#positiveInteger>";
 pub const XSD_SHORT: &str = "<http://www.w3.org/2001/XMLSchema#short>";
 pub const XSD_STRING: &str = "<http://www.w3.org/2001/XMLSchema#string>";
-pub const XSD_STRING_BARE: &str = "http://www.w3.org/2001/XMLSchema#string";
 pub const XSD_UNSIGNED_BYTE: &str = "<http://www.w3.org/2001/XMLSchema#unsignedByte>";
 pub const XSD_UNSIGNED_INT: &str = "<http://www.w3.org/2001/XMLSchema#unsignedInt>";
 pub const XSD_UNSIGNED_LONG: &str = "<http://www.w3.org/2001/XMLSchema#unsignedLong>";
