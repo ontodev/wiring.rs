@@ -28,6 +28,7 @@ pub const XSD_UNSIGNED_LONG: &str = "<http://www.w3.org/2001/XMLSchema#unsignedL
 pub const XSD_UNSIGNED_SHORT: &str = "<http://www.w3.org/2001/XMLSchema#unsignedShort>";
 
 // ── OWL classes / types ──────────────────────────────────────────────────────
+pub const OWL_AXIOM: &str = "<http://www.w3.org/2002/07/owl#Axiom>";
 pub const OWL_ALL_DIFFERENT: &str = "<http://www.w3.org/2002/07/owl#AllDifferent>";
 pub const OWL_ALL_DISJOINT_CLASSES: &str = "<http://www.w3.org/2002/07/owl#AllDisjointClasses>";
 pub const OWL_ALL_DISJOINT_PROPERTIES: &str = "<http://www.w3.org/2002/07/owl#AllDisjointProperties>";

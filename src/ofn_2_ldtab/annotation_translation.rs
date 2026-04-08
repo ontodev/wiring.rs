@@ -4,6 +4,8 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
+use crate::ofn_2_ldtab::constants::*;
+
 static RE_SIMPLE_STRING: LazyLock<Regex> =
     LazyLock::new(|| Regex::new("^\"(?s)(.*)\"$").unwrap());
 static RE_LANG_TAG: LazyLock<Regex> =
@@ -86,7 +88,7 @@ pub fn translate_literal(s: &str) -> Value {
             let text = lexical_form[1..].to_string(); // drop the leading "
             return json!({
                 "object":   text,
-                "meta":     "owl:Axiom",
+                "meta":     OWL_AXIOM,
                 "datatype": datatype
             });
         }
@@ -96,7 +98,7 @@ pub fn translate_literal(s: &str) -> Value {
             let text = lexical_form[1..].to_string(); // drop the leading "
             return json!({
                 "object":   text,
-                "meta":     "owl:Axiom",
+                "meta":     OWL_AXIOM,
                 "datatype": format!("@{}", lang)
             });
         }
@@ -108,7 +110,7 @@ pub fn translate_literal(s: &str) -> Value {
         let text = &s[1..s.len()-1];
         return json!({
             "object":   text,
-            "meta":     "owl:Axiom",
+            "meta":     OWL_AXIOM,
             "datatype": "xsd:string"
         });
     }
@@ -117,7 +119,7 @@ pub fn translate_literal(s: &str) -> Value {
     // TODO: this case should not occur
     json!({
         "object":   s,
-        "meta":     "owl:Axiom",
+        "meta":     OWL_AXIOM,
         "datatype": "xsd:string"
     })
 }
@@ -131,11 +133,11 @@ pub fn translate_value(v: &Value) -> Value {
         translate_literal(s)
     } else if RE_URI.is_match(s) {
         json!({"object" : s,
-               "meta" : "owl:Axiom",
+               "meta" : OWL_AXIOM,
                "datatype" : "_IRI"})
     } else if RE_CURIE.is_match(s) {
         json!({"object" : s,
-               "meta" : "owl:Axiom",
+               "meta" : OWL_AXIOM,
                "datatype" : "_IRI"})
     } else {
         json!("ERROR")
