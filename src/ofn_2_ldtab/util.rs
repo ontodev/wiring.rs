@@ -47,9 +47,9 @@ pub fn translate_string(s: &str) -> Value {
     if RE_LITERAL.is_match(s) {
         translate_literal(s)
     } else if RE_URI.is_match(s) {
-        json!("_IRI")
+        json!(LDTAB_IRI)
     } else if RE_CURIE.is_match(s) {
-        json!("_IRI")
+        json!(LDTAB_IRI)
     } else {
         json!("ERROR")
     }
@@ -58,8 +58,8 @@ pub fn translate_string(s: &str) -> Value {
 pub fn translate_datatype(v: &Value) -> Value {
     match v {
         Value::String(s) => translate_string(&s),
-        Value::Array(_x) => json!("_JSONLIST"),
-        Value::Object(_x) => json!("_JSONMAP"),
+        Value::Array(_x) => json!(LDTAB_JSON_LIST),
+        Value::Object(_x) => json!(LDTAB_JSON_MAP),
         _ => json!("error"),
     }
     //check array & object
@@ -88,7 +88,7 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
 
         if key == "object"
             && v.contains_key("datatype")
-            && v.get("datatype").unwrap() == &json!("_JSONLIST")
+            && v.get("datatype").unwrap() == &json!(LDTAB_JSON_LIST)
         {
             //check if value is none
             match value.as_array() {

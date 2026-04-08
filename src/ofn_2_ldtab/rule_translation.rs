@@ -53,7 +53,7 @@ pub fn translate_same_individual_atom(v: &Value) -> Value {
     let type_o = get_object(&json!(SWRL_SAME_INDIVIDUAL_ATOM));
     let arg1_o = get_object(&v[1]);
     let arg2_o = get_object(&v[2]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_ARGUMENT1 : vec![arg1_o],
                         SWRL_ARGUMENT2 : vec![arg2_o]}})
@@ -63,7 +63,7 @@ pub fn translate_different_individuals_atom(v: &Value) -> Value {
     let type_o = get_object(&json!(SWRL_DIFFERENT_INDIVIDUALS_ATOM));
     let arg1_o = get_object(&v[1]);
     let arg2_o = get_object(&v[2]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_ARGUMENT1 : vec![arg1_o],
                         SWRL_ARGUMENT2 : vec![arg2_o]}})
@@ -73,7 +73,7 @@ pub fn translate_data_range_atom(v: &Value) -> Value {
     let type_o = get_object(&json!(SWRL_DATA_RANGE_ATOM));
     let datarange_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_DATA_RANGE : vec![datarange_o],
                         SWRL_ARGUMENT1 : vec![arg1_o]}})
@@ -84,7 +84,7 @@ pub fn translate_data_property_atom(v: &Value) -> Value {
     let property_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_PROPERTY_PREDICATE : vec![property_o],
                         SWRL_ARGUMENT1 : vec![arg1_o],
@@ -103,7 +103,7 @@ pub fn translate_builtin_atom(v: &Value) -> Value {
         arg_objects.push(get_object(arg));
     }
 
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_BUILTIN : vec![builtin_o],
                         SWRL_ARGUMENTS : arg_objects}})
@@ -113,7 +113,7 @@ pub fn translate_class_atom(v: &Value) -> Value {
     let type_o = get_object(&json!(SWRL_CLASS_ATOM));
     let class_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_CLASS_PREDICATE : vec![class_o],
                         SWRL_ARGUMENT1 : vec![arg1_o]}})
@@ -124,7 +124,7 @@ pub fn translate_object_property_atom(v: &Value) -> Value {
     let property_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
-    json!( {"datatype" : "_JSONMAP",
+    json!( {"datatype" : LDTAB_JSON_MAP,
             "object": {RDF_TYPE : vec![type_o],
                         SWRL_PROPERTY_PREDICATE : vec![property_o],
                         SWRL_ARGUMENT1 : vec![arg1_o],

@@ -1,6 +1,11 @@
 // ── RDF ──────────────────────────────────────────────────────────────────────
 pub const RDF_TYPE: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 
+// ── LDTab datatype markers ───────────────────────────────────────────────────
+pub const LDTAB_IRI: &str = "_IRI";
+pub const LDTAB_JSON_LIST: &str = "_JSONLIST";
+pub const LDTAB_JSON_MAP: &str = "_JSONMAP";
+
 // ── RDFS ─────────────────────────────────────────────────────────────────────
 pub const RDFS_DATATYPE: &str = "<http://www.w3.org/2000/01/rdf-schema#Datatype>";
 pub const RDFS_DOMAIN: &str = "<http://www.w3.org/2000/01/rdf-schema#domain>";

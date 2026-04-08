@@ -51,7 +51,7 @@ pub fn translate_class_declaration(v: &Value) -> Value {
     "subject":class,
     "predicate":RDF_TYPE,
     "object":OWL_CLASS,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -69,7 +69,7 @@ pub fn translate_ontology_import(v: &Value) -> Value {
         "subject": subject,
         "predicate":OWL_IMPORTS,
         "object": object,
-        "datatype":"_IRI",
+        "datatype":LDTAB_IRI,
         "annotation":annotation
     })
 }
@@ -106,7 +106,7 @@ pub fn translate_class_assertion_axiom(v: &Value) -> Value {
     "subject":individual,
     "predicate":RDF_TYPE,
     "object":class,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -127,7 +127,7 @@ pub fn translate_object_property_assertion_axiom(v: &Value) -> Value {
     "subject":from,
     "predicate":property,
     "object":to,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -178,10 +178,10 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     let to = class_translation::translate(&owl[3]);
 
     //TODO reuse blank node object
-    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : "_IRI"}],
-                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":"_IRI"}],
-                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
-                            OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":"_IRI"}]});
+    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+                            OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":LDTAB_IRI}]});
 
     let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -191,11 +191,11 @@ pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":blank_node_id,
     "predicate":OWL_NEGATIVE_PROPERTY_ASSERTION,
-    "object": {RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : "_IRI"}],
-               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":"_IRI"}],
-               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
-               OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":"_IRI"}]},
-    "datatype":"_JSONMAP",
+    "object": {RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+               OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":LDTAB_IRI}]},
+    "datatype":LDTAB_JSON_MAP,
     "annotation":annotation
     });
     triple
@@ -230,9 +230,9 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     let literal = to.get("object").unwrap().as_str().unwrap();
     let datatype = to.get("datatype").unwrap().as_str().unwrap();
 
-    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : "_IRI"}],
-                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":"_IRI"}],
-                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
+    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
                             OWL_TARGET_VALUE:[{"object":literal, "datatype":datatype }]});
 
     let blank_node_id = util::generate_blank_node_id(&blank_node);
@@ -243,11 +243,11 @@ pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":blank_node_id,
     "predicate":OWL_NEGATIVE_PROPERTY_ASSERTION,
-    "object":{ RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : "_IRI"}],
-               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":"_IRI"}],
-               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":"_IRI"}],
+    "object":{ RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
                OWL_TARGET_VALUE:[{"object":literal, "datatype":datatype }]},
-    "datatype":"_JSONMAP",
+    "datatype":LDTAB_JSON_MAP,
     "annotation":annotation
     });
     triple
@@ -278,8 +278,8 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
 
         //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
         let blank_node = json!({"predicate":OWL_ALL_SAME_AS,
-                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
         let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -289,8 +289,8 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
                             "subject":blank_node_id,
                             //"predicate":OWL_SAME_AS, 
                             "predicate":OWL_ALL_SAME_AS, //this is LDtab specific
-                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -318,8 +318,8 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
 
         //TODO: this object should be reused
-        let blank_node = json!({OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],
-                                RDF_TYPE:[{"datatype":"_IRI","object":OWL_ALL_DIFFERENT}]});
+        let blank_node = json!({OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],
+                                RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DIFFERENT}]});
 
         let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -328,9 +328,9 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
                             "predicate":OWL_ALL_DIFFERENT, 
-                            "object": {OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],
-                                       RDF_TYPE:[{"datatype":"_IRI","object":OWL_ALL_DIFFERENT}]},
-                            "datatype":"_JSONMAP",
+                            "object": {OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],
+                                       RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DIFFERENT}]},
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -352,7 +352,7 @@ pub fn translate_object_property_declaration(v: &Value) -> Value {
     "subject":property,
     "predicate":RDF_TYPE,
     "object":OWL_OBJECT_PROPERTY,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -374,7 +374,7 @@ pub fn translate_data_property_declaration(v: &Value) -> Value {
     "subject":property,
     "predicate":RDF_TYPE,
     "object":OWL_DATATYPE_PROPERTY,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -396,7 +396,7 @@ pub fn translate_annotation_property_declaration(v: &Value) -> Value {
     "subject":property,
     "predicate":RDF_TYPE,
     "object":OWL_ANNOTATION_PROPERTY,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -418,7 +418,7 @@ pub fn translate_datatype_definition(v: &Value) -> Value {
     "subject":lhs,
     "predicate":OWL_EQUIVALENT_CLASS,
     "object":rhs,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -441,7 +441,7 @@ pub fn translate_datatype_declaration(v: &Value) -> Value {
     "subject":datatype,
     "predicate":RDF_TYPE,
     "object":RDFS_DATATYPE,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -464,7 +464,7 @@ pub fn translate_individual_declaration(v: &Value) -> Value {
     "subject":individual,
     "predicate":RDF_TYPE,
     "object":OWL_NAMED_INDIVIDUAL,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -489,7 +489,7 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
             "subject":sup,
             "predicate":OWL_PROPERTY_CHAIN_AXIOM,
             "object":sub,
-            "datatype":"_JSONLIST",
+            "datatype":LDTAB_JSON_LIST,
             "annotation":annotation
         })
     } else {
@@ -585,7 +585,7 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],RDF_TYPE:[{"datatype":"_IRI","object":OWL_ALL_DISJOINT_CLASSES}]});
+        let blank_node = json!({OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DISJOINT_CLASSES}]});
 
         //"annotation":annotation});
 
@@ -596,8 +596,8 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
                             "graph":"graph",
                             "subject":blank_node_id,
                             "predicate":OWL_ALL_DISJOINT_CLASSES,
-                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}],RDF_TYPE:[{"datatype":"_IRI","object":OWL_ALL_DISJOINT_CLASSES}]},
-                            "datatype": "_JSONMAP", 
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DISJOINT_CLASSES}]},
+                            "datatype": LDTAB_JSON_MAP, 
                             "annotation":annotation});
         triple
     }
@@ -616,7 +616,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
                         "subject":lhs,
                         "predicate":OWL_DISJOINT_UNION_OF,
                         "object":operands,
-                        "datatype": "_JSONLIST", 
+                        "datatype": LDTAB_JSON_LIST, 
                         "annotation":annotation});
     triple
 }
@@ -645,8 +645,8 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
 
         let blank_node = json!({"predicate":OWL_EQUIVALENT_CLASS,
-                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
         let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -655,8 +655,8 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
                             "predicate":OWL_EQUIVALENT_CLASS,
-                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
-                            "datatype":"_JSONMAP",
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype 
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -753,8 +753,8 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
 
         let blank_node = json!({"predicate":OWL_EQUIVALENT_PROPERTY,
-                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
         let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -763,8 +763,8 @@ pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
                             "predicate":OWL_EQUIVALENT_PROPERTY, //TODO AllEquivalentProperties?
-                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -956,8 +956,8 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
 
         let blank_node = json!({"predicate":OWL_ALL_DISJOINT_PROPERTIES,
-                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
         let blank_node_id = util::generate_blank_node_id(&blank_node);
 
@@ -967,8 +967,8 @@ pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
                             "predicate":OWL_ALL_DISJOINT_PROPERTIES, 
-                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -1002,7 +1002,7 @@ pub fn translate_has_key_axiom(v: &Value) -> Value {
                         "subject":class,
                         "predicate":OWL_HAS_KEY,
                         "object": operands,
-                        "datatype": "_JSONLIST", 
+                        "datatype": LDTAB_JSON_LIST, 
                         "annotation":annotation});
     triple
 }
@@ -1047,7 +1047,7 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
         "subject":from,
         "predicate":property,
         "object":to,
-        "datatype":"_IRI",
+        "datatype":LDTAB_IRI,
         "annotation":annotation
         });
         triple
@@ -1121,9 +1121,9 @@ pub fn translate_rule(v: &Value) -> Value {
         map.remove("meta");
     }
 
-    let mut blank_node = json!({RDF_TYPE:[{"datatype":"_IRI", "object" :SWRL_IMP}],
-                            SWRL_BODY:[{"datatype":"_JSONLIST", "object" : body}],
-                            SWRL_HEAD:[{"datatype":"_JSONLIST", "object" :head}]});
+    let mut blank_node = json!({RDF_TYPE:[{"datatype":LDTAB_IRI, "object" :SWRL_IMP}],
+                            SWRL_BODY:[{"datatype":LDTAB_JSON_LIST, "object" : body}],
+                            SWRL_HEAD:[{"datatype":LDTAB_JSON_LIST, "object" :head}]});
     //merge_json(&mut blank_node, anno_blan.clone());
 
     let blank_node_id = util::generate_blank_node_id(&blank_node);
@@ -1135,7 +1135,7 @@ pub fn translate_rule(v: &Value) -> Value {
     "subject": blank_node_id,
     "predicate":RDF_TYPE,
     "object":SWRL_IMP,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation": Value::Null
     });
 
@@ -1146,7 +1146,7 @@ pub fn translate_rule(v: &Value) -> Value {
     "subject": blank_node_id,
     "predicate":SWRL_BODY,
     "object":body,
-    "datatype":"_JSONLIST",
+    "datatype":LDTAB_JSON_LIST,
     "annotation": Value::Null
     });
 
@@ -1157,7 +1157,7 @@ pub fn translate_rule(v: &Value) -> Value {
     "subject":blank_node_id,
     "predicate":SWRL_HEAD,
     "object":head,
-    "datatype":"_JSONLIST",
+    "datatype":LDTAB_JSON_LIST,
     "annotation": Value::Null
     });
 
@@ -1200,7 +1200,7 @@ pub fn translate_ontology(v: &Value) -> Value {
     "subject":iri,
     "predicate":OWL_VERSION_IRI,
     "object":viri,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation": Value::Null
     });
     triple
@@ -1216,7 +1216,7 @@ pub fn translate_doc_iri(v: &Value) -> Value {
     "subject":"ontology",//TODO
     "predicate":OWL_VERSION_IRI,
     "object":iri,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":""
     });
     triple

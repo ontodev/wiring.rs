@@ -134,11 +134,11 @@ pub fn translate_value(v: &Value) -> Value {
     } else if RE_URI.is_match(s) {
         json!({"object" : s,
                "meta" : OWL_AXIOM,
-               "datatype" : "_IRI"})
+               "datatype" : LDTAB_IRI})
     } else if RE_CURIE.is_match(s) {
         json!({"object" : s,
                "meta" : OWL_AXIOM,
-               "datatype" : "_IRI"})
+               "datatype" : LDTAB_IRI})
     } else {
         json!("ERROR")
     }

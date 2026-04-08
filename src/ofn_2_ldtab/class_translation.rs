@@ -415,7 +415,7 @@ pub fn translate_intersection_of(v: &Value) -> Value {
     let operands: Value = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o: Value = json!({"object" : operands,
-                                   "datatype" : "_JSONLIST"});
+                                   "datatype" : LDTAB_JSON_LIST});
 
     let type_o: Value = get_object(&json!(OWL_CLASS));
 
@@ -428,7 +428,7 @@ pub fn translate_union_of(v: &Value) -> Value {
 
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
-                                    "datatype" : "_JSONLIST"});
+                                    "datatype" : LDTAB_JSON_LIST});
     let type_o: Value = get_object(&json!(OWL_CLASS));
 
     json!({RDF_TYPE : vec![type_o],
@@ -440,7 +440,7 @@ pub fn translate_one_of(v: &Value) -> Value {
 
     //let operands_o : Value = get_object(operands);
     let operands_o: Value = json!({"object" : operands,
-                                    "datatype" : "_JSONLIST"});
+                                    "datatype" : LDTAB_JSON_LIST});
     let type_o: Value = get_object(&json!(OWL_CLASS));
 
     json!({RDF_TYPE : vec![type_o],
