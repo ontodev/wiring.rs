@@ -84,7 +84,7 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
 
     //sort nested values
     for (key, value) in v.iter() {
-        let mut sorted_value = Value::Null;
+        let sorted_value;
 
         if key == "object"
             && v.contains_key("datatype")
@@ -92,7 +92,7 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
         {
             //check if value is none
             match value.as_array() {
-                Some(val) => {}
+                Some(_val) => {}
                 None => {
                     println!("NOT AN ARRAY {:?}", value);
                 }

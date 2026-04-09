@@ -1054,12 +1054,12 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
     }
 }
 
-fn merge_json(a: &mut Value, b: Value) {
+fn _merge_json(a: &mut Value, b: Value) {
     match (a, b) {
         (Value::Object(a_map), Value::Object(b_map)) => {
             for (k, v) in b_map {
                 // Merge if key exists, otherwise insert
-                merge_json(a_map.entry(k).or_insert(Value::Null), v);
+                _merge_json(a_map.entry(k).or_insert(Value::Null), v);
             }
         }
         (a, b) => {
@@ -1076,7 +1076,7 @@ fn remove_meta(value: &mut Value) {
         Value::Object(map) => {
             // First, remove all "meta" keys that have the value "owl:Axiom"
             let mut keys_to_remove = Vec::new();
-            for (k, v) in map.iter() {
+            for (k, _v) in map.iter() {
                 if k == "meta" {
                     keys_to_remove.push(k.clone());
                 }
@@ -1121,7 +1121,7 @@ pub fn translate_rule(v: &Value) -> Value {
         map.remove("meta");
     }
 
-    let mut blank_node = json!({RDF_TYPE:[{"datatype":LDTAB_IRI, "object" :SWRL_IMP}],
+    let blank_node = json!({RDF_TYPE:[{"datatype":LDTAB_IRI, "object" :SWRL_IMP}],
                             SWRL_BODY:[{"datatype":LDTAB_JSON_LIST, "object" : body}],
                             SWRL_HEAD:[{"datatype":LDTAB_JSON_LIST, "object" :head}]});
     //merge_json(&mut blank_node, anno_blan.clone());

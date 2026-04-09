@@ -1,9 +1,7 @@
-use crate::ofn_2_ldtab::class_translation;
 use crate::constants::*;
-use crate::ofn_2_ldtab::property_translation;
 use crate::ofn_2_ldtab::util;
 use serde_json::json;
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 pub fn translate(v: &Value) -> Value {
     match v[0].as_str() {
