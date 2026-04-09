@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ofn_2_thick::class_translation;
 use crate::owl::thick_triple as owl;
 use rand::Rng;
@@ -11,7 +12,7 @@ pub fn translate_subclass_of_axiom(v: &Value) -> Value {
     let superclass = class_translation::translate(&v[2]);
 
     let triple = json!({"subject":subclass,
-                     "predicate":"<http://www.w3.org/2000/01/rdf-schema#subClassOf>", 
+                     "predicate":RDFS_SUB_CLASS_OF, 
                      "object":superclass});
     triple
 }
@@ -25,8 +26,8 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
     let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]);
 
     let triple = json!({"subject":blank_node,
-                        "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>",
-                        "object": {"<http://www.w3.org/2002/07/owl#members>":operands}});
+                        "predicate":OWL_ALL_DISJOINT_CLASSES,
+                        "object": {OWL_MEMBERS:operands}});
     triple
 }
 
@@ -35,7 +36,7 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
     let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[2..]);
 
     let triple = json!({"subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#disjointUnionOf>",
+                        "predicate":OWL_DISJOINT_UNION_OF,
                         "object":operands});
     triple
 }
@@ -49,7 +50,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
         let rhs = class_translation::translate(&v[2]);
 
         let triple = json!({"subject":lhs,
-                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+                            "predicate":OWL_EQUIVALENT_CLASS,
                             "object":rhs});
         triple
     } else {
@@ -59,7 +60,7 @@ pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
 
         let operands: owl::OWL = class_translation::translate_list(&(v.as_array().unwrap())[1..]);
         let triple = json!({"subject":blank_node,
-                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+                            "predicate":OWL_EQUIVALENT_CLASS,
                             "object":operands});
         triple
     }

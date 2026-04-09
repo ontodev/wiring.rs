@@ -1,4 +1,5 @@
 use serde_json::{Value, Result as SResult};
+use crate::constants::*;
 use crate::owl::thick_triple as tt;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
@@ -99,7 +100,7 @@ fn is_thick_triple(v: &Value) -> bool {
     if nesting  {
         true
     } else {
-        v["predicate"].as_str().unwrap().eq("<http://www.w3.org/2000/01/rdf-schema#subClassOf>")
+        v["predicate"].as_str().unwrap().eq(RDFS_SUB_CLASS_OF)
     } 
 }
 
@@ -130,11 +131,11 @@ fn is_class_expression_axiom(v: &Value) -> bool {
     let predicate = v["predicate"].as_str();
 
      match predicate {
-         Some("<http://www.w3.org/2000/01/rdf-schema#subClassOf>")  => true,
-         Some("<http://www.w3.org/2002/07/owl#equivalentClass>")  => true,
-         Some("<http://www.w3.org/2002/07/owl#disjointWith>")  => true,
-         Some("<http://www.w3.org/2002/07/owl#AllDisjointClasses>")  => true,
-         Some("<http://www.w3.org/2002/07/owl#disjointUnionOf>")  => true,
+         Some(x) if x == RDFS_SUB_CLASS_OF  => true,
+         Some(x) if x == OWL_EQUIVALENT_CLASS  => true,
+         Some(x) if x == OWL_DISJOINT_WITH  => true,
+         Some(x) if x == OWL_ALL_DISJOINT_CLASSES  => true,
+         Some(x) if x == OWL_DISJOINT_UNION_OF  => true,
          Some(_) => false,
          None => false,
      } 

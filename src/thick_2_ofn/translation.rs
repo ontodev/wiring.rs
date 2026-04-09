@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::thick_2_ofn::axiom_translation;
 use serde_json::Value;
 
@@ -29,15 +30,15 @@ pub fn thick_2_ofn(thick_triple: &Value) -> Value {
     let predicate = thick_triple["predicate"].as_str();
 
     match predicate {
-        Some("<http://www.w3.org/2000/01/rdf-schema#subClassOf>") => axiom_translation::translate_subclass_of_axiom(subj, obj),
-        Some("<http://www.w3.org/2002/07/owl#equivalentClass>") => axiom_translation::translate_equivalent_class(subj, obj),
-        Some("<http://www.w3.org/2002/07/owl#AllDisjointClasses>") => {
-            let members_helper: String = thick_triple["object"]["<http://www.w3.org/2002/07/owl#members>"].to_string();
+        Some(x) if x == RDFS_SUB_CLASS_OF => axiom_translation::translate_subclass_of_axiom(subj, obj),
+        Some(x) if x == OWL_EQUIVALENT_CLASS => axiom_translation::translate_equivalent_class(subj, obj),
+        Some(x) if x == OWL_ALL_DISJOINT_CLASSES => {
+            let members_helper: String = thick_triple["object"][OWL_MEMBERS].to_string();
             let members: &str = members_helper.as_str();
             axiom_translation::translate_disjoint_classes(members)
         }
-        Some("<http://www.w3.org/2002/07/owl#disjointUnionOf>") => axiom_translation::translate_disjoint_union(subj, obj),
-        Some("<http://www.w3.org/2002/07/owl#disjointWith>") => axiom_translation::translate_disjoint_with(subj, obj),
+        Some(x) if x == OWL_DISJOINT_UNION_OF => axiom_translation::translate_disjoint_union(subj, obj),
+        Some(x) if x == OWL_DISJOINT_WITH => axiom_translation::translate_disjoint_with(subj, obj),
         Some(_) => axiom_translation::translate_thin_triple(&thick_triple),
         None => Value::String(String::from("Fail")),
     }

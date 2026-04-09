@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ofn_2_thick::property_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::Value;
@@ -57,7 +58,7 @@ pub fn translate_some_values_from(v: &Value) -> owl::OWL {
     //build objects
     let property_o: owl::Object = get_object(property);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     //build struct
     let res: owl::SomeValuesFrom = owl::SomeValuesFrom {
@@ -75,7 +76,7 @@ pub fn translate_all_values_from(v: &Value) -> owl::OWL {
 
     let property_o: owl::Object = get_object(property);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::AllValuesFrom = owl::AllValuesFrom {
         rdf_type: Some(vec![type_o]),
@@ -91,7 +92,7 @@ pub fn translate_has_value(v: &Value) -> owl::OWL {
 
     let property_o: owl::Object = get_object(property);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::HasValue = owl::HasValue {
         rdf_type: Some(vec![type_o]),
@@ -105,8 +106,8 @@ pub fn translate_has_self(v: &Value) -> owl::OWL {
     let property: owl::OWL = translate(&v[1]);
 
     let property_o: owl::Object = get_object(property);
-    let has_self_o: owl::Object = get_object(owl::OWL::Named("true^^xsd:boolean".to_string()));
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let has_self_o: owl::Object = get_object(owl::OWL::Named(format!("true^^{XSD_BOOLEAN}")));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::HasSelf = owl::HasSelf {
         rdf_type: Some(vec![type_o]),
@@ -122,7 +123,7 @@ pub fn translate_min_cardinality(v: &Value) -> owl::OWL {
 
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::MinCardinality = owl::MinCardinality {
         rdf_type: Some(vec![type_o]),
@@ -140,7 +141,7 @@ pub fn translate_min_qualified_cardinality(v: &Value) -> owl::OWL {
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::MinObjectQualifiedCardinality = owl::MinObjectQualifiedCardinality {
         rdf_type: Some(vec![type_o]),
@@ -157,7 +158,7 @@ pub fn translate_max_cardinality(v: &Value) -> owl::OWL {
 
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::MaxCardinality = owl::MaxCardinality {
         rdf_type: Some(vec![type_o]),
@@ -175,7 +176,7 @@ pub fn translate_max_qualified_cardinality(v: &Value) -> owl::OWL {
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::MaxObjectQualifiedCardinality = owl::MaxObjectQualifiedCardinality {
         rdf_type: Some(vec![type_o]),
@@ -192,7 +193,7 @@ pub fn translate_exact_cardinality(v: &Value) -> owl::OWL {
 
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::ExactCardinality = owl::ExactCardinality {
         rdf_type: Some(vec![type_o]),
@@ -210,7 +211,7 @@ pub fn translate_exact_qualified_cardinality(v: &Value) -> owl::OWL {
     let property_o: owl::Object = get_object(property);
     let cardinality_o: owl::Object = get_object(cardinliaty);
     let filler_o: owl::Object = get_object(filler);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Restriction>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_RESTRICTION.to_string()));
 
     let res: owl::ExactObjectQualifiedCardinality = owl::ExactObjectQualifiedCardinality {
         rdf_type: Some(vec![type_o]),
@@ -225,7 +226,7 @@ pub fn translate_list(v: &[Value]) -> owl::OWL {
     //TODO: refactor common parts
     if v.len() == 1 {
         let first: owl::OWL = translate(&v[0]);
-        let rest = owl::OWL::Named("<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>".to_string());
+        let rest = owl::OWL::Named(RDF_NIL.to_string());
 
         let first_o: owl::Object = get_object(first);
         let rest_o: owl::Object = get_object(rest);
@@ -254,7 +255,7 @@ pub fn translate_intersection_of(v: &Value) -> owl::OWL {
     let operands: owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o: owl::Object = get_object(operands);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Class>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_CLASS.to_string()));
 
     let res: owl::IntersectionOf = owl::IntersectionOf {
         rdf_type: Some(vec![type_o]),
@@ -267,7 +268,7 @@ pub fn translate_union_of(v: &Value) -> owl::OWL {
     let operands: owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o: owl::Object = get_object(operands);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Class>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_CLASS.to_string()));
 
     let res: owl::UnionOf = owl::UnionOf {
         rdf_type: Some(vec![type_o]),
@@ -280,7 +281,7 @@ pub fn translate_one_of(v: &Value) -> owl::OWL {
     let operands: owl::OWL = translate_list(&(v.as_array().unwrap())[1..]);
 
     let operands_o: owl::Object = get_object(operands);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Class>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_CLASS.to_string()));
 
     let res: owl::OneOf = owl::OneOf {
         rdf_type: Some(vec![type_o]),
@@ -293,7 +294,7 @@ pub fn translate_complement_of(v: &Value) -> owl::OWL {
     let argument: owl::OWL = translate(&v[1]);
 
     let argument_o: owl::Object = get_object(argument);
-    let type_o: owl::Object = get_object(owl::OWL::Named("<http://www.w3.org/2002/07/owl#Class>".to_string()));
+    let type_o: owl::Object = get_object(owl::OWL::Named(OWL_CLASS.to_string()));
 
     let res: owl::ComplementOf = owl::ComplementOf {
         rdf_type: Some(vec![type_o]),

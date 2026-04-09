@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ldtab_2_ofn::property_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::Value;
@@ -549,7 +550,7 @@ pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value {
     };
 
     let operator = match rdf_type.as_str() {
-        "<http://www.w3.org/2002/07/owl#AllDifferent>" => Value::String(String::from("DifferentIndividuals")),
+        OWL_ALL_DIFFERENT => Value::String(String::from("DifferentIndividuals")),
         _ => Value::String(String::from("Error")),
     };
 
@@ -586,7 +587,7 @@ pub fn translate_list(exp: &owl::RDFList) -> Value {
     let mut rest = translate(&exp.rdf_rest[0].object);
 
     //base case for RDF lists
-    if rest.is_string() && rest.as_str().unwrap() == "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>" {
+    if rest.is_string() && rest.as_str().unwrap() == RDF_NIL {
         let mut v = Vec::new();
         v.push(first);
         Value::Array(v)
@@ -624,7 +625,7 @@ pub fn check_class_type(v: &Option<Vec<owl::Object>>) -> bool {
                 match &t.object {
                     //look for an owl:Class
                     owl::OWL::Named(s) => {
-                        if s == "<http://www.w3.org/2002/07/owl#Class>" {
+                        if s == OWL_CLASS {
                             res = true
                         }
                     }
@@ -649,7 +650,7 @@ pub fn check_data_range_type(v: &Option<Vec<owl::Object>>) -> bool {
                 //check all types
                 match &t.object {
                     owl::OWL::Named(s) => {
-                        if s == "<http://www.w3.org/2000/01/rdf-schema#Datatype>" {
+                        if s == RDFS_DATATYPE {
                             res = true
                         }
                     }

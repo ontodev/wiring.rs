@@ -3,6 +3,7 @@ use std::io::{prelude::*, BufReader};
 use serde_json::{Value};
 use std::collections::HashMap;
 use std::collections::HashSet;
+use crate::constants::*;
 
 //returns a map from entity names to their types
 //TODO: think about whether you want this mapping to work on Values too
@@ -31,7 +32,7 @@ fn is_typing_triple(t: &str) -> bool {
     //let predicate : String = thick_triple["predicate"].to_string(); 
     //predicate == "\"rdf:type\"" 
     let predicate : &str = thick_triple["predicate"].as_str().unwrap();
-    predicate.eq("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>")
+    predicate.eq(RDF_TYPE)
 }
 
 fn get_type_mapping(t: &str) -> (String, String) {

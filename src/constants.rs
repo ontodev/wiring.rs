@@ -1,19 +1,24 @@
-// ── RDF ──────────────────────────────────────────────────────────────────────
+// -- RDF ----------------------------------------------------------------------
+pub const RDF_FIRST: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>";
+pub const RDF_LIST: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#List>";
+pub const RDF_NIL: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>";
+pub const RDF_REST: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
 pub const RDF_TYPE: &str = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 
-// ── LDTab datatype markers ───────────────────────────────────────────────────
+// -- LDTab datatype markers ---------------------------------------------------
 pub const LDTAB_IRI: &str = "_IRI";
 pub const LDTAB_JSON_LIST: &str = "_JSONLIST";
 pub const LDTAB_JSON_MAP: &str = "_JSONMAP";
 
-// ── RDFS ─────────────────────────────────────────────────────────────────────
+// -- RDFS ---------------------------------------------------------------------
 pub const RDFS_DATATYPE: &str = "<http://www.w3.org/2000/01/rdf-schema#Datatype>";
 pub const RDFS_DOMAIN: &str = "<http://www.w3.org/2000/01/rdf-schema#domain>";
+pub const RDFS_LABEL: &str = "<http://www.w3.org/2000/01/rdf-schema#label>";
 pub const RDFS_RANGE: &str = "<http://www.w3.org/2000/01/rdf-schema#range>";
 pub const RDFS_SUB_CLASS_OF: &str = "<http://www.w3.org/2000/01/rdf-schema#subClassOf>";
 pub const RDFS_SUB_PROPERTY_OF: &str = "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>";
 
-// ── XSD ──────────────────────────────────────────────────────────────────────
+// -- XSD ----------------------------------------------------------------------
 pub const XSD_BOOLEAN: &str = "<http://www.w3.org/2001/XMLSchema#boolean>";
 pub const XSD_BYTE: &str = "<http://www.w3.org/2001/XMLSchema#byte>";
 pub const XSD_DECIMAL: &str = "<http://www.w3.org/2001/XMLSchema#decimal>";
@@ -31,7 +36,7 @@ pub const XSD_UNSIGNED_INT: &str = "<http://www.w3.org/2001/XMLSchema#unsignedIn
 pub const XSD_UNSIGNED_LONG: &str = "<http://www.w3.org/2001/XMLSchema#unsignedLong>";
 pub const XSD_UNSIGNED_SHORT: &str = "<http://www.w3.org/2001/XMLSchema#unsignedShort>";
 
-// ── OWL classes / types ──────────────────────────────────────────────────────
+// -- OWL classes / types ------------------------------------------------------
 pub const OWL_AXIOM: &str = "<http://www.w3.org/2002/07/owl#Axiom>";
 pub const OWL_ALL_DIFFERENT: &str = "<http://www.w3.org/2002/07/owl#AllDifferent>";
 pub const OWL_ALL_DISJOINT_CLASSES: &str = "<http://www.w3.org/2002/07/owl#AllDisjointClasses>";
@@ -47,6 +52,7 @@ pub const OWL_IRREFLEXIVE_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#Irref
 pub const OWL_NAMED_INDIVIDUAL: &str = "<http://www.w3.org/2002/07/owl#NamedIndividual>";
 pub const OWL_NEGATIVE_PROPERTY_ASSERTION: &str = "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>";
 pub const OWL_OBJECT_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#ObjectProperty>";
+pub const OWL_ONTOLOGY: &str = "<http://www.w3.org/2002/07/owl#Ontology>";
 pub const OWL_REAL: &str = "<http://www.w3.org/2002/07/owl#real>";
 pub const OWL_RATIONAL: &str = "<http://www.w3.org/2002/07/owl#rational>";
 pub const OWL_REFLECTIVE_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#ReflexiveProperty>";
@@ -54,7 +60,7 @@ pub const OWL_RESTRICTION: &str = "<http://www.w3.org/2002/07/owl#Restriction>";
 pub const OWL_SYMMETRIC_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#SymmetricProperty>";
 pub const OWL_TRANSITIVE_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#TransitiveProperty>";
 
-// ── OWL properties ───────────────────────────────────────────────────────────
+// -- OWL properties -----------------------------------------------------------
 pub const OWL_ALL_VALUES_FROM: &str = "<http://www.w3.org/2002/07/owl#allValuesFrom>";
 pub const OWL_ASSERTION_PROPERTY: &str = "<http://www.w3.org/2002/07/owl#assertionProperty>";
 pub const OWL_CARDINALITY: &str = "<http://www.w3.org/2002/07/owl#cardinality>";
@@ -91,7 +97,7 @@ pub const OWL_TARGET_VALUE: &str = "<http://www.w3.org/2002/07/owl#targetValue>"
 pub const OWL_UNION_OF: &str = "<http://www.w3.org/2002/07/owl#unionOf>";
 pub const OWL_VERSION_IRI: &str = "<http://www.w3.org/2002/07/owl#versionIRI>";
 
-// ── SWRL ─────────────────────────────────────────────────────────────────────
+// -- SWRL ---------------------------------------------------------------------
 pub const SWRL_ARGUMENT1: &str = "<http://www.w3.org/2003/11/swrl#argument1>";
 pub const SWRL_ARGUMENT2: &str = "<http://www.w3.org/2003/11/swrl#argument2>";
 pub const SWRL_ARGUMENTS: &str = "<http://www.w3.org/2003/11/swrl#arguments>";

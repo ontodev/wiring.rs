@@ -1,4 +1,5 @@
 use serde_json::{Value};
+use crate::constants::*;
 use crate::ofn_typing::property_translation as property_translation;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -71,7 +72,7 @@ pub fn is_named_individual(v :&Value, m : &HashMap<String, HashSet<String>>) -> 
     let s = v.as_str().unwrap();
 
     match m.get(s) {
-        Some(set) => set.contains("owl:NamedIndividual"),
+        Some(set) => set.contains(OWL_NAMED_INDIVIDUAL),
         _ => false,
     }
 
@@ -140,7 +141,7 @@ pub fn is_class_expression(v : &Value, m : &HashMap<String, HashSet<String>>) ->
 pub fn type_look_up(s : &str, m: &HashMap<String, HashSet<String>>) -> bool { 
 
     match m.get(s) {
-        Some(set) => set.contains("<http://www.w3.org/2002/07/owl#Class>"),
+        Some(set) => set.contains(OWL_CLASS),
         _ => false,
     }
 }
@@ -163,21 +164,21 @@ pub fn translate_rdf_type(v : &Value, m : &HashMap<String, HashSet<String>>) -> 
 
     match v[3].as_str() {
         //declarations
-        Some("<http://www.w3.org/2002/07/owl#Class>") => translate_declaration(v,m),
-        Some("<http://www.w3.org/2000/01/rdf-schema#Datatype>") => translate_declaration(v,m), 
-        Some("owl:ObjectProperty") => translate_declaration(v,m),
-        Some("owl:DatatypeProperty") => translate_declaration(v,m), 
-        Some("owl:AnnotationProperty") => translate_declaration(v,m),
-        Some("owl:NamedIndividual") => translate_declaration(v,m),
+        Some(x) if x == OWL_CLASS => translate_declaration(v,m),
+        Some(x) if x == RDFS_DATATYPE => translate_declaration(v,m), 
+        Some(x) if x == OWL_OBJECT_PROPERTY => translate_declaration(v,m),
+        Some(x) if x == OWL_DATATYPE_PROPERTY => translate_declaration(v,m), 
+        Some(x) if x == OWL_ANNOTATION_PROPERTY => translate_declaration(v,m),
+        Some(x) if x == OWL_NAMED_INDIVIDUAL => translate_declaration(v,m),
 
         //property axioms
-        Some("owl:FunctionalProperty") => translate_functional_property(v,m),
-        Some("owl:InverseFunctionalProperty") => translate_inverse_functional_property(v,m),
-        Some("owl:ReflexiveProperty") => translate_reflexive_property(v,m),
-        Some("owl:IrreflexiveProperty") => translate_irreflexive_property(v,m),
-        Some("owl:SymmetricProperty") => translate_symmetric_property(v,m),
-        Some("owl:AsymmetricProperty") => translate_asymmetric_property(v,m),
-        Some("owl:TransitiveProperty") => translate_transitive_property(v,m),
+        Some(x) if x == OWL_FUNCTIONAL_PROPERTY => translate_functional_property(v,m),
+        Some(x) if x == OWL_INVERSE_FUNCTIONAL_PROPERTY => translate_inverse_functional_property(v,m),
+        Some(x) if x == OWL_REFLECTIVE_PROPERTY => translate_reflexive_property(v,m),
+        Some(x) if x == OWL_IRREFLEXIVE_PROPERTY => translate_irreflexive_property(v,m),
+        Some(x) if x == OWL_SYMMETRIC_PROPERTY => translate_symmetric_property(v,m),
+        Some(x) if x == OWL_ASYMMETRIC_PROPERTY => translate_asymmetric_property(v,m),
+        Some(x) if x == OWL_TRANSITIVE_PROPERTY => translate_transitive_property(v,m),
 
         _ => translate_class_assertion(v,m),
 
@@ -292,12 +293,12 @@ pub fn translate_declaration(v : &Value, _m : &HashMap<String, HashSet<String>>)
     let entity = Value::String(String::from(s));
     let operator = 
     match v[3].as_str() {
-        Some("<http://www.w3.org/2002/07/owl#Class>") => Value::String(String::from("Class")),
-        Some("<http://www.w3.org/2000/01/rdf-schema#Datatype>") => Value::String(String::from("Datatype")), 
-        Some("owl:ObjectProperty") => Value::String(String::from("ObjectProperty")),
-        Some("owl:DatatypeProperty") => Value::String(String::from("DataProperty")), 
-        Some("owl:AnnotationProperty") => Value::String(String::from("AnnotationProperty")),
-        Some("owl:NamedIndividual") => Value::String(String::from("NamedIndividual")),
+        Some(x) if x == OWL_CLASS => Value::String(String::from("Class")),
+        Some(x) if x == RDFS_DATATYPE => Value::String(String::from("Datatype")), 
+        Some(x) if x == OWL_OBJECT_PROPERTY => Value::String(String::from("ObjectProperty")),
+        Some(x) if x == OWL_DATATYPE_PROPERTY => Value::String(String::from("DataProperty")), 
+        Some(x) if x == OWL_ANNOTATION_PROPERTY => Value::String(String::from("AnnotationProperty")),
+        Some(x) if x == OWL_NAMED_INDIVIDUAL => Value::String(String::from("NamedIndividual")),
         _ => panic!("Unknown type in declaration")
     };
 
