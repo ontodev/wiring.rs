@@ -1,4 +1,5 @@
 use serde_json::{Value, Result as SResult};
+use crate::constants::*;
 use crate::owl::thick_triple as tt;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
@@ -8,13 +9,13 @@ use std::io::{prelude::*, BufReader};
 /// 
 /// #Examples
 /// 
-/// let object = r#"{"owl:someValuesFrom": [{"object": "obo:OBI_0500000",
+/// let object = r#"{"<http://www.w3.org/2002/07/owl#someValuesFrom>": [{"object": "obo:OBI_0500000",
 ///                                          "datatype":"_iri",
 ///                                          "meta":null}],
-///                  "rdf:type": [{"object": "owl:Restriction",
+///                  "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>": [{"object": "<http://www.w3.org/2002/07/owl#Restriction>",
 ///                                "datatype":"_iri",
 ///                                "meta":null}],
-///                  "owl:onProperty": [{"object": "obo:BFO_0000050",
+///                  "<http://www.w3.org/2002/07/owl#onProperty>": [{"object": "obo:BFO_0000050",
 ///                                      "datatype":"_iri",
 ///                                      "meta":null}]}"#;
 ///
@@ -99,7 +100,7 @@ fn is_thick_triple(v: &Value) -> bool {
     if nesting  {
         true
     } else {
-        v["predicate"].as_str().unwrap().eq("rdfs:subClassOf")
+        v["predicate"].as_str().unwrap().eq(RDFS_SUB_CLASS_OF)
     } 
 }
 
@@ -130,11 +131,11 @@ fn is_class_expression_axiom(v: &Value) -> bool {
     let predicate = v["predicate"].as_str();
 
      match predicate {
-         Some("rdfs:subClassOf")  => true,
-         Some("owl:equivalentClass")  => true,
-         Some("owl:disjointWith")  => true,
-         Some("owl:AllDisjointClasses")  => true,
-         Some("owl:disjointUnionOf")  => true,
+         Some(x) if x == RDFS_SUB_CLASS_OF  => true,
+         Some(x) if x == OWL_EQUIVALENT_CLASS  => true,
+         Some(x) if x == OWL_DISJOINT_WITH  => true,
+         Some(x) if x == OWL_ALL_DISJOINT_CLASSES  => true,
+         Some(x) if x == OWL_DISJOINT_UNION_OF  => true,
          Some(_) => false,
          None => false,
      } 

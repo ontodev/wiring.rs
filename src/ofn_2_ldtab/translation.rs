@@ -13,12 +13,13 @@ use serde_json::Value;
 /// println!("{}", thick_triple);
 ///
 pub fn ofn_2_thick_triple(v: &Value) -> Value {
+
     let ldtab_triple = match v[0].as_str() {
         Some("Declaration") => axiom_translation::translate_declaration(v),
         Some("DatatypeDefinition") => axiom_translation::translate_datatype_definition(v),
         Some("SubClassOf") => axiom_translation::translate_subclass_of_axiom(v),
         Some("DisjointClasses") => axiom_translation::translate_disjoint_classes_axiom(v),
-        Some("DisjointUnionOf") => axiom_translation::translate_disjoint_union_of_axiom(v),
+        Some("DisjointUnion") => axiom_translation::translate_disjoint_union_of_axiom(v),
         Some("EquivalentClasses") => axiom_translation::translate_equivalent_classes_axiom(v),
         Some("SubObjectPropertyOf") => axiom_translation::translate_sub_object_property(v),
         Some("SubDataPropertyOf") => axiom_translation::translate_sub_data_property(v),
@@ -73,7 +74,7 @@ pub fn ofn_2_thick_triple(v: &Value) -> Value {
             axiom_translation::translate_negative_object_property_assertion_axiom(v)
         }
         Some("DataPropertyAssertion") => {
-            axiom_translation::translate_object_property_assertion_axiom(v)
+            axiom_translation::translate_data_property_assertion_axiom(v)
         }
         Some("NegativeDataPropertyAssertion") => {
             axiom_translation::translate_negative_data_property_assertion_axiom(v)
@@ -97,7 +98,7 @@ pub fn ofn_2_thick_triple(v: &Value) -> Value {
 
         Some("DLSafeRule") => axiom_translation::translate_rule(v),
 
-        Some(_) => panic!(),
+        Some(_) => panic!("Unsupported axiom type: {}", v[0]),
         None => panic!(),
     };
 

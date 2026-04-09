@@ -35,7 +35,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value) -> String {
     let lhs: String = class_translation::translate(&v[1]); 
     let operands: Vec<String> = (&(v.as_array().unwrap())[2..]).into_iter().map(|x| class_translation::translate(&x)).collect(); 
     let merged = operands.join(", ");
-    format!("Class: {} DisjointUnionOf: {}", lhs, merged) 
+    format!("Class: {} DisjointUnion: {}", lhs, merged) 
 
 }
 

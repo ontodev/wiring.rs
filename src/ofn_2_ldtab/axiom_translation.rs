@@ -1,22 +1,23 @@
 use crate::ofn_2_ldtab::annotation_translation;
 use crate::ofn_2_ldtab::class_translation;
+use crate::constants::*;
 use crate::ofn_2_ldtab::property_translation;
 use crate::ofn_2_ldtab::rule_translation;
 use crate::ofn_2_ldtab::util;
-use rand::Rng;
 use serde_json::json;
 use serde_json::Value;
-use sha2::{Digest, Sha256};
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
-//TODO
-//
-// == [1] ==
-//top level translation is not always correct:
-//- "subject":{"datatype":"_IRI","object":"http://purl.obolibrary.org/obo/OBI_0000301"}}
-//should just be
-//- "subject":"http://purl.obolibrary.org/obo/OBI_0000301"
+
+/// Splits an annotated axiom into its logical part and translated annotations.
+/// Returns `(owl, annotation)` where `owl` is the axiom with annotations stripped,
+/// and `annotation` is the JSON representation of the annotations.
+fn split_axiom(v: &Value) -> (Value, Value) {
+    let owl = annotation_translation::get_owl(v);
+    let annotations = annotation_translation::get_annotations(v);
+    let annotation = annotation_translation::translate_annotations(&annotations);
+    (owl, annotation)
+}
+
 
 pub fn translate_declaration(v: &Value) -> Value {
     let owl = annotation_translation::get_owl(v);
@@ -35,10 +36,7 @@ pub fn translate_declaration(v: &Value) -> Value {
 }
 
 pub fn translate_class_declaration(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -51,19 +49,16 @@ pub fn translate_class_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":class,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2002/07/owl#Class>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":OWL_CLASS,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
 }
 
 pub fn translate_ontology_import(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     let subject = class_translation::translate(&owl[1]);
     let object = class_translation::translate(&owl[2]);
@@ -72,9 +67,9 @@ pub fn translate_ontology_import(v: &Value) -> Value {
         "retraction":"0",
         "graph":"graph",
         "subject": subject,
-        "predicate":"<http://www.w3.org/2002/07/owl#imports>",
+        "predicate":OWL_IMPORTS,
         "object": object,
-        "datatype":"_IRI",
+        "datatype":LDTAB_IRI,
         "annotation":annotation
     })
 }
@@ -98,10 +93,7 @@ pub fn translate_ontology_annotation(v: &Value) -> Value {
 }
 
 pub fn translate_class_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let class = class_translation::translate(&owl[1]);
@@ -112,19 +104,16 @@ pub fn translate_class_assertion_axiom(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":individual,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+    "predicate":RDF_TYPE,
     "object":class,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
 }
 
 pub fn translate_object_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
@@ -138,22 +127,34 @@ pub fn translate_object_property_assertion_axiom(v: &Value) -> Value {
     "subject":from,
     "predicate":property,
     "object":to,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
 }
 
 pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
     let from = class_translation::translate(&owl[2]);
-    let to = class_translation::translate(&owl[3]);
+
+    let to: Value = if let Some(s) = owl[3].as_str() {
+    if let Some((literal, datatype)) = s.split_once("^^") {
+        json!({ "object": unquote_once(literal), "datatype": datatype })
+    } else if let Some((literal, language)) = s.split_once('@') {
+        json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
+    } else {
+        json!({ "object": unquote_once(s), "datatype": XSD_STRING })
+    }
+} else {
+        Value::Null
+    };
+
+    let literal = to.get("object").unwrap().as_str().unwrap();
+    let datatype = to.get("datatype").unwrap().as_str().unwrap();
+
 
     let triple = json!({
     "assertion":"1",
@@ -161,100 +162,99 @@ pub fn translate_data_property_assertion_axiom(v: &Value) -> Value {
     "graph":"graph",
     "subject":from,
     "predicate":property,
-    "object":to,
-    "datatype":"_IRI",
+    "object":literal,
+    "datatype":datatype,
     "annotation":annotation
     });
     triple
 }
 
 pub fn translate_negative_object_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
     let from = class_translation::translate(&owl[2]);
     let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
-                            "datatype":"_IRI"});
+    //TODO reuse blank node object
+    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+                            OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":LDTAB_IRI}]});
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-    "object":{
-        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
-    },
-    "datatype":"_IRI",
+    "predicate":OWL_NEGATIVE_PROPERTY_ASSERTION,
+    "object": {RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+               OWL_TARGET_INDIVIDUAL:[{"object":to, "datatype":LDTAB_IRI}]},
+    "datatype":LDTAB_JSON_MAP,
     "annotation":annotation
     });
     triple
 }
 
+fn unquote_once(s: &str) -> &str {
+    s.strip_prefix('"')
+        .and_then(|t| t.strip_suffix('"'))
+        .unwrap_or(s)
+}
+
 pub fn translate_negative_data_property_assertion_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let ofn_annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&ofn_annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //translate OWL classes
     let property = property_translation::translate(&owl[1]);
     let from = class_translation::translate(&owl[2]);
-    let to = class_translation::translate(&owl[3]);
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-                            "object": {"<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-                                        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-                                        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]},
-                            "datatype":"_IRI"});
+    //TODO: handle data values properly
+    let to: Value = if let Some(s) = owl[3].as_str() {
+    if let Some((literal, datatype)) = s.split_once("^^") {
+        json!({ "object": unquote_once(literal), "datatype": datatype })
+    } else if let Some((literal, language)) = s.split_once('@') {
+        json!({ "object": unquote_once(literal), "datatype": format!("@{language}") })
+    } else {
+        json!({ "object": unquote_once(s), "datatype": XSD_STRING })
+    }
+} else {
+        Value::Null
+    };
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
+    let literal = to.get("object").unwrap().as_str().unwrap();
+    let datatype = to.get("datatype").unwrap().as_str().unwrap();
 
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node = json!({RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+                            OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+                            OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+                            OWL_TARGET_VALUE:[{"object":literal, "datatype":datatype }]});
+
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>",
-    "object":{
-        "<http://www.w3.org/2002/07/owl#sourceIndividual>":[{"object":from}],
-        "<http://www.w3.org/2002/07/owl#assertionProperty>":[{"object":property}],
-        "<http://www.w3.org/2002/07/owl#targetIndividual>":[{"object":to}]
-    },
-    "datatype":"_IRI",
+    "predicate":OWL_NEGATIVE_PROPERTY_ASSERTION,
+    "object":{ RDF_TYPE:[{"object" : OWL_NEGATIVE_PROPERTY_ASSERTION, "datatype" : LDTAB_IRI}],
+               OWL_SOURCE_INDIVIDUAL:[{"object":from, "datatype":LDTAB_IRI}],
+               OWL_ASSERTION_PROPERTY:[{"object":property, "datatype":LDTAB_IRI}],
+               OWL_TARGET_VALUE:[{"object":literal, "datatype":datatype }]},
+    "datatype":LDTAB_JSON_MAP,
     "annotation":annotation
     });
     triple
 }
 
 pub fn translate_same_individuals_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
 
@@ -262,92 +262,75 @@ pub fn translate_same_individuals_axiom(v: &Value) -> Value {
         //TODO check that class_translation supports individuals
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#sameAs>",
+                        "predicate":OWL_SAME_AS,
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllSameAs>",
-                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        let blank_node = json!({"predicate":OWL_ALL_SAME_AS,
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            //"predicate":"<http://www.w3.org/2002/07/owl#sameAs>", 
-                            "predicate":"<http://www.w3.org/2002/07/owl#AllSameAs>", //this is LDtab specific
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            //"predicate":OWL_SAME_AS, 
+                            "predicate":OWL_ALL_SAME_AS, //this is LDtab specific
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
 }
 
 pub fn translate_different_individuals_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#differentFrom>",
+                        "predicate":OWL_DIFFERENT_FROM,
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
-        //NB: IRIs are not expanded by wiring - this is LDTab's responsibility
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>",
-                                "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        //TODO: this object should be reused
+        let blank_node = json!({OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],
+                                RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DIFFERENT}]});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"<http://www.w3.org/2002/07/owl#AllDifferent>", 
-                            "object": {"<http://www.w3.org/2002/07/owl#distinctMembers>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                            "datatype":"_JSONMAP",
+                            "predicate":OWL_ALL_DIFFERENT, 
+                            "object": {OWL_DISTINCT_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],
+                                       RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DIFFERENT}]},
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
@@ -355,9 +338,7 @@ pub fn translate_different_individuals_axiom(v: &Value) -> Value {
 
 pub fn translate_object_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -369,9 +350,9 @@ pub fn translate_object_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2002/07/owl#ObjectProperty>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":OWL_OBJECT_PROPERTY,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -379,9 +360,7 @@ pub fn translate_object_property_declaration(v: &Value) -> Value {
 
 pub fn translate_data_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -393,9 +372,9 @@ pub fn translate_data_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2002/07/owl#DatatypeProperty>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":OWL_DATATYPE_PROPERTY,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -403,9 +382,7 @@ pub fn translate_data_property_declaration(v: &Value) -> Value {
 
 pub fn translate_annotation_property_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -417,9 +394,9 @@ pub fn translate_annotation_property_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":property,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2002/07/owl#AnnotationProperty>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":OWL_ANNOTATION_PROPERTY,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -428,9 +405,7 @@ pub fn translate_annotation_property_declaration(v: &Value) -> Value {
 //TODO: test this
 pub fn translate_datatype_definition(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //TODO: check this (should just be a string)
     let lhs = owl[1].clone();
@@ -441,9 +416,9 @@ pub fn translate_datatype_definition(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":lhs,
-    "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+    "predicate":OWL_EQUIVALENT_CLASS,
     "object":rhs,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -451,9 +426,7 @@ pub fn translate_datatype_definition(v: &Value) -> Value {
 
 pub fn translate_datatype_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -466,9 +439,9 @@ pub fn translate_datatype_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":datatype,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2000/01/rdf-schema#Datatype>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":RDFS_DATATYPE,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -476,9 +449,7 @@ pub fn translate_datatype_declaration(v: &Value) -> Value {
 
 pub fn translate_individual_declaration(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //unwrap declaration
     let unwrapped_declaration = owl[1].clone();
@@ -491,9 +462,9 @@ pub fn translate_individual_declaration(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":individual,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2002/07/owl#NamedIndividual>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":OWL_NAMED_INDIVIDUAL,
+    "datatype":LDTAB_IRI,
     "annotation":annotation
     });
     triple
@@ -501,8 +472,7 @@ pub fn translate_individual_declaration(v: &Value) -> Value {
 
 pub fn translate_sub_object_property(v: &Value) -> Value {
     //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     //SubObjectPropertyOf( ObjectPropertyChain( OPE1 ... OPEn ) OPE )
     //is translated as
@@ -512,27 +482,25 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
     if owl[1].is_array() && owl[1][0].as_str().unwrap().eq("ObjectPropertyChain") {
         let sub = property_translation::translate_list(&(owl[1].as_array().unwrap())[1..]);
         let sup = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         json!({ "assertion":"1",
             "retraction":"0",
             "graph":"graph",
             "subject":sup,
-            "predicate":"<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
+            "predicate":OWL_PROPERTY_CHAIN_AXIOM,
             "object":sub,
-            "datatype":"_JSONLIST",
+            "datatype":LDTAB_JSON_LIST,
             "annotation":annotation
         })
     } else {
         let sub = property_translation::translate(&owl[1]);
         let sup = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         json!({ "assertion":"1",
             "retraction":"0",
             "graph":"graph",
             "subject":sub,
-            "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
+            "predicate":RDFS_SUB_PROPERTY_OF,
             "object":sup,
             "datatype":util::translate_datatype(&json!(sup)),
             "annotation":annotation
@@ -541,19 +509,16 @@ pub fn translate_sub_object_property(v: &Value) -> Value {
 }
 
 pub fn translate_sub_data_property(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let sub = property_translation::translate(&owl[1]);
     let sup = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     json!({ "assertion":"1",
         "retraction":"0",
         "graph":"graph",
         "subject":sub,
-        "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
+        "predicate":RDFS_SUB_PROPERTY_OF,
         "object":sup,
         "datatype":util::translate_datatype(&json!(sup)),
         "annotation":annotation
@@ -561,21 +526,17 @@ pub fn translate_sub_data_property(v: &Value) -> Value {
 }
 
 pub fn translate_subclass_of_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
-    //translate OWL classes
     let subclass = class_translation::translate(&owl[1]);
     let superclass = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
     "subject":subclass,
-    "predicate":"<http://www.w3.org/2000/01/rdf-schema#subClassOf>",
+    "predicate":RDFS_SUB_CLASS_OF,
     "object":superclass,
     "datatype":util::translate_datatype(&json!(superclass)),
     "annotation":annotation
@@ -584,21 +545,17 @@ pub fn translate_subclass_of_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_sub_annotation_property_of_axiom(v: &Value) -> Value {
-    //split annotations from logical structure
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
-    //translate OWL classes
     let lhs = property_translation::translate(&owl[1]);
     let rhs = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
     "subject":lhs,
-    "predicate":"<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
+    "predicate":RDFS_SUB_PROPERTY_OF,
     "object":rhs,
     "datatype":util::translate_datatype(&json!(rhs)),
     "annotation":annotation
@@ -619,7 +576,7 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
                             "retraction":"0",
                             "graph":"graph",
                             "subject":lhs,
-                            "predicate":"<http://www.w3.org/2002/07/owl#disjointWith>",
+                            "predicate":OWL_DISJOINT_WITH,
                             "object": rhs,
                             "datatype":util::translate_datatype(&json!(rhs)),
                             "annotation":annotation});
@@ -628,48 +585,38 @@ pub fn translate_disjoint_classes_axiom(v: &Value) -> Value {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
         let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>"}]});
+        let blank_node = json!({OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DISJOINT_CLASSES}]});
 
         //"annotation":annotation});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        println!("Blank node: {}", blank_string);
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph",
                             "subject":blank_node_id,
-                            "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>",
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}],"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI","object":"<http://www.w3.org/2002/07/owl#AllDisjointClasses>"}]},
-                            "datatype": "_JSONMAP", 
+                            "predicate":OWL_ALL_DISJOINT_CLASSES,
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}],RDF_TYPE:[{"datatype":LDTAB_IRI,"object":OWL_ALL_DISJOINT_CLASSES}]},
+                            "datatype": LDTAB_JSON_MAP, 
                             "annotation":annotation});
         triple
     }
 }
 
 pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let lhs = class_translation::translate(&owl[1]);
     let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[2..]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#disjointUnionOf>",
+                        "predicate":OWL_DISJOINT_UNION_OF,
                         "object":operands,
-                        "datatype": "_JSONLIST", 
+                        "datatype": LDTAB_JSON_LIST, 
                         "annotation":annotation});
     triple
 }
@@ -677,66 +624,55 @@ pub fn translate_disjoint_union_of_axiom(v: &Value) -> Value {
 //TODO:: equivalent classe  (we have a custom encoding for this and need a case distinction
 //between binary axioms and n-ary axioms)
 pub fn translate_equivalent_classes_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = class_translation::translate(&owl[1]);
         let rhs = class_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
+                        "predicate":OWL_EQUIVALENT_CLASS,
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
         triple
     } else {
         let operands: Value = class_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
-                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        let blank_node = json!({"predicate":OWL_EQUIVALENT_CLASS,
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentClass>",
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype 
-                            "datatype":"_JSONMAP",
+                            "predicate":OWL_EQUIVALENT_CLASS,
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype 
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
 }
 
 pub fn translate_object_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
+                        "predicate":RDFS_DOMAIN,
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -744,18 +680,16 @@ pub fn translate_object_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_object_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
+                        "predicate":RDFS_RANGE,
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -763,18 +697,16 @@ pub fn translate_object_property_range_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_annotation_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]); //TODO IRI
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
+                        "predicate":RDFS_DOMAIN,
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -782,18 +714,16 @@ pub fn translate_annotation_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_annotation_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
+                        "predicate":RDFS_RANGE,
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -802,66 +732,55 @@ pub fn translate_annotation_property_range_axiom(v: &Value) -> Value {
 
 //TODO test n-ary case
 pub fn translate_equivalent_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = property_translation::translate(&owl[1]);
         let rhs = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>",
+                        "predicate":OWL_EQUIVALENT_PROPERTY,
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
         triple
     } else {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>",
-                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        let blank_node = json!({"predicate":OWL_EQUIVALENT_PROPERTY,
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"<http://www.w3.org/2002/07/owl#equivalentProperty>", //TODO AllEquivalentProperties?
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            "predicate":OWL_EQUIVALENT_PROPERTY, //TODO AllEquivalentProperties?
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
 }
 
 pub fn translate_data_property_domain_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let domain = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#domain>",
+                        "predicate":RDFS_DOMAIN,
                         "object":domain,
                         "datatype": util::translate_datatype(&json!(domain)),
                         "annotation":annotation});
@@ -869,19 +788,17 @@ pub fn translate_data_property_domain_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let lhs = property_translation::translate(&owl[1]);
     let rhs = property_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
     let datatype = util::translate_datatype(&json!(rhs));
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#inverseOf>",
+                        "predicate":OWL_INVERSE_OF,
                         "object":rhs,
                         "datatype": datatype,
                         "annotation":annotation});
@@ -889,144 +806,128 @@ pub fn translate_inverse_properties_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_functional_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#FunctionalProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_FUNCTIONAL_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_inverse_functional_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#InverseFunctionalProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_INVERSE_FUNCTIONAL_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_reflexive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#ReflexiveProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_REFLECTIVE_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_irreflexive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#IrreflexiveProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_IRREFLEXIVE_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_symmetric_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#SymmetricProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_SYMMETRIC_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_asymmetric_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#AsymmetricProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_ASYMMETRIC_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_transitive_object_property_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let argument = property_translation::translate(&owl[1]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":argument,
-                        "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-                        "object":"<http://www.w3.org/2002/07/owl#TransitiveProperty>",
+                        "predicate":RDF_TYPE,
+                        "object":OWL_TRANSITIVE_PROPERTY,
                         "datatype": util::translate_datatype(&json!(argument)),
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_data_property_range_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let property = property_translation::translate(&owl[1]);
     let range = class_translation::translate(&owl[2]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":property,
-                        "predicate":"<http://www.w3.org/2000/01/rdf-schema#range>",
+                        "predicate":RDFS_RANGE,
                         "object":range,
                         "datatype": util::translate_datatype(&json!(range)),
                         "annotation":annotation});
@@ -1034,89 +935,81 @@ pub fn translate_data_property_range_axiom(v: &Value) -> Value {
 }
 
 pub fn translate_disjoint_properties_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
     let number_of_operands = (owl.as_array().unwrap())[1..].len();
     if number_of_operands == 2 {
         let lhs = property_translation::translate(&owl[1]);
         let rhs = property_translation::translate(&owl[2]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
         let triple = json!({
                         "assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
                         "subject":lhs,
-                        "predicate":"<http://www.w3.org/2002/07/owl#propertyDisjointWith>",
+                        "predicate":OWL_PROPERTY_DISJOINT_WITH,
                         "object":rhs, 
                         "datatype":util::translate_datatype(&json!(rhs)), 
                         "annotation":annotation});
         triple
     } else {
         let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-        let annotation = annotation_translation::translate_annotations(&annotations);
 
-        let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#AllDisjointProperties>",
-                                "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                                "datatype":"_JSONMAP"});
+        let blank_node = json!({"predicate":OWL_ALL_DISJOINT_PROPERTIES,
+                                "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]},
+                                "datatype":LDTAB_JSON_MAP});
 
-        let blank_sorted = util::sort_value(&blank_node);
-        let blank_string = blank_sorted.to_string();
-
-        let mut hasher = Sha256::new();
-        hasher.update(blank_string.as_bytes());
-        let blank_node_hash = hasher.finalize();
-        let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+        let blank_node_id = util::generate_blank_node_id(&blank_node);
 
 
         let triple = json!({"assertion":"1",
                             "retraction":"0",
                             "graph":"graph", //TODO
                             "subject":blank_node_id,
-                            "predicate":"<http://www.w3.org/2002/07/owl#AllDisjointProperties>", 
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]}, //TODO remove datatype
-                            "datatype":"_JSONMAP",
+                            "predicate":OWL_ALL_DISJOINT_PROPERTIES, 
+                            "object": {OWL_MEMBERS:[{"object":operands, "datatype":LDTAB_JSON_LIST}]}, //TODO remove datatype
+                            "datatype":LDTAB_JSON_MAP,
                             "annotation":annotation});
         triple
     }
 }
 
 pub fn translate_has_key_axiom(v: &Value) -> Value {
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
+    let (owl, annotation) = split_axiom(v);
 
-    let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let class = class_translation::translate(&owl[1]);
+    let ops = property_translation::translate_list(&owl[2].as_array().unwrap());
+    let dps = property_translation::translate_list(&owl[3].as_array().unwrap());
 
-    let blank_node = json!({"predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
-                            "object": {"<http://www.w3.org/2002/07/owl#members>":[{"object":operands, "datatype":"_JSONLIST"}]},
-                            "datatype": "_JSONMAP"});
+    let mut operands = ops;
+    if !dps.is_null() {
+        if operands.is_null() {
+            operands = dps;
+        } else if operands.is_array() && dps.is_array() {
+            let mut ops_array = operands.as_array().unwrap().clone();
+            let dps_array = dps.as_array().unwrap();
+            ops_array.extend(dps_array.iter().cloned());
+            operands = Value::Array(ops_array);
+        }
+    }
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
+    //let operands: Value = property_translation::translate_list(&(owl.as_array().unwrap())[1..]);
 
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
 
     let triple = json!({"assertion":"1",
                         "retraction":"0",
                         "graph":"graph", //TODO
-                        "subject":blank_node_id,
-                        "predicate":"<http://www.w3.org/2002/07/owl#hasKey>",
-                        "object": {"<http://www.w3.org/2002/07/owl#members>":operands, "datatype":"_JSONLIST"}, //TODO remove datatype
-                        "datatype": "_JSONMAP", 
+                        "subject":class,
+                        "predicate":OWL_HAS_KEY,
+                        "object": operands,
+                        "datatype": LDTAB_JSON_LIST, 
                         "annotation":annotation});
     triple
 }
 
 pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
     //TODO: check order
-    let owl = annotation_translation::get_owl(v);
-    let annotations = annotation_translation::get_annotations(v);
-    let annotation = annotation_translation::translate_annotations(&annotations);
+    let (owl, annotation) = split_axiom(v);
 
     //if annotation_translation::has_annotation(v) {
     //    println!("Input: {:?}",v);
@@ -1154,19 +1047,19 @@ pub fn translate_annotation_assertion_axiom(v: &Value) -> Value {
         "subject":from,
         "predicate":property,
         "object":to,
-        "datatype":"_IRI",
+        "datatype":LDTAB_IRI,
         "annotation":annotation
         });
         triple
     }
 }
 
-fn merge_json(a: &mut Value, b: Value) {
+fn _merge_json(a: &mut Value, b: Value) {
     match (a, b) {
         (Value::Object(a_map), Value::Object(b_map)) => {
             for (k, v) in b_map {
                 // Merge if key exists, otherwise insert
-                merge_json(a_map.entry(k).or_insert(Value::Null), v);
+                _merge_json(a_map.entry(k).or_insert(Value::Null), v);
             }
         }
         (a, b) => {
@@ -1183,7 +1076,7 @@ fn remove_meta(value: &mut Value) {
         Value::Object(map) => {
             // First, remove all "meta" keys that have the value "owl:Axiom"
             let mut keys_to_remove = Vec::new();
-            for (k, v) in map.iter() {
+            for (k, _v) in map.iter() {
                 if k == "meta" {
                     keys_to_remove.push(k.clone());
                 }
@@ -1228,29 +1121,21 @@ pub fn translate_rule(v: &Value) -> Value {
         map.remove("meta");
     }
 
-    let mut blank_node = json!({"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>":[{"datatype":"_IRI", "object" :"<http://www.w3.org/2003/11/swrl#Imp>"}],
-                            "<http://www.w3.org/2003/11/swrl#body>":[{"datatype":"_JSONLIST", "object" : body}],
-                            "<http://www.w3.org/2003/11/swrl#head>":[{"datatype":"_JSONLIST", "object" :head}]});
-    merge_json(&mut blank_node, anno_blan.clone());
+    let blank_node = json!({RDF_TYPE:[{"datatype":LDTAB_IRI, "object" :SWRL_IMP}],
+                            SWRL_BODY:[{"datatype":LDTAB_JSON_LIST, "object" : body}],
+                            SWRL_HEAD:[{"datatype":LDTAB_JSON_LIST, "object" :head}]});
+    //merge_json(&mut blank_node, anno_blan.clone());
 
-    let blank_sorted = util::sort_value(&blank_node);
-    let blank_string = blank_sorted.to_string();
-
-    //println!("blank_node: {}", blank_string);
-
-    let mut hasher = Sha256::new();
-    hasher.update(blank_string.as_bytes());
-    let blank_node_hash = hasher.finalize();
-    let blank_node_id = format!("<ldtab:blanknode:{:x}>", blank_node_hash);
+    let blank_node_id = util::generate_blank_node_id(&blank_node);
 
     let blank_node_type = json!({
     "assertion":"1",
     "retraction":"0",
     "graph":"graph",
     "subject": blank_node_id,
-    "predicate":"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
-    "object":"<http://www.w3.org/2003/11/swrl#Imp>",
-    "datatype":"_IRI",
+    "predicate":RDF_TYPE,
+    "object":SWRL_IMP,
+    "datatype":LDTAB_IRI,
     "annotation": Value::Null
     });
 
@@ -1259,9 +1144,9 @@ pub fn translate_rule(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject": blank_node_id,
-    "predicate":"<http://www.w3.org/2003/11/swrl#body>",
+    "predicate":SWRL_BODY,
     "object":body,
-    "datatype":"_JSONLIST",
+    "datatype":LDTAB_JSON_LIST,
     "annotation": Value::Null
     });
 
@@ -1270,9 +1155,9 @@ pub fn translate_rule(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":blank_node_id,
-    "predicate":"<http://www.w3.org/2003/11/swrl#head>",
+    "predicate":SWRL_HEAD,
     "object":head,
-    "datatype":"_JSONLIST",
+    "datatype":LDTAB_JSON_LIST,
     "annotation": Value::Null
     });
 
@@ -1313,9 +1198,9 @@ pub fn translate_ontology(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":iri,
-    "predicate":"<http://www.w3.org/2002/07/owl#versionIRI>",
+    "predicate":OWL_VERSION_IRI,
     "object":viri,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation": Value::Null
     });
     triple
@@ -1329,9 +1214,9 @@ pub fn translate_doc_iri(v: &Value) -> Value {
     "retraction":"0",
     "graph":"graph",
     "subject":"ontology",//TODO
-    "predicate":"<http://www.w3.org/2002/07/owl#versionIRI>",
+    "predicate":OWL_VERSION_IRI,
     "object":iri,
-    "datatype":"_IRI",
+    "datatype":LDTAB_IRI,
     "annotation":""
     });
     triple

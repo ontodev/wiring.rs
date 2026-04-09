@@ -1,3 +1,4 @@
+use crate::constants::*;
 use serde_json::{Value};
 use serde_json::json; 
 use std::collections::HashMap;
@@ -28,20 +29,20 @@ pub fn is_named_class(ofn: &Value) -> bool {
 pub fn get_type(ofn: &Value) -> &str {
 
      match ofn[0].as_str() {
-         Some("ObjectSomeValuesFrom") => "owl:Restriction", 
-         Some("ObjectAllValuesFrom") => "owl:Restriction",
-         Some("ObjectHasValue") => "owl:Restriction", 
-         Some("ObjectMinCardinality") => "owl:Restriction", 
-         Some("ObjectMinQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectMaxCardinality") => "owl:Restriction", 
-         Some("ObjectMaxQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectExactCardinality") => "owl:Restriction", 
-         Some("ObjectExactQualifiedCardinality") => "owl:Restriction", 
-         Some("ObjectHasSelf") => "owl:Restriction", 
-         Some("ObjectIntersectionOf") => "owl:Class", 
-         Some("ObjectUnionOf") => "owl:Class", 
-         Some("ObjectOneOf") => "owl:Class", 
-         Some("ObjectComplementOf") => "owl:Class", 
+         Some("ObjectSomeValuesFrom") => OWL_RESTRICTION, 
+         Some("ObjectAllValuesFrom") => OWL_RESTRICTION,
+         Some("ObjectHasValue") => OWL_RESTRICTION, 
+         Some("ObjectMinCardinality") => OWL_RESTRICTION, 
+         Some("ObjectMinQualifiedCardinality") => OWL_RESTRICTION, 
+         Some("ObjectMaxCardinality") => OWL_RESTRICTION, 
+         Some("ObjectMaxQualifiedCardinality") => OWL_RESTRICTION, 
+         Some("ObjectExactCardinality") => OWL_RESTRICTION, 
+         Some("ObjectExactQualifiedCardinality") => OWL_RESTRICTION, 
+         Some("ObjectHasSelf") => OWL_RESTRICTION, 
+         Some("ObjectIntersectionOf") => OWL_CLASS, 
+         Some("ObjectUnionOf") => OWL_CLASS, 
+         Some("ObjectOneOf") => OWL_CLASS, 
+         Some("ObjectComplementOf") => OWL_CLASS, 
          None => ofn.as_str().unwrap(),
          Some(_) => panic!(),
      }
@@ -59,6 +60,6 @@ pub fn type_opening(ofn: &Value) -> Value {
 pub fn translate_subclass_of_axiom(sub: &Value, sup: &Value, subject_2_label: &HashMap<String,String>) -> Value {
     let opening = type_opening(sub);
     let sub_class = class_translation::translate(sub, subject_2_label, None);
-    let sup_class = class_translation::translate(sup, subject_2_label, Some("rdfs:subClassOf"));
+    let sup_class = class_translation::translate(sup, subject_2_label, Some(RDFS_SUB_CLASS_OF));
     json!(["div", opening, sub_class, " SubClassOf ", sup_class]) 
 }

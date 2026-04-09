@@ -1,4 +1,5 @@
 use serde_json::{Value};
+use crate::constants::*;
 use crate::ofn_typing::class_translation as class_translation; //TODO: class translation
 use crate::ofn_typing::property_translation as property_translation;
 use crate::util::signature as signature;
@@ -42,7 +43,7 @@ pub fn translate_disjoint_union_of_axiom(v : &Value, m : &HashMap<String,HashSet
     let lhs : Value = class_translation::translate(&v[1], m);
     let operands : Value = class_translation::translate_list(&(v.as_array().unwrap())[2..], m); 
 
-    let operator = Value::String(String::from("DisjointUnionOf"));
+    let operator = Value::String(String::from("DisjointUnion"));
     let v = vec![operator, lhs, operands];
     Value::Array(v) 
 }
@@ -199,13 +200,13 @@ pub fn translate_sub_property_of(v : &Value, m : &HashMap<String,HashSet<String>
             Value::String(x) => {
                 if m.contains_key(&x) {
                     let types = m.get(&x).unwrap();
-                    if types.contains("owl:ObjectProperty") {
+                    if types.contains(OWL_OBJECT_PROPERTY) {
                         is_object_property = true;
                     }
-                    if types.contains("owl:DatatypeProperty")  { 
+                    if types.contains(OWL_DATATYPE_PROPERTY)  { 
                         is_data_property = true;
                     }
-                    if types.contains("owl:AnnotationProperty") {
+                    if types.contains(OWL_ANNOTATION_PROPERTY) {
                         is_annotation_property = true; 
                     }
                 } 
@@ -390,7 +391,7 @@ pub fn translate_thin_triple(v : &Value, m : &HashMap<String,HashSet<String>>) -
 
     match v[2].as_str() {
 
-        Some("rdf:type") => class_translation::translate_rdf_type(v,m),
+        Some(RDF_TYPE) => class_translation::translate_rdf_type(v,m),
         //TODO: translate annotation (and then check what kind of annotation)
         _ => class_translation::translate_assertion(v,m),
     } 

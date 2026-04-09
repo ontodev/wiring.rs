@@ -1,8 +1,7 @@
-use crate::ofn_2_ldtab::class_translation;
-use crate::ofn_2_ldtab::property_translation;
+use crate::constants::*;
 use crate::ofn_2_ldtab::util;
 use serde_json::json;
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 pub fn translate(v: &Value) -> Value {
     match v[0].as_str() {
@@ -10,19 +9,19 @@ pub fn translate(v: &Value) -> Value {
         Some("Head") => translate_head(v),
         Some("ObjectPropertyAtom") => translate_object_property_atom(v),
         Some("Variable") => translate_variable(v),
+        Some("ClassAtom") => translate_class_atom(v),
+        Some("SameIndividualAtom") => translate_same_individual_atom(v),
+        Some("DifferentIndividualsAtom") => translate_different_individuals_atom(v),
+        Some("DataRangeAtom") => translate_data_range_atom(v),
+        Some("BuiltInAtom") => translate_builtin_atom(v),
+
         Some(_) => {
             println!("Error: {}", v);
             json!("TODO")}
         ,
         //None => owl::OWL::Named(String::from(v.as_str().unwrap())),
 
-        //Some("Variable") => axiom_translation::translate_ontology(v),
-        //Some("SameIndividualAtom") => axiom_translation::translate_ontology(v),
-        //Some("DifferentIndividualsAtom") => axiom_translation::translate_ontology(v),
-        //Some("DataRangeAtom") => axiom_translation::translate_ontology(v),
-        //Some("ClassAtom") => axiom_translation::translate_ontology(v),
-        //Some("BuiltInAtom") => axiom_translation::translate_ontology(v),
-        //
+
         None => translate_named_entity(&v),
     }
 }
@@ -48,16 +47,86 @@ pub fn translate_variable(v: &Value) -> Value {
     translate_named_entity(&v[1])
 }
 
-pub fn translate_object_property_atom(v: &Value) -> Value {
-    let type_o = get_object(&json!("<http://www.w3.org/2003/11/swrl#IndividualPropertyAtom>"));
+pub fn translate_same_individual_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_SAME_INDIVIDUAL_ATOM));
+    let arg1_o = get_object(&v[1]);
+    let arg2_o = get_object(&v[2]);
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o],
+                        SWRL_ARGUMENT2 : vec![arg2_o]}})
+}
+
+pub fn translate_different_individuals_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_DIFFERENT_INDIVIDUALS_ATOM));
+    let arg1_o = get_object(&v[1]);
+    let arg2_o = get_object(&v[2]);
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o],
+                        SWRL_ARGUMENT2 : vec![arg2_o]}})
+}
+
+pub fn translate_data_range_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_DATA_RANGE_ATOM));
+    let datarange_o = get_object(&v[1]);
+    let arg1_o = get_object(&v[2]);
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_DATA_RANGE : vec![datarange_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o]}})
+}
+
+pub fn translate_data_property_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_DATAVALUED_PROPERTY_ATOM));
     let property_o = get_object(&v[1]);
     let arg1_o = get_object(&v[2]);
     let arg2_o = get_object(&v[3]);
-    json!( {"datatype" : "_JSONMAP",
-            "object": {"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" : vec![type_o],
-                        "<http://www.w3.org/2003/11/swrl#propertyPredicate>" : vec![property_o],
-                        "<http://www.w3.org/2003/11/swrl#argument1>" : vec![arg1_o],
-                        "<http://www.w3.org/2003/11/swrl#argument2>" : vec![arg2_o]}})
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_PROPERTY_PREDICATE : vec![property_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o],
+                        SWRL_ARGUMENT2 : vec![arg2_o]}})
+}
+
+pub fn translate_builtin_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_BUILTIN_ATOM));
+    let builtin_o = get_object(&v[1]);
+
+    let array = v.as_array().unwrap();
+    let args = array[2..].to_vec();
+
+    let mut arg_objects = Vec::new();
+    for arg in args.iter() {
+        arg_objects.push(get_object(arg));
+    }
+
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_BUILTIN : vec![builtin_o],
+                        SWRL_ARGUMENTS : arg_objects}})
+}
+
+pub fn translate_class_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_CLASS_ATOM));
+    let class_o = get_object(&v[1]);
+    let arg1_o = get_object(&v[2]);
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_CLASS_PREDICATE : vec![class_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o]}})
+}
+
+pub fn translate_object_property_atom(v: &Value) -> Value {
+    let type_o = get_object(&json!(SWRL_INDIVIDUAL_PROPERTY_ATOM));
+    let property_o = get_object(&v[1]);
+    let arg1_o = get_object(&v[2]);
+    let arg2_o = get_object(&v[3]);
+    json!( {"datatype" : LDTAB_JSON_MAP,
+            "object": {RDF_TYPE : vec![type_o],
+                        SWRL_PROPERTY_PREDICATE : vec![property_o],
+                        SWRL_ARGUMENT1 : vec![arg1_o],
+                        SWRL_ARGUMENT2 : vec![arg2_o]}})
 }
 
 pub fn translate_body(v: &Value) -> Value {

@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::{prelude::*, BufReader};
 use serde_json::{Value};
 use std::collections::HashMap;
+use crate::constants::*;
 
 
 pub fn substitute(v : &Value, e2l : &HashMap<String, String>) -> Value {
@@ -51,7 +52,7 @@ fn is_labeling_triple(t: &str) -> bool {
 
     let predicate : &str = thick_triple["predicate"].as_str().unwrap();
 
-    predicate.eq("rdfs:label")
+    predicate.eq(RDFS_LABEL)
 }
 
 fn get_label_mapping(t: &str) -> (String, String) {

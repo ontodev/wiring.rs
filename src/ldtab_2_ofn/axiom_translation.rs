@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ldtab_2_ofn::class_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::Value;
@@ -353,7 +354,7 @@ pub fn translate_disjoint_with(subject: &owl::OWL, object: &owl::OWL) -> Value {
 ///
 /// let axiom : Value = translation::translate_disjoint_union(&union_owl,
 /// &operands_owl);
-/// let axiom_expected_string = r#"["DisjointUnionOf","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
+/// let axiom_expected_string = r#"["DisjointUnion","obo:IAO_0000120","obo:IAO_0000121","obo:IAO_0000122"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -362,7 +363,7 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
     let lhs = class_translation::translate(union);
     let rhs = class_translation::translate(operands);
 
-    let operator = Value::String("DisjointUnionOf".into());
+    let operator = Value::String("DisjointUnion".into());
 
     match rhs {
         Value::Array(mut arr) => {
@@ -391,27 +392,27 @@ pub fn translate_disjoint_union(union: &owl::OWL, operands: &owl::OWL) -> Value 
 ///```
 pub fn get_ofn_operator(op: &str) -> Value {
     match op {
-        "<http://www.w3.org/2000/01/rdf-schema#Datatype>" => Value::String(String::from("Datatype")),
-        "<http://www.w3.org/2002/07/owl#Class>" => Value::String(String::from("Class")),
-        "owl:ObjectProperty" => Value::String(String::from("ObjectProperty")),
-        "owl:DatatypeProperty" => Value::String(String::from("DataProperty")),
-        "owl:AnnotationProperty" => Value::String(String::from("AnnotationProperty")),
-        "owl:NamedIndividual" => Value::String(String::from("NamedIndividual")),
+        RDFS_DATATYPE => Value::String(String::from("Datatype")),
+        OWL_CLASS => Value::String(String::from("Class")),
+        OWL_OBJECT_PROPERTY => Value::String(String::from("ObjectProperty")),
+        OWL_DATATYPE_PROPERTY => Value::String(String::from("DataProperty")),
+        OWL_ANNOTATION_PROPERTY => Value::String(String::from("AnnotationProperty")),
+        OWL_NAMED_INDIVIDUAL => Value::String(String::from("NamedIndividual")),
 
-        "owl:FunctionalProperty" => Value::String(String::from("FunctionalProperty")),
+        OWL_FUNCTIONAL_PROPERTY => Value::String(String::from("FunctionalProperty")),
 
-        "owl:InverseFunctionalProperty" => {
+        OWL_INVERSE_FUNCTIONAL_PROPERTY => {
             Value::String(String::from("InverseObjectFunctionalProperty"))
         }
-        "owl:ReflexiveProperty" => Value::String(String::from("ReflexiveObjectProperty")),
-        "owl:IrreflexiveProperty" => Value::String(String::from("IrreflexiveObjectProperty")),
-        "owl:SymmetricProperty" => Value::String(String::from("SymmetricObjectProperty")),
-        "owl:AsymmetricProperty" => Value::String(String::from("AsymmetricObjectProperty")),
-        "owl:TransitiveProperty" => Value::String(String::from("TransitiveObjectProperty")),
+        OWL_REFLECTIVE_PROPERTY => Value::String(String::from("ReflexiveObjectProperty")),
+        OWL_IRREFLEXIVE_PROPERTY => Value::String(String::from("IrreflexiveObjectProperty")),
+        OWL_SYMMETRIC_PROPERTY => Value::String(String::from("SymmetricObjectProperty")),
+        OWL_ASYMMETRIC_PROPERTY => Value::String(String::from("AsymmetricObjectProperty")),
+        OWL_TRANSITIVE_PROPERTY => Value::String(String::from("TransitiveObjectProperty")),
 
-        "<http://www.w3.org/2002/07/owl#AllDifferent>" => Value::String(String::from("DifferentIndividuals")),
+        OWL_ALL_DIFFERENT => Value::String(String::from("DifferentIndividuals")),
 
-        "owl:Ontology" => Value::String(String::from("ThinTriple")),
+        OWL_ONTOLOGY => Value::String(String::from("ThinTriple")),
 
         _ => Value::String(String::from("ClassAssertion")),
     }
@@ -428,7 +429,7 @@ pub fn get_ofn_operator(op: &str) -> Value {
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let lhs = "\"obo:IAO_0000120\"";
-/// let rhs = "\"owl:FunctionalProperty\"";
+/// let rhs = "\"<http://www.w3.org/2002/07/owl#FunctionalProperty>\"";
 ///
 /// let lhs_owl : owl::OWL = serde_json::from_str(lhs).unwrap();
 /// let rhs_owl : owl::OWL = serde_json::from_str(rhs).unwrap();

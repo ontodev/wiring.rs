@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ldtab_2_ofn::annotation_translation;
 use crate::ldtab_2_ofn::axiom_translation;
 use crate::util::parser;
@@ -70,53 +71,53 @@ fn translate_triple(subject: &str, predicate: &str, object: &str) -> Value {
     let object_json = parser::parse_thick_triple_object(object);
 
     match predicate_json.as_str() {
-        "<http://www.w3.org/2000/01/rdf-schema#subClassOf>" => {
+        RDFS_SUB_CLASS_OF => {
             axiom_translation::translate_subclass_of_axiom(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#equivalentClass>" => {
+        OWL_EQUIVALENT_CLASS => {
             axiom_translation::translate_equivalent_class(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#AllDisjointClasses>" => axiom_translation::translate_disjoint_classes(&object_json),
-        "<http://www.w3.org/2002/07/owl#disjointUnionOf>" => {
+        OWL_ALL_DISJOINT_CLASSES => axiom_translation::translate_disjoint_classes(&object_json),
+        OWL_DISJOINT_UNION_OF => {
             axiom_translation::translate_disjoint_union(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#disjointWith>" => {
+        OWL_DISJOINT_WITH => {
             axiom_translation::translate_disjoint_with(&subject_json, &object_json)
         }
-        "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>" => axiom_translation::translate_rdf_type(&subject_json, &object_json),
-        "<http://www.w3.org/2000/01/rdf-schema#domain>" => axiom_translation::translate_domain(&subject_json, &object_json),
-        "<http://www.w3.org/2000/01/rdf-schema#range>" => axiom_translation::translate_range(&subject_json, &object_json),
-        "<http://www.w3.org/2002/07/owl#inverseOf>" => {
+        RDF_TYPE => axiom_translation::translate_rdf_type(&subject_json, &object_json),
+        RDFS_DOMAIN => axiom_translation::translate_domain(&subject_json, &object_json),
+        RDFS_RANGE => axiom_translation::translate_range(&subject_json, &object_json),
+        OWL_INVERSE_OF => {
             axiom_translation::translate_inverse_object_properties(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#equivalentProperty>" => {
+        OWL_EQUIVALENT_PROPERTY => {
             axiom_translation::translate_equivalent_properties(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#propertyDisjointWith>" => {
+        OWL_PROPERTY_DISJOINT_WITH => {
             axiom_translation::translate_property_disjoint_with(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#AllDisjointProperties>" => {
+        OWL_ALL_DISJOINT_PROPERTIES => {
             axiom_translation::translate_all_disjoint_properties(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>" => {
+        RDFS_SUB_PROPERTY_OF => {
             axiom_translation::translate_sub_property_of(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#AllDifferent>" => {
+        OWL_ALL_DIFFERENT => {
             axiom_translation::translate_all_different(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#differentFrom>" => {
+        OWL_DIFFERENT_FROM => {
             axiom_translation::translate_different_from(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#sameAs>" => axiom_translation::translate_same_as(&subject_json, &object_json),
-        "<http://www.w3.org/2002/07/owl#AllSameAs>" => axiom_translation::translate_all_same_as(&subject_json, &object_json),
-        "<http://www.w3.org/2002/07/owl#propertyChainAxiom>" => {
+        OWL_SAME_AS => axiom_translation::translate_same_as(&subject_json, &object_json),
+        OWL_ALL_SAME_AS => axiom_translation::translate_all_same_as(&subject_json, &object_json),
+        OWL_PROPERTY_CHAIN_AXIOM => {
             axiom_translation::translate_property_chain(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#NegativePropertyAssertion>" => {
+        OWL_NEGATIVE_PROPERTY_ASSERTION => {
             axiom_translation::translate_negative_property_assertion(&subject_json, &object_json)
         }
-        "<http://www.w3.org/2002/07/owl#hasKey>" => axiom_translation::translate_has_key(&subject_json, &object_json),
-        "<http://www.w3.org/2002/07/owl#imports>" => axiom_translation::translate_import(&subject_json, &object_json),
+        OWL_HAS_KEY => axiom_translation::translate_has_key(&subject_json, &object_json),
+        OWL_IMPORTS => axiom_translation::translate_import(&subject_json, &object_json),
 
         _ => axiom_translation::translate_thin_triple(subject, predicate, object),
     }

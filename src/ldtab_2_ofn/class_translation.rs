@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::ldtab_2_ofn::property_translation;
 use crate::owl::thick_triple as owl;
 use serde_json::Value;
@@ -221,7 +222,7 @@ pub fn translate_has_self(exp: &owl::HasSelf) -> Value {
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&min_cardinality_owl);
-/// let axiom_expected_string = r#"["MinCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["MinCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -252,7 +253,7 @@ pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value {
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&min_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectMinCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectMinCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -316,7 +317,7 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&max_cardinality_owl);
-/// let axiom_expected_string = r#"["MaxCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["MaxCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -347,7 +348,7 @@ pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value {
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&max_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectMaxCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectMaxCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -412,7 +413,7 @@ pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardi
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&exact_cardinality_owl);
-/// let axiom_expected_string = r#"["ExactCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["ExactCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -443,7 +444,7 @@ pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value {
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&exact_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectExactCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectExactCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -549,7 +550,7 @@ pub fn translate_distinct_members(exp: &owl::DistinctMembers) -> Value {
     };
 
     let operator = match rdf_type.as_str() {
-        "<http://www.w3.org/2002/07/owl#AllDifferent>" => Value::String(String::from("DifferentIndividuals")),
+        OWL_ALL_DIFFERENT => Value::String(String::from("DifferentIndividuals")),
         _ => Value::String(String::from("Error")),
     };
 
@@ -586,7 +587,7 @@ pub fn translate_list(exp: &owl::RDFList) -> Value {
     let mut rest = translate(&exp.rdf_rest[0].object);
 
     //base case for RDF lists
-    if rest.is_string() && rest.as_str().unwrap() == "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>" {
+    if rest.is_string() && rest.as_str().unwrap() == RDF_NIL {
         let mut v = Vec::new();
         v.push(first);
         Value::Array(v)
@@ -624,7 +625,7 @@ pub fn check_class_type(v: &Option<Vec<owl::Object>>) -> bool {
                 match &t.object {
                     //look for an owl:Class
                     owl::OWL::Named(s) => {
-                        if s == "<http://www.w3.org/2002/07/owl#Class>" {
+                        if s == OWL_CLASS {
                             res = true
                         }
                     }
@@ -649,7 +650,7 @@ pub fn check_data_range_type(v: &Option<Vec<owl::Object>>) -> bool {
                 //check all types
                 match &t.object {
                     owl::OWL::Named(s) => {
-                        if s == "<http://www.w3.org/2000/01/rdf-schema#Datatype>" {
+                        if s == RDFS_DATATYPE {
                             res = true
                         }
                     }

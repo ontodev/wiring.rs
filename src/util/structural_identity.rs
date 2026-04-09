@@ -13,7 +13,7 @@ pub fn translate(v : &Value,
      match owl_operator.as_str() {
          "\"SubClassOf\"" => translate_subclass_of(v,m,t), 
          "\"DisjointClasses\"" => translate_disjoint_classes(v,m,t), 
-         "\"DisjointUnionOf\"" => translate_disjoint_union_of(v,m,t), 
+         "\"DisjointUnion\"" => translate_disjoint_union_of(v,m,t), 
          "\"EquivalentClasses\"" => translate_equivalent_classes(v,m,t), 
          "\"ObjectSomeValuesFrom\"" => translate_some_values_from(v,m,t), 
          "\"ObjectAllValuesFrom\"" => translate_all_values_from(v,m,t), 
@@ -68,7 +68,7 @@ pub fn translate_disjoint_union_of(v : &Value,
 
     let lhs = translate(&v[1], m, t);
     let mut operands : Value = translate_list(&(v.as_array().unwrap())[2..], m, t); 
-    let operator = Value::String(String::from("DisjointUnionOf"));
+    let operator = Value::String(String::from("DisjointUnion"));
 
     let mut union = vec![operator, lhs];
     let arguments = operands.as_array_mut().unwrap();

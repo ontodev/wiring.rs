@@ -1,3 +1,4 @@
+use crate::constants::*;
 use serde_json::{Value};
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -30,7 +31,7 @@ pub fn is_data_property(v : &Value, m : &HashMap<String, HashSet<String>>) -> bo
     };
 
     match m.get(&key) {
-        Some(set) => set.contains("owl:DatatypeProperty"),//we are using JSON Strings here
+        Some(set) => set.contains(OWL_DATATYPE_PROPERTY),//we are using JSON Strings here
         _ => false, 
     } 
 }
@@ -43,14 +44,14 @@ pub fn is_annotation_property(v : &Value, m : &HashMap<String, HashSet<String>>)
     };
 
     match m.get(&key) {
-        Some(set) => set.contains("owl:AnnotationProperty"),
+        Some(set) => set.contains(OWL_ANNOTATION_PROPERTY),
         _ => false, 
     } 
 }
 
 pub fn object_type_look_up(s : String, m: &HashMap<String, HashSet<String>>) -> bool { 
     match m.get(&s) {
-        Some(set) => set.contains("owl:ObjectProperty"),
+        Some(set) => set.contains(OWL_OBJECT_PROPERTY),
         _ => false,
     }
 }

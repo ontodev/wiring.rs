@@ -1,38 +1,55 @@
+use crate::constants::*;
 use regex::Regex;
 use serde_json::json;
 use serde_json::{Map, Value};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static RE_LANGUAGE_TAG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"@(.*)$").unwrap());
+static RE_DATATYPE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap());
+static RE_LITERAL: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^\"(.+)\"(.*)$").unwrap());
+static RE_URI: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^<(.+)>$").unwrap());
+static RE_CURIE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new("^(.+):(.+)$").unwrap());
+
+/// Generates a blank node ID for an LDTab object.
+pub fn generate_blank_node_id(v: &Value) -> String {
+    let sorted = sort_value(v);
+    let s = sorted.to_string();
+    let mut hasher = Sha256::new();
+    hasher.update(s.as_bytes());
+    let hash = hasher.finalize();
+    format!("<ldtab:blanknode:{:x}>", hash)
+}
 
 pub fn translate_literal(s: &str) -> Value {
-    let language_tag = Regex::new("^\"(.+)\"@(.*)$").unwrap();
-    let datatype = Regex::new("^\"(.+)\"\\^\\^(.*)$").unwrap();
-
-    if language_tag.is_match(s) {
-        match language_tag.captures(s) {
+    if RE_LANGUAGE_TAG.is_match(s) {
+        match RE_LANGUAGE_TAG.captures(s) {
             Some(x) => json!(format!("@{}", &x[2])),
             None => json!("Error"),
         }
-    } else if datatype.is_match(s) {
-        match datatype.captures(s) {
+    } else if RE_DATATYPE.is_match(s) {
+        match RE_DATATYPE.captures(s) {
             Some(x) => json!(format!("{}", &x[2])),
             None => json!("Error"),
         }
     } else {
-        json!("_plain")
+        json!(XSD_STRING)
     }
 }
 
 pub fn translate_string(s: &str) -> Value {
-    let literal = Regex::new("^\"(.+)\"(.*)$").unwrap();
-    let uri = Regex::new("^<(.+)>$").unwrap();
-    let curie = Regex::new("^(.+):(.+)$").unwrap();
-
-    if literal.is_match(s) {
+    if RE_LITERAL.is_match(s) {
         translate_literal(s)
-    } else if uri.is_match(s) {
-        json!("_IRI")
-    } else if curie.is_match(s) {
-        json!("_IRI")
+    } else if RE_URI.is_match(s) {
+        json!(LDTAB_IRI)
+    } else if RE_CURIE.is_match(s) {
+        json!(LDTAB_IRI)
     } else {
         json!("ERROR")
     }
@@ -41,8 +58,8 @@ pub fn translate_string(s: &str) -> Value {
 pub fn translate_datatype(v: &Value) -> Value {
     match v {
         Value::String(s) => translate_string(&s),
-        Value::Array(_x) => json!("_JSONLIST"),
-        Value::Object(_x) => json!("_JSONMAP"),
+        Value::Array(_x) => json!(LDTAB_JSON_LIST),
+        Value::Object(_x) => json!(LDTAB_JSON_MAP),
         _ => json!("error"),
     }
     //check array & object
@@ -67,15 +84,15 @@ pub fn sort_object(v: &Map<String, Value>) -> Value {
 
     //sort nested values
     for (key, value) in v.iter() {
-        let mut sorted_value = Value::Null;
+        let sorted_value;
 
         if key == "object"
             && v.contains_key("datatype")
-            && v.get("datatype").unwrap() == &json!("_JSONLIST")
+            && v.get("datatype").unwrap() == &json!(LDTAB_JSON_LIST)
         {
             //check if value is none
             match value.as_array() {
-                Some(val) => {}
+                Some(_val) => {}
                 None => {
                     println!("NOT AN ARRAY {:?}", value);
                 }
