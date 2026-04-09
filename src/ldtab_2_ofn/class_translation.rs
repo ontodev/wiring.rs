@@ -222,7 +222,7 @@ pub fn translate_has_self(exp: &owl::HasSelf) -> Value {
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&min_cardinality_owl);
-/// let axiom_expected_string = r#"["MinCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["MinCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -253,7 +253,7 @@ pub fn translate_min_cardinality(exp: &owl::MinCardinality) -> Value {
 /// let min_cardinality_owl : owl::OWL = serde_json::from_str(min_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&min_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectMinCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectMinCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -317,7 +317,7 @@ pub fn translate_data_min_qualified_cardinality(exp: &owl::MinDataQualifiedCardi
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&max_cardinality_owl);
-/// let axiom_expected_string = r#"["MaxCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["MaxCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -348,7 +348,7 @@ pub fn translate_max_cardinality(exp: &owl::MaxCardinality) -> Value {
 /// let max_cardinality_owl : owl::OWL = serde_json::from_str(max_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&max_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectMaxCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectMaxCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -413,7 +413,7 @@ pub fn translate_data_max_qualified_cardinality(exp: &owl::MaxDataQualifiedCardi
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&exact_cardinality_owl);
-/// let axiom_expected_string = r#"["ExactCardinality","\"1\"^^xsd:int","obo:IAO_0000120"]"#;
+/// let axiom_expected_string = r#"["ExactCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);
@@ -444,7 +444,7 @@ pub fn translate_exact_cardinality(exp: &owl::ExactCardinality) -> Value {
 /// let exact_cardinality_owl : owl::OWL = serde_json::from_str(exact_cardinality).unwrap();
 ///
 /// let axiom : Value = translation::translate(&exact_cardinality_owl);
-/// let axiom_expected_string = r#"["ObjectExactCardinality","\"1\"^^xsd:int","obo:IAO_0000120","obo:IAO_0000121"]"#;
+/// let axiom_expected_string = r#"["ObjectExactCardinality","\"1\"^^<http://www.w3.org/2001/XMLSchema#int>","obo:IAO_0000120","obo:IAO_0000121"]"#;
 /// let axiom_expected : Value = serde_json::from_str(axiom_expected_string).unwrap();
 ///
 /// assert_eq!(axiom, axiom_expected);

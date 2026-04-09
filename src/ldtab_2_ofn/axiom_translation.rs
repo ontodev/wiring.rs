@@ -429,7 +429,7 @@ pub fn get_ofn_operator(op: &str) -> Value {
 /// use wiring_rs::owl::thick_triple as owl;
 ///
 /// let lhs = "\"obo:IAO_0000120\"";
-/// let rhs = "\"owl:FunctionalProperty\"";
+/// let rhs = "\"<http://www.w3.org/2002/07/owl#FunctionalProperty>\"";
 ///
 /// let lhs_owl : owl::OWL = serde_json::from_str(lhs).unwrap();
 /// let rhs_owl : owl::OWL = serde_json::from_str(rhs).unwrap();
